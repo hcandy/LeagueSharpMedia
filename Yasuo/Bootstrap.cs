@@ -24,7 +24,7 @@
                 //assemblyVersion = new AssemblyVersion();
                 //assemblyVersion.Check(Variables.Name, 2500, Variables.GitHubPath);
 
-                Variables.Assembly = new MediaSuo();
+                Variables.Assembly = new MediaSuo("Yasuo");
 
                 menuManager = new MenuManager();
                 menuManager.GenerateMenu();

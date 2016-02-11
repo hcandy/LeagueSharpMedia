@@ -111,11 +111,11 @@ namespace Yasuo.Common
             return 0;
         }
 
-        public static int GetVersion()
-        {
+        //public static int GetVersion()
+        //{
             
-            return Convert.ToInt32(Assembly.GetExecutingAssembly().GetName().Version);
-        }
+        //    return Convert.ToInt32(Assembly.GetExecutingAssembly().GetName().Version);
+        //}
     }
 }
 
