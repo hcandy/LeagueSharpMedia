@@ -1,0 +1,17 @@
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\Yasuo.exe.config
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\Yasuo.exe
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\Yasuo.pdb
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\clipper_library.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\LeagueSharp.Common.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\LeagueSharp.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\LeagueSharp.SDK.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\SharpDX.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\LeagueSharp.Sandbox.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\Newtonsoft.Json.dll
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\bin\Release\LeagueSharp.xml
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.csprojResolveAssemblyReference.cache
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.Properties.Resources.resources
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.csproj.GenerateResource.Cache
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.exe
+C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.pdb

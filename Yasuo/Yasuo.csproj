@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B3716828-C323-49CE-B2A0-2000CC0D846C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Yasuo</RootNamespace>
+    <AssemblyName>Yasuo</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PreBuildEvent />
+    <PostBuildEvent />
+    <OutputPath>bin\Release</OutputPath>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="clipper_library">
+      <HintPath>C:\LeagueSharp\System\clipper_library.dll</HintPath>
+    </Reference>
+    <Reference Include="LeagueSharp">
+      <HintPath>C:\LeagueSharp\System\LeagueSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="LeagueSharp.Common">
+      <HintPath>C:\LeagueSharp\System\LeagueSharp.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="LeagueSharp.SDK">
+      <HintPath>C:\LeagueSharp\System\LeagueSharp.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>C:\LeagueSharp\System\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AntiGapCloser.cs" />
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Clear.cs" />
+    <Compile Include="Common\AssemblyVersion.cs" />
+    <Compile Include="Common\Extensions\Extensions.cs" />
+    <Compile Include="Common\Extensions\AddToolTip.cs" />
+    <Compile Include="Common\IChild.cs" />
+    <Compile Include="Common\Predictions\PredictionOktw.cs" />
+    <Compile Include="Common\Utility\Djikstra\Djikstra.cs" />
+    <Compile Include="Common\Utility\Djikstra\Edge.cs" />
+    <Compile Include="Common\Utility\Djikstra\Node.cs" />
+    <Compile Include="Common\Utility\Enums\ModuleMode.cs" />
+    <Compile Include="Common\Utility\Enums\SkillMode.cs" />
+    <Compile Include="Common\Utility\Helper.cs" />
+    <Compile Include="Common\Utility\Utility.cs" />
+    <Compile Include="Drawings.cs" />
+    <Compile Include="EvadeSkills\SweepingBlade.cs" />
+    <Compile Include="EvadeSkills\SweepingBladeLogicProvider.cs" />
+    <Compile Include="FlowManager.cs" />
+    <Compile Include="EvadeSkills\WindWall.cs" />
+    <Compile Include="EvadeSkills\WindWallLogicProvider.cs" />
+    <Compile Include="Modules\Protector\Protector.cs" />
+    <Compile Include="Modules\IEvadeSkills.cs" />
+    <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Modules\Protector\WindWallProtector.cs" />
+    <Compile Include="Modules\Protector\SafeZoneLogicProvider.cs" />
+    <Compile Include="Modules\SafeZone.cs" />
+    <Compile Include="Modules\SweepingBlade.cs" />
+    <Compile Include="Modules\WallDash.cs" />
+    <Compile Include="Common\Child.cs" />
+    <Compile Include="Common\Parent.cs" />
+    <Compile Include="Common\Base.cs" />
+    <Compile Include="Skills\Combo\LastBreath.cs" />
+    <Compile Include="Skills\Combo\LastBreathLogicProvider.cs" />
+    <Compile Include="Skills\Combo\LastBreathSettings.cs" />
+    <Compile Include="Skills\Combo\Spells.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="MediaSuo.cs" />
+    <Compile Include="Potions.cs" />
+    <Compile Include="SafeZone.cs" />
+    <Compile Include="Skills\Combo\SteelTempest.cs" />
+    <Compile Include="Skills\Combo\SteelTempestLogicProvider.cs" />
+    <Compile Include="Skills\Combo\SweepingBlade.cs" />
+    <Compile Include="Skills\Combo\SweepingBladeLogicProvider.cs" />
+    <Compile Include="Spells.cs" />
+    <Compile Include="UnderTowerFarm.cs" />
+    <Compile Include="Variables.cs" />
+    <Compile Include="Wall.cs" />
+    <Compile Include="WindWall.cs" />
+    <Compile Include="Manager.cs" />
+    <Compile Include="MenuManager.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
