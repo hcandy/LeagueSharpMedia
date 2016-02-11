@@ -38,10 +38,15 @@ namespace Yasuo
 
             Menu = new Menu(Name, Name, true);
 
-            var info = new Menu(Name + " Info", Name + " Info", false);
+            var info = new Menu(Name + " Info", Name + " Info", false);         
             info.AddItem(new MenuItem(info.Name + "Version", "Version: " + 1337));
             info.AddItem(new MenuItem(info.Name + "Author", "Author: " + Variables.Author));
             Menu.AddSubMenu(info);
+
+            Menu orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
+            Menu.AddSubMenu(orbWalkingMenu);
+
+
             
             CustomEvents.Game.OnGameLoad += OnGameLoad;
             CustomEvents.Game.OnGameEnd +=  OnGameEnd;
