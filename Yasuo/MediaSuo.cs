@@ -41,6 +41,8 @@ namespace Yasuo
             var info = new Menu(Name + " Info", Name + " Info", false);
             info.AddItem(new MenuItem(info.Name + "Version", "Version: " + 1337));
             info.AddItem(new MenuItem(info.Name + "Author", "Author: " + Variables.Author));
+            Menu.AddSubMenu(info);
+            Menu.AddToMainMenu();
 
             CustomEvents.Game.OnGameLoad += OnGameLoad;
             CustomEvents.Game.OnGameEnd +=  OnGameEnd;
