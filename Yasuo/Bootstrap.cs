@@ -29,7 +29,7 @@
                 menuManager = new MenuManager();
                 menuManager.GenerateMenu();
 
-                LoadedSuccessfully(Variables.Name + " by "+Variables.Author, AssemblyVersion.GetVersion(), 2500);
+                LoadedSuccessfully(Variables.Name + " by "+Variables.Author, 1337, 2500);
 
                 #region parents
 

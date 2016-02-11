@@ -15,3 +15,6 @@ C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.Properties.Resources.reso
 C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.csproj.GenerateResource.Cache
 C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.exe
 C:\Users\bje\Desktop\LeagueSharp\Yasuo\obj\Debug\Yasuo.pdb
+C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\bin\Release\Yasuo.exe.config
+C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.exe
+C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.pdb
