@@ -45,28 +45,28 @@ namespace Yasuo.Skills.Combo
 
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
-            // Blacklist
-            var blacklist = new Menu("Blacklist", this.Name + "Blacklist");
+            //// Blacklist
+            //var blacklist = new Menu("Blacklist", this.Name + "Blacklist");
 
-            foreach (var x in HeroManager.Enemies)
-            {
-                blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
-            }
-            MenuExtensions.AddToolTip(
-                blacklist,
-                "Setting a champion to 'on', will make the script not using Q for him anymore");
-            this.Menu.AddSubMenu(blacklist);
+            //foreach (var x in HeroManager.Enemies)
+            //{
+            //    blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
+            //}
+            //MenuExtensions.AddToolTip(
+            //    blacklist,
+            //    "Setting a champion to 'on', will make the script not using Q for him anymore");
+            //this.Menu.AddSubMenu(blacklist);
 
             // Spell Settings
             // Hit Multiple
             this.Menu.AddItem(new MenuItem(this.Name + "AOE", "Try to hit multiple").SetValue(true));
             this.Menu.AddItem(new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
-            MenuExtensions.AddToolTip(
-                this.Menu, 
-                "If predicted hit count > slider, it will try to hit multiple, else it will aim for a single champion");
+            //MenuExtensions.AddToolTip(
+            //    this.Menu, 
+            //    "If predicted hit count > slider, it will try to hit multiple, else it will aim for a single champion");
 
             // Prediction Mode
-            this.Menu.AddItem(new MenuItem(this.Name + "Prediction", "Prediction").SetValue(new StringList(Variables.Predictions, 0)));
+            //this.Menu.AddItem(new MenuItem(this.Name + "Prediction", "Prediction").SetValue(new StringList(Variables.Predictions, 0)));
             //Menu.AddItem(new MenuItem(Name + "Prediction Mode", "Prediction Mode").SetValue(new Slider(5, 0, 0)));
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
