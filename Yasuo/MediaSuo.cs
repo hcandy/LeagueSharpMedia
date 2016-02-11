@@ -46,8 +46,10 @@ namespace Yasuo
             Menu orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
             Menu.AddSubMenu(orbWalkingMenu);
 
+            Variables.Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalking"));
 
-            
+
+
             CustomEvents.Game.OnGameLoad += OnGameLoad;
             CustomEvents.Game.OnGameEnd +=  OnGameEnd;
         }
