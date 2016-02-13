@@ -1,38 +1,148 @@
-﻿//namespace Yasuo.Skills.Combo
-//{
-//    using System;
+﻿//TODO:  Djikstra
 
-//    using LeagueSharp;
+namespace Yasuo.Skills.Combo
+{
+    using System;
+    using System.Drawing;
 
-//    using Yasuo.Common.Utility.Enums;
+    using LeagueSharp;
+    using LeagueSharp.Common;
 
-//    internal class SweepingBlade : Combo
-//    {
-//        public SweepingBladeLogicProvider Provider;
+    using Yasuo.Common;
+    using Yasuo.Common.Extensions;
 
-//        public SweepingBlade()
-//        {
-//            this.Provider = new SweepingBladeLogicProvider();
-//        }
+    internal class SweepingBlade : Child<Combo>
+    {
+        public SweepingBlade(Combo parent)
+            : base(parent)
+        {
+            this.OnLoad();
+        }
 
-//        public SkillMode GetSkillMode()
-//        {
-//            return SkillMode.OnUpdate;
-//        }
+        public override string Name => "Sweeping Blade";
 
-//        public void Execute(EventArgs args)
-//        {
-//            if (!target.IsValid) return;
+        public SweepingBladeLogicProvider Provider;
 
-//            if (target.isWallDash(Variables.Spells[SpellSlot.E].Range, 75) && )
-//            {
-                
-//            }
-//        }
+        protected override void OnEnable()
+        {
+            Game.OnUpdate += this.OnUpdate;
+            Drawing.OnDraw += this.OnDraw;
+            base.OnEnable();
+        }
 
-//        public void Execute()
-//        {
-            
-//        }
-//    }
-//}
+        protected override void OnDisable()
+        {
+            Game.OnUpdate -= this.OnUpdate;
+            Drawing.OnDraw -= this.OnDraw;
+            base.OnDisable();
+        }
+
+        protected override sealed void OnLoad()
+        {
+            this.Menu = new Menu(this.Name, this.Name);
+            this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
+
+            // Blacklist
+            var blacklist = new Menu("Blacklist", this.Name + "Blacklist");
+
+            if (HeroManager.Enemies.Count == 0)
+            {
+                blacklist.AddItem(new MenuItem(blacklist.Name + "null", "No enemies found"));
+            }
+            else
+            {
+                foreach (var x in HeroManager.Enemies)
+                {
+                    blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
+                }
+                MenuExtensions.AddToolTip(
+                    blacklist,
+                    "Setting a champion to 'on', will make the script not using Q for him anymore");
+            }
+            this.Menu.AddSubMenu(blacklist);
+
+            // Spell Settings
+
+            // Mode
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "ModeTarget", "Dash to: ").SetValue(
+                    new StringList(new[] { "Mouse", "Enemy" }, 0))
+                    .SetTooltip("The assembly will try to E on a minion in order to Q"));
+
+            new MenuItem(this.Name + "ModeAlgo", "Algorithmus: ").SetValue(
+                new StringList(new[] { "Media (Pre-Calc Path)", "Valvrave/Brian Sharp", "YasuoPro" }, 0))
+                .SetTooltip(
+                    "Setting the Algorithmus to Media will make " + Variables.Name
+                    + " calculate a path around Skillshots or Dangerous Zones.");
+
+            // EQ
+
+            #region EQ
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "EQ", "Try to E for EQ").SetValue(true)
+                    .SetTooltip("The assembly will try to E on a minion in order to Q"));
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
+
+            #endregion
+
+            // Prediction
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "Prediction", "Predict enemy position").SetValue(true)
+                    .SetTooltip(
+                        "The assembly will try to E to the enemy predicted position. This will not work if Mode is set to Mouse."));
+
+            this.Parent.Menu.AddSubMenu(this.Menu);
+        }
+
+        protected override void OnInitialize()
+        {
+            this.Provider = new SweepingBladeLogicProvider();
+
+            base.OnInitialize();
+        }
+
+        public void OnUpdate(EventArgs args)
+        {
+            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
+            {
+                return;
+            }
+
+            var target = TargetSelector.GetTarget(
+                Variables.Spells[SpellSlot.Q].Range,
+                TargetSelector.DamageType.Physical);
+
+            var unit = Provider.GetBestUnit(target.ServerPosition.To2D(), true);
+            if (unit != null)
+            {
+                Execute(unit);
+            }
+        }
+
+        public void OnDraw(EventArgs args)
+        {
+            var target = TargetSelector.GetTarget(
+                Variables.Spells[SpellSlot.Q].Range,
+                TargetSelector.DamageType.Physical);
+
+            var unit = Provider.GetBestUnit(target.ServerPosition.To2D(), true);
+            if (unit != null)
+            {
+                Drawing.DrawCircle(unit.ServerPosition, 150, Color.Aqua);
+            }
+        }
+
+        private static void Execute(Obj_AI_Base target)
+        {
+            if (target.IsValidTarget())
+            {
+                Variables.Spells[SpellSlot.E].Cast(target);
+            }
+        }
+    }
+}
+

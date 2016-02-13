@@ -18,6 +18,7 @@ namespace Yasuo
     {
         /**
         * TODO:
+        MOST PRIO: FIX OrbWalker
         * E: Dont Dash into Wall || Dash if E hits wall if distance shorter than before || if Evade E check for Wall || Evade with E behind own wall
         * Q: Q on multiple target || E for Q (ref: Bubba Kush Lee Sin > Flash R into multiple targets
         * E through Trundle / J4 / Anivia Walls
@@ -38,9 +39,9 @@ namespace Yasuo
 
             Menu = new Menu(Name, Name, true);
 
-            var info = new Menu(Name + " Info", Name + " Info", false);         
-            info.AddItem(new MenuItem(info.Name + "Version", "Version: " + 1337));
-            info.AddItem(new MenuItem(info.Name + "Author", "Author: " + Variables.Author));
+            var info = new Menu("Info", Name + " Info", false);         
+            info.AddItem(new MenuItem("Version", "Version: " + 1337));
+            info.AddItem(new MenuItem("Author", "Author: " + Variables.Author));
             Menu.AddSubMenu(info);
 
             Menu orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
@@ -52,6 +53,8 @@ namespace Yasuo
 
             CustomEvents.Game.OnGameLoad += OnGameLoad;
             CustomEvents.Game.OnGameEnd +=  OnGameEnd;
+
+            Game.OnUpdate += OnUpdate;
         }
 
         public event EventHandler<Base.UnloadEventArgs> OnUnload;
@@ -73,9 +76,14 @@ namespace Yasuo
         /// Called when the game ends
         /// </summary>
         /// <param name="args"></param>
-        private void OnGameEnd(EventArgs args)
+        private static void OnGameEnd(EventArgs args)
         {
             AppDomain.Unload(AppDomain.CurrentDomain);
+        }
+
+        private static void OnUpdate(EventArgs args)
+        {   
+            Variables.SetSpells();
         }
     }
 }

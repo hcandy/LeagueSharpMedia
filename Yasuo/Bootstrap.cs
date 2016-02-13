@@ -1,4 +1,6 @@
-﻿namespace Yasuo
+﻿// TODO: Add automatically Version changing based on the current date.
+
+namespace Yasuo
 {
     using System;
     using System.Collections.Generic;
@@ -13,27 +15,17 @@
 
     internal class Bootstrap
     {
-        private readonly MenuManager menuManager;
-
-        private readonly AssemblyVersion assemblyVersion;
-
         public Bootstrap()
         {
             try
             {
-                //assemblyVersion = new AssemblyVersion();
-                //assemblyVersion.Check(Variables.Name, 2500, Variables.GitHubPath);
-
                 Variables.Assembly = new MediaSuo("Yasuo");
-
-                menuManager = new MenuManager();
-                menuManager.GenerateMenu();
 
                 LoadedSuccessfully(Variables.Name + " by "+Variables.Author, 1337, 2500);
 
                 #region parents
 
-                var Combo = new Skills.Combo.Spells();
+                var combo = new Combo();
                 //var Items = new Yasuo.Items.Item();
 
                 #endregion
@@ -41,21 +33,24 @@
 
                 #region features
 
-                Variables.Assembly.Features.AddRange(
-                    new List<IChild>
+                CustomEvents.Game.OnGameLoad += delegate
                     {
-                        new SteelTempest(Combo),
+                        Variables.Assembly.Features.AddRange(
+                            new List<IChild>
+                                {
+                                    new SteelTempest(combo),
+                                    new SweepingBlade(combo)
+                                });
+
+                        /*      new WindWall(evade),
                         
-                    });
+                        new LastBreath(combo)  */
 
-                /*      new WindWall(Combo),
-                        new SweepingBlade(Spells),
-                        new LastBreath(Spells)  */
-
-                foreach (var feature in Variables.Assembly.Features)
-                {
-                    feature.HandleEvents();
-                }
+                        foreach (var feature in Variables.Assembly.Features)
+                        {
+                            feature.HandleEvents();
+                        }
+                    };
 
                 #endregion
             }

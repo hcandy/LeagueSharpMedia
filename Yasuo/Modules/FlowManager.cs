@@ -64,3 +64,7 @@
 //        }
 //    }
 //}
+
+namespace Yasuo.Modules
+{
+}

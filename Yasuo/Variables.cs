@@ -1,4 +1,6 @@
-﻿using System;
+﻿//TODO: Set collision (Spells Q - YasuoWall)
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,11 +26,10 @@ namespace Yasuo
         public static Obj_AI_Hero Player => ObjectManager.Player;
 
         public static string ChampionName = "Yasuo";
-        public static string GitHubPath = "Media/LeagueSharp/master/Yasuo";
+        public static string GitHubPath = "Media/LeagueSharpMedia/master/Yasuo";
         public static string Name => "MediaSuo";
         public static string Author => "Media";
 
-        //TODO: Set collision
         public static void SetSpells()
         {
             var q = Spells[SpellSlot.Q];
@@ -38,31 +39,31 @@ namespace Yasuo
 
             if (Player.HasQ3())
             {
-                q.SetSkillshot(GetQDelay, GetSpellWidth("YasuoQ3W"), GetMissileSpeed("YasuoQ3W"), false, SkillshotType.SkillshotLine);
-                q.Range = GetSpellRange("YasuoQ3W");
+                q.SetSkillshot(GetQDelay, 90, 1200, false, SkillshotType.SkillshotLine);
+                q.Range = 975;
                 q.MinHitChance = HitChance.VeryHigh;
             }
             else
             {
-                q.SetSkillshot(GetQDelay, GetSpellWidth("YasuoQ"), GetMissileSpeed("YasuoQ"), false, SkillshotType.SkillshotLine);
-                q.Range = GetSpellRange("YasuoQ3W");
+                q.SetSkillshot(GetQDelay, 20, float.MaxValue, false, SkillshotType.SkillshotLine);
+                q.Range = 475;
                 q.MinHitChance = HitChance.VeryHigh;
             }
             if (Player.IsDashing())
             {
-                q.SetSkillshot(GetQDelay, GetSpellWidth("YasuoEQ"), GetMissileSpeed("YasuoQ"), false, SkillshotType.SkillshotCircle);
+                q.SetSkillshot(GetQDelay, 375, float.MaxValue, false, SkillshotType.SkillshotCircle);
                 q.MinHitChance = HitChance.High;
             }
             
 
-            w = new Spell(SpellSlot.W, GetSpellRange("YasuoWMovingWall"));
-            w.SetSkillshot(GetSpellDelay("YasuoMovingWall"), GetSpellWidth("YasuoWmovingWall"), 400, false, SkillshotType.SkillshotLine);
+            w = new Spell(SpellSlot.W, 400);
+            w.SetSkillshot(0, 400, 400, false, SkillshotType.SkillshotLine);
 
-            e = new Spell(SpellSlot.E, GetSpellRange("YasuoDash"));
-            e.SetTargetted(GetSpellDelay("YasuoDash"), GetMissileSpeed("YasuoDash"));
+            e = new Spell(SpellSlot.E, 475);
+            e.SetTargetted(0, 1025);
             
-            r = new Spell(SpellSlot.R, GetSpellRange("YasuoR"));
-            r.SetTargetted(GetSpellDelay("YasuoR"), GetMissileSpeed("YasuoR"));
+            r = new Spell(SpellSlot.R, 900);
+            r.SetTargetted(0, float.MaxValue);
         }
         
         public static Dictionary<SpellSlot, Spell> Spells = new Dictionary<SpellSlot, Spell>()

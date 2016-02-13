@@ -84,6 +84,7 @@
     <Compile Include="Common\Extensions\Extensions.cs" />
     <Compile Include="Common\Extensions\AddToolTip.cs" />
     <Compile Include="Common\IChild.cs" />
+    <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\Predictions\PredictionOktw.cs" />
     <Compile Include="Common\Utility\Djikstra\Djikstra.cs" />
     <Compile Include="Common\Utility\Djikstra\Edge.cs" />
@@ -95,16 +96,14 @@
     <Compile Include="Drawings.cs" />
     <Compile Include="EvadeSkills\SweepingBlade.cs" />
     <Compile Include="EvadeSkills\SweepingBladeLogicProvider.cs" />
-    <Compile Include="FlowManager.cs" />
     <Compile Include="EvadeSkills\WindWall.cs" />
     <Compile Include="EvadeSkills\WindWallLogicProvider.cs" />
+    <Compile Include="Modules\FlowManager.cs" />
+    <Compile Include="Modules\Potions.cs" />
     <Compile Include="Modules\Protector\Protector.cs" />
-    <Compile Include="Modules\IEvadeSkills.cs" />
-    <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\Protector\WindWallProtector.cs" />
     <Compile Include="Modules\Protector\SafeZoneLogicProvider.cs" />
     <Compile Include="Modules\SafeZone.cs" />
-    <Compile Include="Modules\SweepingBlade.cs" />
     <Compile Include="Modules\WallDash.cs" />
     <Compile Include="Common\Child.cs" />
     <Compile Include="Common\Parent.cs" />
@@ -113,9 +112,7 @@
     <Compile Include="Skills\Combo\LastBreathLogicProvider.cs" />
     <Compile Include="Skills\Combo\LastBreathSettings.cs" />
     <Compile Include="Skills\Combo\Spells.cs" />
-    <Compile Include="Logger.cs" />
     <Compile Include="MediaSuo.cs" />
-    <Compile Include="Potions.cs" />
     <Compile Include="SafeZone.cs" />
     <Compile Include="Skills\Combo\SteelTempest.cs" />
     <Compile Include="Skills\Combo\SteelTempestLogicProvider.cs" />

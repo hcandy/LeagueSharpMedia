@@ -31,7 +31,6 @@
 
 //            Obj_AI_Hero target = this.Provider.GetTarget(enemies);
 
-//            //TODO: Add Menu Items and Preferance
 //            // Auto Ult on X targets with preference
 //            if (enemies.Count >= 3)
 //            {

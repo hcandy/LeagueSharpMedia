@@ -185,8 +185,8 @@
         /// <returns></returns>
         public float GetExecutionTime()
         {
-            var speed = Helper.GetMissileSpeed("YasuoDash");
-            var distance = Helper.GetSpellRange("YasuoDash");
+            var speed = 1025;
+            var distance = 475;
 
             return distance / speed;
         }

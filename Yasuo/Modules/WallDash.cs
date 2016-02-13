@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//TODO: Make class more accessable. And easier to use. Maybe add some Extensions?
 
 using LeagueSharp.Common;
 using LeagueSharp;
