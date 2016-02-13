@@ -125,15 +125,15 @@ namespace Yasuo.Skills.Combo
 
         public void OnDraw(EventArgs args)
         {
-            var target = TargetSelector.GetTarget(
-                Variables.Spells[SpellSlot.Q].Range,
-                TargetSelector.DamageType.Physical);
+            //var target = TargetSelector.GetTarget(
+            //    Variables.Spells[SpellSlot.Q].Range,
+            //    TargetSelector.DamageType.Physical);
 
-            var unit = Provider.GetBestUnit(target.ServerPosition.To2D(), true);
-            if (unit != null)
-            {
-                Drawing.DrawCircle(unit.ServerPosition, 150, Color.Aqua);
-            }
+            //var unit = Provider.GetBestUnit(target.ServerPosition.To2D(), true);
+            //if (unit != null)
+            //{
+            //    Drawing.DrawCircle(unit.ServerPosition, 150, Color.Aqua);
+            //}
         }
 
         private static void Execute(Obj_AI_Base target)
