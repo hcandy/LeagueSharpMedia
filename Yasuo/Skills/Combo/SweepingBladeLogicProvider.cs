@@ -1,5 +1,6 @@
 ﻿namespace Yasuo.Skills.Combo
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -22,59 +23,99 @@
         }
 
         /// <summary>
-        /// The MAXIMAL calculation distance. Every unit in a range of 3000 units will be taken into consideration.
+        ///     The MAXIMAL calculation distance. Every unit in a range of 3000 units will be taken into consideration.
         /// </summary>
         public static float CalculationDistance = 3000f;
 
         /// <summary>
-        /// Returns the unit that is best to Gapclose to a given position
+        ///     Returns the unit that is best to Gapclose to a given position
         /// </summary>
         /// <param name="position">The vector to dash to</param>
         /// <param name="minions"></param>
         /// <param name="champions"></param>
         /// <param name="noLowHealth"></param>
         /// <returns>Obj_AI_Base</returns>
-        public Obj_AI_Base GetBestUnit(Vector2 position, bool minions = true, bool champions = true, bool noLowHealth = false)
+        public Obj_AI_Base GetBestUnit(
+            Vector2 position,
+            bool minions = true,
+            bool champions = true,
+            bool noLowHealth = false)
         {
-            return this.GetBestPath(position, minions, champions, noLowHealth).FirstOrDefault();
+            var path = GetBestPath(position, minions, champions, noLowHealth);
+
+            Game.PrintChat("7) path available");
+
+            if (path != null)
+            {
+                return path.MinOrDefault(x => x.Distance(Variables.Player));
+            }
+            Game.PrintChat("return null");
+            return null;
         }
 
         /// <summary>
-        /// Returns the unit that is best to Gapclose to a given position
+        ///     Returns the unit that is best to Gapclose to a given position
         /// </summary>
         /// <param name="position">The vector to dash to</param>
         /// <param name="minions"></param>
         /// <param name="champions"></param>
         /// <param name="noLowHealth"></param>
         /// <returns>Obj_AI_Base</returns>
-        public List<Obj_AI_Base> GetBestPath(Vector2 position, bool minions = true, bool champions = true, bool noLowHealth = false)
+        public List<Obj_AI_Base> GetBestPath(
+            Vector2 position,
+            bool minions = true,
+            bool champions = true,
+            bool noLowHealth = false)
         {
-            var dictNodes = GetUnits(ObjectManager.Player, minions, champions, noLowHealth).ToDictionary(x => x, x => new Node(x));
+            Game.PrintChat("3) getting path");
+            var units = GetUnits(ObjectManager.Player, minions, champions, noLowHealth);
+            Game.PrintChat("4) got units");
+            Dictionary<Obj_AI_Base, Node> dictNodes = null;
 
-            var nodes = dictNodes.Values.ToList();
+            if (units.Count > 0 && units != null)
+            {
+                Game.PrintChat("5) setting nodes");
+                dictNodes = new Dictionary<Obj_AI_Base, Node>();
+
+                foreach (var unit in units)
+                {
+                        dictNodes.Add(unit, new Node(unit));
+                }
+                dictNodes.Add(Variables.Player, new Node(Variables.Player));
+            }
+
+            Game.PrintChat("6) got nodes");
+
+            List<Node> nodes = null;
+
+            if (dictNodes != null && dictNodes.Count > 0)
+            {
+                nodes = dictNodes.Values.ToList();
+            }
 
             var edges = new List<Edge>();
 
-            var _path = new List<Obj_AI_Base>();
-
             foreach (var x in dictNodes.OfType<Obj_AI_Base>())
             {
-                edges.AddRange(dictNodes.OfType<Obj_AI_Base>().Where(y => x.Distance(y) <= 900).Select(y => new Edge(dictNodes[x], dictNodes[y], x.Distance(y))));
+                edges.AddRange(
+                    dictNodes.OfType<Obj_AI_Base>()
+                        .Where(y => x.Distance(y) <= 900)
+                        .Select(y => new Edge(dictNodes[x], dictNodes[y], x.Distance(y))));
             }
 
             // Create new Object of the Djikstra class with values from above
-            Dijkstra d = new Dijkstra(edges, nodes);
+            var d = new Dijkstra(edges, nodes);
 
             // Set starting point, Obj_Ai_Base Player in this case
             d.CalculateDistance(dictNodes[ObjectManager.Player]);
 
-            List<Node> path = d.GetPathTo(dictNodes[TargetSelector.GetSelectedTarget()]);
+            var path = d.GetPathTo(dictNodes[TargetSelector.GetSelectedTarget()]);
 
             return path.OfType<Obj_AI_Base>().ToList();
         }
 
         /// <summary>
-        /// Returns a list containing all units
+        ///     Returns a list containing all units
         /// </summary>
         /// <param name="startPosition">start point (vector)</param>
         /// <param name="minions">bool</param>
@@ -82,19 +123,24 @@
         /// <param name="notInSkillshot">bool</param>
         /// <param name="noLowHealth">bool</param>
         /// <returns>List(Obj_Ai_Base)</returns>
-        /// 
-        public static List<Obj_AI_Base> GetUnits(Obj_AI_Base startPosition, bool minions = true, bool champions = true, bool notInSkillshot = true, bool noLowHealth = false)
+        public static List<Obj_AI_Base> GetUnits(
+            Obj_AI_Base startPosition,
+            bool minions = true,
+            bool champions = true,
+            bool notInSkillshot = true,
+            bool noLowHealth = false)
         {
             // Add all units
             var units = new List<Obj_AI_Base>();
 
-            // Add Player and Target since they are start and end point
-            units.Add(ObjectManager.Player);
-            units.Add(TargetSelector.GetSelectedTarget());
-
             if (minions)
             {
-                units.AddRange(MinionManager.GetMinions(ObjectManager.Player.ServerPosition, CalculationDistance, MinionTypes.All, MinionTeam.NotAlly));
+                units.AddRange(
+                    MinionManager.GetMinions(
+                        ObjectManager.Player.ServerPosition,
+                        CalculationDistance,
+                        MinionTypes.All,
+                        MinionTeam.NotAlly));
             }
 
             if (champions)
@@ -126,7 +172,16 @@
             //    units.AddRange(Waypoints());
             //}
 
-            return units.Count == 0 ? null : units;
+            units.Remove(Variables.Player);
+
+            if (units.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return units;
+            }
         }
 
         public static Vector3 GetEndPosition(Obj_AI_Base target)
@@ -134,12 +189,16 @@
             var rawEndPos = Vector3.Zero;
             var realEndPos = Vector3.Zero;
 
-            rawEndPos = ObjectManager.Player.ServerPosition.Extend(target.ServerPosition, Variables.Spells[SpellSlot.E].Range);
+            rawEndPos = ObjectManager.Player.ServerPosition.Extend(
+                target.ServerPosition,
+                Variables.Spells[SpellSlot.E].Range);
 
             if (rawEndPos.IsWall())
             {
                 if (Wall.CanWallDash(target, Variables.Spells[SpellSlot.E].Range))
+                {
                     realEndPos = Wall.GetFirstWallPoint(ObjectManager.Player.ServerPosition, rawEndPos, 2);
+                }
             }
             else
             {
@@ -149,10 +208,8 @@
             return realEndPos;
         }
 
-
-
         /// <summary>
-        /// Returns the best unit to dodge
+        ///     Returns the best unit to dodge
         /// </summary>
         /// <param name="position"></param>
         /// <param name="minions"></param>
@@ -171,16 +228,17 @@
                 var target = TargetSelector.SelectedTarget;
                 if (target != null)
                 {
-                    result = this.GetBestUnit(Prediction.GetPrediction(target, Variables.Spells[SpellSlot.E].Speed).UnitPosition.To2D());
+                    result =
+                        this.GetBestUnit(
+                            Prediction.GetPrediction(target, Variables.Spells[SpellSlot.E].Speed).UnitPosition.To2D());
                 }
-
             }
 
             return result;
         }
 
         /// <summary>
-        /// Returns the time of execution for Sweeping Blade (E)
+        ///     Returns the time of execution for Sweeping Blade (E)
         /// </summary>
         /// <returns></returns>
         public float GetExecutionTime()
@@ -192,7 +250,7 @@
         }
 
         /// <summary>
-        /// Returns the estimated time of arrival
+        ///     Returns the estimated time of arrival
         /// </summary>
         /// <param name="additionalDelay">Adds additional time</param>
         /// <param name="additionalDistance">Adds additional distance</param>
@@ -208,7 +266,7 @@
             {
                 dashedtime = path.Sum(unit => this.GetExecutionTime());
 
-                for (int i = 0; i < path.Count; i++)
+                for (var i = 0; i < path.Count; i++)
                 {
                     distance += path[i].Distance(path[i + 1]);
                 }

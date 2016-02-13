@@ -8,6 +8,8 @@ namespace Yasuo.Skills.Combo
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using SharpDX;
+
     using Yasuo.Common;
     using Yasuo.Common.Extensions;
 
@@ -112,15 +114,29 @@ namespace Yasuo.Skills.Combo
                 return;
             }
 
-            var target = TargetSelector.GetTarget(
-                Variables.Spells[SpellSlot.Q].Range,
-                TargetSelector.DamageType.Physical);
+            var dashVector = Vector2.Zero;
 
-            var unit = Provider.GetBestUnit(target.ServerPosition.To2D(), true);
-            if (unit != null)
+            switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {
-                Execute(unit);
+                case 0:
+                    dashVector = Game.CursorPos.To2D();
+                    break;
+                case 1:
+                    dashVector = TargetSelector.GetTarget(
+                Variables.Spells[SpellSlot.Q].Range,
+                TargetSelector.DamageType.Physical).ServerPosition.To2D(); ;
+                    break;
             }
+
+            if (dashVector != null)
+            {
+                var unit = Provider.GetBestUnit(dashVector, true);
+                if (unit != null)
+                {
+                    Execute(unit);
+                }
+            }
+
         }
 
         public void OnDraw(EventArgs args)
@@ -140,7 +156,7 @@ namespace Yasuo.Skills.Combo
         {
             if (target.IsValidTarget())
             {
-                Variables.Spells[SpellSlot.E].Cast(target);
+                Variables.Spells[SpellSlot.E].CastOnUnit(target);
             }
         }
     }
