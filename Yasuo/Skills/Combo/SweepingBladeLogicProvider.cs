@@ -3,9 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
 
     using LeagueSharp;
     using LeagueSharp.Common;
+    using LeagueSharp.SDK.MoreLinq;
 
     using SharpDX;
 
@@ -42,11 +44,12 @@
             bool noLowHealth = false)
         {
             var path = GetBestPath(position, minions, champions, noLowHealth);
+            path.Remove(Variables.Player);
 
-            if (path != null)
+            if (path.Count > 0)
             {
-                Game.PrintChat("E: Found Units, returning them.");
-                return path.MinOrDefault(x => x.Distance(Variables.Player));
+                Game.PrintChat("E: Units in result: "+path);
+                return path.FirstOrDefault();
             }
             
             Game.PrintChat("E: No Path found");
@@ -67,36 +70,54 @@
 
             if (units == null || units.Count == 0)
             {
+                Console.WriteLine(@"Units == null");
                 return null;
             }
-
             Dictionary<Obj_AI_Base, Node> dictNodes = new Dictionary<Obj_AI_Base, Node>();
-
-            if (units.Count > 0)
+            try
             {
-                foreach (var unit in units.Where(x => x.IsValid && !x.IsZombie && !dictNodes.ContainsKey(x) && !x.HasBuff("DashWrapper")).ToList())
+
+
+                if (units.Count > 0)
                 {
+                    foreach (var unit in units.Where(x => x.IsValid && !x.IsZombie && !dictNodes.ContainsKey(x) && !x.HasBuff("DashWrapper")).ToList())
+                    {
                         dictNodes.Add(unit, new Node(unit));
+                    }
+                    dictNodes.Add(Variables.Player, new Node(Variables.Player));
+                    dictNodes.Add(TargetSelector.GetTarget(Variables.Spells[SpellSlot.Q].Range, TargetSelector.DamageType.Physical),
+                        new Node(TargetSelector.GetTarget(Variables.Spells[SpellSlot.Q].Range, TargetSelector.DamageType.Physical)));
                 }
-                dictNodes.Add(Variables.Player, new Node(Variables.Player));
+            }
+            catch (Exception)
+            {
+                Console.Clear();
+                Console.WriteLine(dictNodes.Keys);
             }
 
-            List<Node> nodes = null;
+
+            List<Node> nodes = new List<Node>();
 
             if (dictNodes.Count > 0)
             {
-                nodes = dictNodes.Values.ToList();
+                Console.WriteLine("dictNodes: "+dictNodes.Keys.Count);
+                nodes.AddRange(dictNodes.Values);
             }
 
             var edges = new List<Edge>();
 
-            foreach (var x in dictNodes.OfType<Obj_AI_Base>().ToList())
+            if (dictNodes.Count > 0)
             {
-                edges.AddRange(
-                    dictNodes.OfType<Obj_AI_Base>()
-                        .Where(y => x.Distance(y) <= 900)
-                        .Select(y => new Edge(dictNodes[x], dictNodes[y], x.Distance(y))));
+                foreach (var unit in dictNodes.Keys)
+                {
+                    foreach (var nextUnit in dictNodes.Keys.Where(x => x.Distance(unit) <= 475))
+                    {
+                        edges.Add(new Edge(dictNodes[unit], dictNodes[nextUnit], unit.Distance(nextUnit)));
+                    }
+
+                }
             }
+
 
             Game.PrintChat("E: Calculating Path");
             // Create new Object of the Djikstra class with values from above
@@ -105,9 +126,31 @@
             // Set starting point, Obj_Ai_Base Player in this case
             d.CalculateDistance(dictNodes[Variables.Player]);
 
-            var path = d.GetPathTo(dictNodes[TargetSelector.GetSelectedTarget()]);
+            var path =
+                d.GetPathTo(
+                    dictNodes[TargetSelector.GetTarget(CalculationDistance,
+                    TargetSelector.DamageType.Physical)]);
+            if (path != null)
+            {
+                foreach (var x in path)
+                {
+                    Game.PrintChat("name: "+x.Unit.Name);
+                }
+                Game.PrintChat("path: " + path.Count);
+            }
+            else
+            {
+                Game.PrintChat("path: null");
+            }
 
-            return path.OfType<Obj_AI_Base>().ToList();
+            var result = new List<Obj_AI_Base>();
+
+            foreach (var node in path)
+            {
+                result.Add(node.Unit);
+            }
+            return result;
+
         }
 
         /// <summary>
@@ -178,12 +221,9 @@
             {
                 foreach (var x in units.ToList())
                 {
-                    foreach (var y in units.ToList())
+                    if (!x.IsValid || x == null)
                     {
-                        if (x.NetworkId == y.NetworkId)
-                        {
-                            units.Remove(x);
-                        }
+                        units.Remove(x);
                     }
                 }
                 return units;

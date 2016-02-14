@@ -128,15 +128,12 @@ namespace Yasuo.Skills.Combo
                     break;
             }
 
-            if (dashVector != null)
-            {
                 var unit = Provider.GetBestUnit(dashVector, true);
                 if (unit != null)
                 {
+                    Game.PrintChat("Execute on: "+unit.Name);
                     Execute(unit);
                 }
-            }
-
         }
 
         public void OnDraw(EventArgs args)
