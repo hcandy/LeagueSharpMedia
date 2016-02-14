@@ -43,13 +43,13 @@
         {
             var path = GetBestPath(position, minions, champions, noLowHealth);
 
-            Game.PrintChat("7) path available");
-
             if (path != null)
             {
+                Game.PrintChat("E: Found Units, returning them.");
                 return path.MinOrDefault(x => x.Distance(Variables.Player));
             }
-            Game.PrintChat("return null");
+            
+            Game.PrintChat("E: No Path found");
             return null;
         }
 
@@ -61,41 +61,36 @@
         /// <param name="champions"></param>
         /// <param name="noLowHealth"></param>
         /// <returns>Obj_AI_Base</returns>
-        public List<Obj_AI_Base> GetBestPath(
-            Vector2 position,
-            bool minions = true,
-            bool champions = true,
-            bool noLowHealth = false)
+        public List<Obj_AI_Base> GetBestPath(Vector2 position, bool minions = true, bool champions = true, bool noLowHealth = false)
         {
-            Game.PrintChat("3) getting path");
             var units = GetUnits(ObjectManager.Player, minions, champions, noLowHealth);
-            Game.PrintChat("4) got units");
-            Dictionary<Obj_AI_Base, Node> dictNodes = null;
 
-            if (units.Count > 0 && units != null)
+            if (units == null || units.Count == 0)
             {
-                Game.PrintChat("5) setting nodes");
-                dictNodes = new Dictionary<Obj_AI_Base, Node>();
+                return null;
+            }
 
-                foreach (var unit in units)
+            Dictionary<Obj_AI_Base, Node> dictNodes = new Dictionary<Obj_AI_Base, Node>();
+
+            if (units.Count > 0)
+            {
+                foreach (var unit in units.Where(x => x.IsValid && !x.IsZombie && !dictNodes.ContainsKey(x) && !x.HasBuff("DashWrapper")).ToList())
                 {
                         dictNodes.Add(unit, new Node(unit));
                 }
                 dictNodes.Add(Variables.Player, new Node(Variables.Player));
             }
 
-            Game.PrintChat("6) got nodes");
-
             List<Node> nodes = null;
 
-            if (dictNodes != null && dictNodes.Count > 0)
+            if (dictNodes.Count > 0)
             {
                 nodes = dictNodes.Values.ToList();
             }
 
             var edges = new List<Edge>();
 
-            foreach (var x in dictNodes.OfType<Obj_AI_Base>())
+            foreach (var x in dictNodes.OfType<Obj_AI_Base>().ToList())
             {
                 edges.AddRange(
                     dictNodes.OfType<Obj_AI_Base>()
@@ -103,11 +98,12 @@
                         .Select(y => new Edge(dictNodes[x], dictNodes[y], x.Distance(y))));
             }
 
+            Game.PrintChat("E: Calculating Path");
             // Create new Object of the Djikstra class with values from above
             var d = new Dijkstra(edges, nodes);
 
             // Set starting point, Obj_Ai_Base Player in this case
-            d.CalculateDistance(dictNodes[ObjectManager.Player]);
+            d.CalculateDistance(dictNodes[Variables.Player]);
 
             var path = d.GetPathTo(dictNodes[TargetSelector.GetSelectedTarget()]);
 
@@ -161,7 +157,7 @@
 
             if (noLowHealth)
             {
-                foreach (var x in units.Where(x => x.Health <= Variables.Spells[SpellSlot.E].GetDamage(x) + 50))
+                foreach (var x in units.Where(x => x.Health <= Variables.Spells[SpellSlot.E].GetDamage(x) + 50).ToList())
                 {
                     units.Remove(x);
                 }
@@ -180,6 +176,16 @@
             }
             else
             {
+                foreach (var x in units.ToList())
+                {
+                    foreach (var y in units.ToList())
+                    {
+                        if (x.NetworkId == y.NetworkId)
+                        {
+                            units.Remove(x);
+                        }
+                    }
+                }
                 return units;
             }
         }
