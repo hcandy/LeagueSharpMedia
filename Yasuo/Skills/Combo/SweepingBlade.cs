@@ -113,7 +113,6 @@ namespace Yasuo.Skills.Combo
             {
                 return;
             }
-
             var dashVector = Vector2.Zero;
 
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
@@ -128,7 +127,8 @@ namespace Yasuo.Skills.Combo
                     break;
             }
 
-                var unit = Provider.GetBestUnit(dashVector, true);
+
+            var unit = Provider.GetBestUnit(dashVector, true);
                 if (unit != null)
                 {
                     Game.PrintChat("Execute on: "+unit.Name);
@@ -138,15 +138,24 @@ namespace Yasuo.Skills.Combo
 
         public void OnDraw(EventArgs args)
         {
-            //var target = TargetSelector.GetTarget(
-            //    Variables.Spells[SpellSlot.Q].Range,
-            //    TargetSelector.DamageType.Physical);
+            var dashVector = Vector2.Zero;
 
-            //var unit = Provider.GetBestUnit(target.ServerPosition.To2D(), true);
-            //if (unit != null)
-            //{
-            //    Drawing.DrawCircle(unit.ServerPosition, 150, Color.Aqua);
-            //}
+            switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
+            {
+                case 0:
+                    dashVector = Game.CursorPos.To2D();
+                    break;
+                case 1:
+                    dashVector = TargetSelector.GetTarget(
+                Variables.Spells[SpellSlot.Q].Range,
+                TargetSelector.DamageType.Physical).ServerPosition.To2D(); ;
+                    break;
+            }
+
+            for (int i = 0; i < this.Provider.GetBestPath(dashVector).Count; i++)
+            {
+                Drawing.DrawLine(Drawing.WorldToScreen(Provider.GetBestPath(dashVector)[i].Position), Drawing.WorldToScreen(Provider.GetBestPath(dashVector)[i + 1].Position), 4f, System.Drawing.Color.White);
+            }
         }
 
         private static void Execute(Obj_AI_Base target)

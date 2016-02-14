@@ -77,7 +77,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AntiGapCloser.cs" />
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Clear.cs" />
     <Compile Include="Common\AssemblyVersion.cs" />
@@ -118,8 +117,6 @@
     <Compile Include="Skills\Combo\SteelTempestLogicProvider.cs" />
     <Compile Include="Skills\Combo\SweepingBlade.cs" />
     <Compile Include="Skills\Combo\SweepingBladeLogicProvider.cs" />
-    <Compile Include="Spells.cs" />
-    <Compile Include="UnderTowerFarm.cs" />
     <Compile Include="Variables.cs" />
     <Compile Include="Wall.cs" />
     <Compile Include="WindWall.cs" />
