@@ -133,7 +133,7 @@
             {
                 if (Variables.Player.IsDashing())
                 {
-                    return ProviderE.GetExecutionTime() / 2;
+                    return 500;
                 }
                 return (float)(1 - Math.Min((ObjectManager.Player.AttackSpeedMod - 1) / 0.172, 0.66f));
             }

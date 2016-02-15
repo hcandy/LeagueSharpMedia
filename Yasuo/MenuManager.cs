@@ -10,7 +10,7 @@ namespace Yasuo
 
     public class MenuManager
     {
-        private Menu RootMenu { get; set; }
+        private Menu RootMenu { get; }
 
         public MenuManager()
         {
@@ -51,7 +51,7 @@ namespace Yasuo
 
         public static Menu OrbWalkingMenu()
         {
-            Menu orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
+            var orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
             return orbWalkingMenu;
         }
 

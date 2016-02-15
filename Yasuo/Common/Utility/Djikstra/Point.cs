@@ -2,26 +2,20 @@
 {
     using LeagueSharp;
 
-    public class Node
+    public class Point
     {
-        private Obj_AI_Base unit;
-
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="unit">Unit of the Node</param>
-        public Node(Obj_AI_Base unit)
+        public Point(Obj_AI_Base unit)
         {
-            this.unit = unit;
+            this.Unit = unit;
         }
 
         /// <summary>
         /// Unit of the Node
         /// </summary>
-        public Obj_AI_Base Unit
-        {
-            get { return this.unit; }
-            set { this.unit = value; }
-        }
+        public Obj_AI_Base Unit { get; set; }
     }
 }

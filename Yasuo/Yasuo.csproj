@@ -84,10 +84,11 @@
     <Compile Include="Common\Extensions\AddToolTip.cs" />
     <Compile Include="Common\IChild.cs" />
     <Compile Include="Common\Logger.cs" />
+    <Compile Include="Common\Pathing\path.cs" />
     <Compile Include="Common\Predictions\PredictionOktw.cs" />
     <Compile Include="Common\Utility\Djikstra\Djikstra.cs" />
-    <Compile Include="Common\Utility\Djikstra\Edge.cs" />
-    <Compile Include="Common\Utility\Djikstra\Node.cs" />
+    <Compile Include="Common\Utility\Djikstra\Connection.cs" />
+    <Compile Include="Common\Utility\Djikstra\Point.cs" />
     <Compile Include="Common\Utility\Enums\ModuleMode.cs" />
     <Compile Include="Common\Utility\Enums\SkillMode.cs" />
     <Compile Include="Common\Utility\Helper.cs" />

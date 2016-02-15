@@ -127,19 +127,18 @@ namespace Yasuo.Skills.Combo
                     break;
             }
 
-
-            var unit = Provider.GetBestUnit(dashVector, true);
-                if (unit != null)
-                {
-                    Game.PrintChat("Execute on: "+unit.Name);
-                    Execute(unit);
-                }
+            var GapClosePath = Provider.GetPath(dashVector);
+            if (GapClosePath != null)
+            {
+                Game.PrintChat("Returning unit");
+                Execute(GapClosePath.ReturnUnit());
+            }
         }
 
         public void OnDraw(EventArgs args)
         {
             var dashVector = Vector2.Zero;
-
+            
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
@@ -152,16 +151,22 @@ namespace Yasuo.Skills.Combo
                     break;
             }
 
-            for (int i = 0; i < this.Provider.GetBestPath(dashVector).Count; i++)
+            var path = this.Provider.GetPath(dashVector);
+
+            if (path == null) return;
+
+            for (var i = 0; i < path.Units.Count; i++)
             {
-                Drawing.DrawLine(Drawing.WorldToScreen(Provider.GetBestPath(dashVector)[i].Position), Drawing.WorldToScreen(Provider.GetBestPath(dashVector)[i + 1].Position), 4f, System.Drawing.Color.White);
+                Drawing.DrawLine(Drawing.WorldToScreen(path.Units[i].Position), Drawing.WorldToScreen(path.Units[i + 1].Position), 4f, System.Drawing.Color.White);
             }
         }
 
         private static void Execute(Obj_AI_Base target)
         {
+            Game.PrintChat("Casting" + target.Name);
             if (target.IsValidTarget())
             {
+
                 Variables.Spells[SpellSlot.E].CastOnUnit(target);
             }
         }

@@ -44,7 +44,7 @@ namespace Yasuo
             info.AddItem(new MenuItem("Author", "Author: " + Variables.Author));
             Menu.AddSubMenu(info);
 
-            Menu orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
+            var orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
             Menu.AddSubMenu(orbWalkingMenu);
 
             Variables.Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalking"));
@@ -59,7 +59,7 @@ namespace Yasuo
 
         public event EventHandler<Base.UnloadEventArgs> OnUnload;
 
-        public Menu Menu { get; private set; }
+        public Menu Menu { get; }
 
         public List<IChild> Features = new List<IChild>();
 

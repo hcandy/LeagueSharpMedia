@@ -40,7 +40,7 @@ namespace Yasuo
             if (Player.HasQ3())
             {
                 q.SetSkillshot(GetQDelay, 90, 1200, false, SkillshotType.SkillshotLine);
-                q.Range = 975;
+                q.Range = 475 * 2;
                 q.MinHitChance = HitChance.VeryHigh;
             }
             else
@@ -61,6 +61,7 @@ namespace Yasuo
 
             e = new Spell(SpellSlot.E, 475);
             e.SetTargetted(0, 1025);
+            e.Speed = Player.MoveSpeed * 2;
             
             r = new Spell(SpellSlot.R, 900);
             r.SetTargetted(0, float.MaxValue);

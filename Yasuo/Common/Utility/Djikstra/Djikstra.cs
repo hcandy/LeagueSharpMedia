@@ -6,28 +6,22 @@
 
     class Dijkstra
     {
-        private List<Node> nodes;
-        private List<Edge> edges;
-        private List<Node> _base;
-        private Dictionary<Obj_AI_Base, double> dist;
-        private Dictionary<Obj_AI_Base, Node> previous;
-
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="edges">List of all Edges</param>
-        /// <param name="nodes">List of all Nodes</param>
-        public Dijkstra(List<Edge> edges, List<Node> nodes)
+        /// <param name="connections">List of all Connections</param>
+        /// <param name="points">List of all Points</param>
+        public Dijkstra(List<Point> points, List<Connection> connections)
         {
 
-            this.Edges = edges;
-            this.Nodes = nodes;
-            this.Base = new List<Node>();
+            this.Connections = connections;
+            this.Points = points;
+            this.Base = new List<Point>();
             this.Dist = new Dictionary<Obj_AI_Base, double>();
-            this.Previous = new Dictionary<Obj_AI_Base, Node>();
+            this.Previous = new Dictionary<Obj_AI_Base, Point>();
 
             // Adding Nodes
-            foreach (Node n in this.Nodes)
+            foreach (var n in this.Points)
             {
                 this.Previous.Add(n.Unit, null);
                 this.Base.Add(n);
@@ -35,26 +29,36 @@
             }
         }
 
+        public List<Point> Points { get; set; }
+
+        public List<Connection> Connections { get; set; }
+
+        public List<Point> Base { get; set; }
+
+        public Dictionary<Obj_AI_Base, double> Dist { get; set; }
+
+        public Dictionary<Obj_AI_Base, Point> Previous { get; set; }
+
         /// <summary>
         /// Calculates the shortest distance from the Start node to all other nodes
         /// </summary>
         /// <param name="start">Startknoten</param>
-        public void CalculateDistance(Node start)
+        public void CalculateDistance(Point start)
         {
             this.Dist[start.Unit] = 0;
 
             while (this.Base.Count > 0)
             {
-                Node u = this.GetNodeWithSmallestDistance();
+                var u = this.GetNodeWithSmallestDistance();
                 if (u == null)
                 {
                     this.Base.Clear();
                 }
                 else
                 {
-                    foreach (Node v in this.GetNeighbors(u))
+                    foreach (var v in this.GetNeighbors(u))
                     {
-                        double alt = this.Dist[u.Unit] +
+                        var alt = this.Dist[u.Unit] +
                                 this.GetDistanceBetween(u, v);
                         if (alt < this.Dist[v.Unit])
                         {
@@ -72,9 +76,9 @@
         /// </summary>
         /// <param name="d">Targeted Node</param>
         /// <returns></returns>
-        public List<Node> GetPathTo(Node d)
+        public List<Point> GetPathTo(Point d)
         {
-            List<Node> path = new List<Node>();
+            var path = new List<Point>();
 
             path.Insert(0, d);
 
@@ -91,12 +95,12 @@
         /// Gets the Node with the shortest distance
         /// </summary>
         /// <returns></returns>
-        public Node GetNodeWithSmallestDistance()
+        public Point GetNodeWithSmallestDistance()
         {
-            double distance = double.MaxValue;
-            Node smallest = null;
+            var distance = double.MaxValue;
+            Point smallest = null;
 
-            foreach (Node n in this.Base)
+            foreach (var n in this.Base)
             {
                 if (this.Dist[n.Unit] < distance)
                 {
@@ -113,15 +117,15 @@
         /// </summary>
         /// <param name="n">Nodes</param>
         /// <returns></returns>
-        public List<Node> GetNeighbors(Node n)
+        public List<Point> GetNeighbors(Point n)
         {
-            List<Node> neighbors = new List<Node>();
+            var neighbors = new List<Point>();
 
-            foreach (Edge e in this.Edges)
+            foreach (var e in this.Connections)
             {
-                if (e.Origin.Equals(n) && this.Base.Contains(n))
+                if (e.From.Equals(n) && this.Base.Contains(n))
                 {
-                    neighbors.Add(e.Destination);
+                    neighbors.Add(e.To);
                 }
             }
 
@@ -134,11 +138,11 @@
         /// <param name="o">Start Node</param>
         /// <param name="d">End Node</param>
         /// <returns></returns>
-        public double GetDistanceBetween(Node o, Node d)
+        public double GetDistanceBetween(Point o, Point d)
         {
-            foreach (Edge e in this.Edges)
+            foreach (var e in this.Connections)
             {
-                if (e.Origin.Equals(o) && e.Destination.Equals(d))
+                if (e.From.Equals(o) && e.To.Equals(d))
                 {
                     return e.Distance;
                 }
@@ -147,49 +151,6 @@
             return 0;
         }
 
-        /// <summary>
-        /// List of all Nodes in the base
-        /// </summary>
-        public List<Node> Nodes
-        {
-            get { return this.nodes; }
-            set { this.nodes = value; }
-        }
 
-        /// <summary>
-        /// List of all edges
-        /// </summary>
-        public List<Edge> Edges
-        {
-            get { return this.edges; }
-            set { this.edges = value; }
-        }
-
-        /// <summary>
-        /// Count of un processed Nodes
-        /// </summary>
-        public List<Node> Base
-        {
-            get { return this._base; }
-            set { this._base = value; }
-        }
-
-        /// <summary>
-        /// Distance of the edges
-        /// </summary>
-        public Dictionary<Obj_AI_Base, double> Dist
-        {
-            get { return this.dist; }
-            set { this.dist = value; }
-        }
-
-        /// <summary>
-        /// Previous Node
-        /// </summary>
-        public Dictionary<Obj_AI_Base, Node> Previous
-        {
-            get { return this.previous; }
-            set { this.previous = value; }
-        }
     }
 }

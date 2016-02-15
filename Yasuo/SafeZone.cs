@@ -31,18 +31,18 @@ namespace Yasuo
 
         public static Geometry.Polygon Safezone(Vector3 casterPosition, float spellRange)
         {
-            Vector3 wwCenter = ObjectManager.Player.ServerPosition.Extend(casterPosition, 300);
+            var wwCenter = ObjectManager.Player.ServerPosition.Extend(casterPosition, 300);
 
-            Vector3 wwPerpend = (wwCenter - ObjectManager.Player.ServerPosition).Normalized();
+            var wwPerpend = (wwCenter - ObjectManager.Player.ServerPosition).Normalized();
             wwPerpend.X = -wwPerpend.X;
 
-            Vector3 leftInnerBound = wwCenter + 250 * wwPerpend;
-            Vector3 rightInnerBound = wwCenter - 250 * wwPerpend;
+            var leftInnerBound = wwCenter + 250 * wwPerpend;
+            var rightInnerBound = wwCenter - 250 * wwPerpend;
 
-            Vector3 leftOuterBound = casterPosition.Extend(leftInnerBound, spellRange);
-            Vector3 rightOuterBound = casterPosition.Extend(rightInnerBound, spellRange);
+            var leftOuterBound = casterPosition.Extend(leftInnerBound, spellRange);
+            var rightOuterBound = casterPosition.Extend(rightInnerBound, spellRange);
 
-            Geometry.Polygon safeZone = new Geometry.Polygon();
+            var safeZone = new Geometry.Polygon();
             safeZone.Add(leftInnerBound);
             safeZone.Add(rightInnerBound);
             safeZone.Add(leftOuterBound);
@@ -68,18 +68,18 @@ namespace Yasuo
         {
             try
             {
-                Vector3 wwCenter = ObjectManager.Player.ServerPosition.Extend(casterPosition, 300);
+                var wwCenter = ObjectManager.Player.ServerPosition.Extend(casterPosition, 300);
 
-                Vector3 wwPerpend = (wwCenter - ObjectManager.Player.ServerPosition).Normalized();
+                var wwPerpend = (wwCenter - ObjectManager.Player.ServerPosition).Normalized();
                 wwPerpend.X = -wwPerpend.X;
 
-                Vector3 leftInnerBound = wwCenter + 250 * wwPerpend;
-                Vector3 rightInnerBound = wwCenter - 250 * wwPerpend;
+                var leftInnerBound = wwCenter + 250 * wwPerpend;
+                var rightInnerBound = wwCenter - 250 * wwPerpend;
 
-                Vector3 leftOuterBound = casterPosition.Extend(leftInnerBound, spellRange);
-                Vector3 rightOuterBound = casterPosition.Extend(rightInnerBound, spellRange);
+                var leftOuterBound = casterPosition.Extend(leftInnerBound, spellRange);
+                var rightOuterBound = casterPosition.Extend(rightInnerBound, spellRange);
 
-                Geometry.Polygon safeZone = new Geometry.Polygon();
+                var safeZone = new Geometry.Polygon();
                 safeZone.Add(leftInnerBound);
                 safeZone.Add(rightInnerBound);
                 safeZone.Add(leftOuterBound);
@@ -102,15 +102,15 @@ namespace Yasuo
 
         private static float Angle(Vector3 a, Vector3 b, Vector3 c)
         {
-            float lenA = b.Distance(c);
-            float lenB = a.Distance(c);
-            float lenC = b.Distance(a);
+            var lenA = b.Distance(c);
+            var lenB = a.Distance(c);
+            var lenC = b.Distance(a);
             return ((float)Math.Cosh((lenB * lenB) + (lenC * lenC) - (lenA * lenA)) / (2 * lenB * lenC));
         }
 
         private static Vector3 Move(this Vector3 origin, Vector3 moveTo, float distance)
         {
-            float t = distance / origin.Distance(moveTo);
+            var t = distance / origin.Distance(moveTo);
             return new Vector3(origin.X + ((moveTo.X - origin.X) * t), origin.Y + ((moveTo.Y - origin.Y) * t), origin.Z + ((moveTo.Z - origin.Z) * t));
         }
 

@@ -387,15 +387,15 @@ namespace Yasuo.Common.Predictions
             var distanceFromToUnit = input.From.Distance(input.Unit.ServerPosition);
             var distanceFromToWaypoint = lastWaypiont.Distance(input.From);
             var getAngle = GetAngle(input.From, input.Unit);
-            float speedDelay = distanceFromToUnit / input.Speed;
+            var speedDelay = distanceFromToUnit / input.Speed;
 
             if (Math.Abs(input.Speed - float.MaxValue) < float.Epsilon)
                 speedDelay = 0;
 
-            float totalDelay = speedDelay + input.Delay;
-            float moveArea = input.Unit.MoveSpeed * totalDelay;
-            float fixRange = moveArea * 0.4f;
-            float pathMinLen = 900 + +moveArea;
+            var totalDelay = speedDelay + input.Delay;
+            var moveArea = input.Unit.MoveSpeed * totalDelay;
+            var fixRange = moveArea * 0.4f;
+            var pathMinLen = 900 + +moveArea;
             double angleMove = 30 + (input.Radius / 17) - totalDelay - (input.Delay * 2);
 
             if (angleMove < 31)
@@ -1091,12 +1091,12 @@ namespace Yasuo.Common.Predictions
         /// 
         private static bool MinionIsDead(PredictionInput input, Obj_AI_Base minion , float distance)
         {
-            float delay = (distance / input.Speed) + input.Delay;
+            var delay = (distance / input.Speed) + input.Delay;
 
             if (Math.Abs(input.Speed - float.MaxValue) < float.Epsilon)
                 delay = input.Delay;
 
-            int convert = (int)(delay * 1000);
+            var convert = (int)(delay * 1000);
 
             if (HealthPrediction.LaneClearHealthPrediction(minion, convert, 0) <= 0)
             {
@@ -1140,7 +1140,7 @@ namespace Yasuo.Common.Predictions
                                 else
                                 {
                                     var minionPos = minion.ServerPosition;
-                                    int bonusRadius = 20;
+                                    var bonusRadius = 20;
                                     if (minion.IsMoving)
                                     {
                                         minionPos = PredictionOKTW.GetPrediction(input, false, false).CastPosition;
@@ -1344,7 +1344,7 @@ namespace Yasuo.Common.Predictions
             Vector2 sr;
             sr.X = (TrackerUnit.PathBank[0].Position.X + TrackerUnit.PathBank[1].Position.X + TrackerUnit.PathBank[2].Position.X) / 3;
             sr.Y = (TrackerUnit.PathBank[0].Position.Y + TrackerUnit.PathBank[1].Position.Y + TrackerUnit.PathBank[2].Position.Y) / 3;
-            List<Vector2> points = new List<Vector2>();
+            var points = new List<Vector2>();
             points.Add(sr);
             return points;
         }
