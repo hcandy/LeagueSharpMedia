@@ -1,83 +1,134 @@
-﻿//TODO: Make class more accessable. And easier to use. Maybe add some Extensions?
-
-using LeagueSharp.Common;
-using LeagueSharp;
-using SharpDX;
+﻿//TODO:  Djikstra
 
 namespace Yasuo.Modules
 {
-    class WallDash
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using LeagueSharp;
+    using LeagueSharp.Common;
+
+    using SharpDX;
+
+    using Yasuo.Common;
+    using Yasuo.Common.Extensions;
+    using Yasuo.Common.Utility;
+    using Yasuo.Skills.Combo;
+
+    internal class WallDash : Child<Modules>
     {
-        private static Obj_AI_Hero Player => ObjectManager.Player;
-
-        public bool isWallDash(Obj_AI_Base target, float dashRange, float minWallWidth = 50)
+        public WallDash(Modules parent)
+            : base(parent)
         {
-            var dashEndPos = ObjectManager.Player.Position.Extend(target.Position, dashRange);
-            var firstWallPoint = GetFirstWallPoint(ObjectManager.Player.Position, dashEndPos);
+            this.OnLoad();
+        }
 
-            if (firstWallPoint.Equals(Vector3.Zero))
+        public List<Obj_AI_Base> BlacklistUnits;
+
+        public override string Name => "Wall Dash";
+
+        public Skills.Combo.SweepingBladeLogicProvider Provider;
+
+        protected override void OnEnable()
+        {
+            Game.OnUpdate += this.OnUpdate;
+            Drawing.OnDraw += this.OnDraw;
+            base.OnEnable();
+        }
+
+        protected override void OnDisable()
+        {
+            Game.OnUpdate -= this.OnUpdate;
+            Drawing.OnDraw -= this.OnDraw;
+            base.OnDisable();
+        }
+
+        protected override sealed void OnLoad()
+        {
+            this.Menu = new Menu(this.Name, this.Name);
+            this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
+
+            // Blacklist
+            var blacklist = new Menu("Blacklist", this.Name + "Blacklist");
+
+            if (HeroManager.Enemies.Count == 0)
             {
-                // No Wall
-                return false;
-            }
-
-            if (dashEndPos.IsWall())
-            // End Position is in Wall
-            {
-                var wallWidth = GetWallWidth(firstWallPoint, dashEndPos);
-
-                if (wallWidth > minWallWidth
-                    && wallWidth - firstWallPoint.Distance(dashEndPos) < wallWidth * 0.4f)
-                {
-                    return true;
-                }
+                blacklist.AddItem(new MenuItem(blacklist.Name + "null", "No enemies found"));
             }
             else
-            // End Position is not a Wall
             {
-                return true;
+                foreach (var x in HeroManager.Enemies)
+                {
+                    blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
+                }
+                MenuExtensions.AddToolTip(
+                    blacklist,
+                    "Setting a champion to 'on', will make the script not using Q for him anymore");
             }
-            return false;
+            this.Menu.AddSubMenu(blacklist);
+
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "Keybind", "Keybind").SetValue(new KeyBind(5, KeyBindType.Press)));
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "MouseCheck", "Check for mouse position").SetValue(false));
+
+            this.Menu.AddItem(
+    new MenuItem(this.Name + "MinWallWidth", "Minimum wall width: ").SetValue(new Slider(50, 10, (int) Variables.Spells[SpellSlot.E].Range / 2)));
+
+            this.Menu.AddItem(new MenuItem(this.Name + "Helper", "How it works")
+                .SetTooltip("Hold down "+Menu.Item(this.Name+"Keybind").GetValue<KeyBind>()+ " to let the assembly perform a Dash over a unit that will be a WallDash"));
+
+            this.Parent.Menu.AddSubMenu(this.Menu);
         }
 
-        internal static Vector3 GetFirstWallPoint(Vector3 start, Vector3 end, int step = 1)
+        protected override void OnInitialize()
         {
-            if (start.IsValid() && end.IsValid())
+            Provider = new SweepingBladeLogicProvider();
+            base.OnInitialize();
+        }
+
+        public void OnUpdate(EventArgs args)
+        {
+            if (Variables.Player.IsDead || Variables.Player.IsDashing()) return;
+
+            var MouseCheck = Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
+
+            var units = Yasuo.Skills.Combo.SweepingBladeLogicProvider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
+
+            if (Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
             {
-                var distance = start.Distance(end);
-                for (var i = 0; i < distance; i = i + step)
+                Variables.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                foreach (var unit in units.Where(unit => unit.IsWallDash(Variables.Spells[SpellSlot.E].Range)))
                 {
-                    var newPoint = start.Extend(end, i);
-                    if (NavMesh.GetCollisionFlags(newPoint) == CollisionFlags.Wall)
+                    if (!MouseCheck)
                     {
-                        return newPoint;
+                        Execute(unit);
+                    }
+                    else if (Game.CursorPos.Distance(unit.ServerPosition) < 500)
+                    {
+                        Execute(unit);
                     }
                 }
             }
-            return Vector3.Zero;
+
         }
 
-        private static float GetWallWidth(Vector3 start, Vector3 direction, int maxWallWidth = 1000, int step = 1)
+        public void OnDraw(EventArgs args)
         {
-            var thickness = 0f;
+            
+        }
 
-            if (start.IsValid() && direction.IsValid())
+        private static void Execute(Obj_AI_Base target)
+        {
+            Game.PrintChat("[WallDash] Casting: " + target.Name);
+            if (target.IsValidTarget())
             {
-                for (var i = 0; i < maxWallWidth; i = i + step)
-                {
-                    if (NavMesh.GetCollisionFlags(start.Extend(direction, i)) == CollisionFlags.Wall)
-                    {
-                        thickness += step;
-                    }
-                    else
-                    {
-                        Game.PrintChat("Thickness: " + thickness);
-                        return thickness;
-                    }
-                }
+                Variables.Spells[SpellSlot.E].CastOnUnit(target);
             }
-            //Drawing.DrawText(450, 450, Color.White, "Wall Thickness: " +thickness);
-            return thickness;
         }
     }
 }
+

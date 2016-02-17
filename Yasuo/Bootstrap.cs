@@ -10,6 +10,7 @@ namespace Yasuo
 
     using Yasuo.Common;
     using Yasuo.Common.Utility;
+    using Yasuo.Modules;
     using Yasuo.Skills;
     using Yasuo.Skills.Combo;
 
@@ -26,6 +27,7 @@ namespace Yasuo
                 #region parents
 
                 var combo = new Combo();
+                var module = new Modules.Modules();
                 //var Items = new Yasuo.Items.Item();
 
                 #endregion
@@ -39,7 +41,8 @@ namespace Yasuo
                             new List<IChild>
                                 {
                                     new SteelTempest(combo),
-                                    new SweepingBlade(combo)
+                                    new SweepingBlade(combo),
+                                    new WallDash(module)
                                 });
 
                         /*      new WindWall(evade),

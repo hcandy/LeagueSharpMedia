@@ -3,7 +3,9 @@
 namespace Yasuo.Skills.Combo
 {
     using System;
+    using System.Collections.Generic;
     using System.Drawing;
+    using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -12,6 +14,7 @@ namespace Yasuo.Skills.Combo
 
     using Yasuo.Common;
     using Yasuo.Common.Extensions;
+    using Yasuo.Common.Utility;
 
     internal class SweepingBlade : Child<Combo>
     {
@@ -20,6 +23,8 @@ namespace Yasuo.Skills.Combo
         {
             this.OnLoad();
         }
+
+        public List<Obj_AI_Base> BlacklistUnits; 
 
         public override string Name => "Sweeping Blade";
 
@@ -128,10 +133,27 @@ namespace Yasuo.Skills.Combo
             }
 
             var GapClosePath = Provider.GetPath(dashVector);
-            if (GapClosePath != null)
+            if (GapClosePath != null 
+                && Variables.Player.Distance(GapClosePath.FirstUnit) < Variables.Spells[SpellSlot.E].Range)
             {
-                Game.PrintChat("Returning unit");
-                Execute(GapClosePath.ReturnUnit());
+                if (GapClosePath.FirstUnit.IsWallDash(Variables.Spells[SpellSlot.E].Range))
+                {
+                    if (Helper.GetPathLenght(
+                            Variables.Player.GetPath(
+                                Variables.Player.ServerPosition.Extend(
+                                    GapClosePath.FirstUnit.ServerPosition,
+                                    Variables.Spells[SpellSlot.E].Range),
+                                dashVector.To3D())) < Helper.GetPathLenght(Variables.Player.GetPath(dashVector.To3D())))
+                    {
+                        Game.PrintChat("Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
+                        Execute(GapClosePath.ReturnUnit());
+                    }
+                    //TODO: else, find new path
+                }
+                else
+                {
+                    Execute(GapClosePath.FirstUnit);
+                }
             }
         }
 
@@ -157,7 +179,27 @@ namespace Yasuo.Skills.Combo
 
             for (var i = 0; i < path.Units.Count; i++)
             {
-                Drawing.DrawLine(Drawing.WorldToScreen(path.Units[i].Position), Drawing.WorldToScreen(path.Units[i + 1].Position), 4f, System.Drawing.Color.White);
+                int index = 0;
+                int index2 = 0;
+
+                index = i;
+                if (i + 1 <= path.Units.Count)
+                {
+                    index2 = i + 1;
+                }
+                else
+                {
+                    index2 = index;
+                }
+                
+                try
+                {
+                    Drawing.DrawLine(Drawing.WorldToScreen(path.Units[index].Position), Drawing.WorldToScreen(path.Units[index2].Position), 4f, System.Drawing.Color.White);
+                }
+                catch (ArgumentOutOfRangeException argumentOutOfRangeException)
+                {
+                    Console.WriteLine(@"Exception in drawing method: "+argumentOutOfRangeException);
+                }
             }
         }
 

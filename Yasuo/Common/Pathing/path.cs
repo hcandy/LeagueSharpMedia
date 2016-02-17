@@ -24,7 +24,10 @@ namespace Yasuo.Common.Pathing
             Units = units;
             StartPosition = startPosition;
             EndPosition = endPosition;
+
+            FirstUnit = this.ReturnUnit();
         }
+        public Obj_AI_Base FirstUnit { get; private set; }
 
         public int DangerValue { get; private set; }
 

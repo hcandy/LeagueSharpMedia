@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
 
     using LeagueSharp;
@@ -27,6 +28,20 @@
         #endregion
 
         #region vectors
+
+        public static float GetPathLenght(Vector3[] Path)
+        {
+            float result = 0f;
+
+            for (int i = 0; i < Path.Count(); i++)
+            {
+                if (i + 1 != Path.Count())
+                {
+                    result += Path[i].Distance(Path[i + 1]);
+                }
+            }
+            return result;
+        }
 
         /// <summary>
         ///     Returns the center from a given list of units
