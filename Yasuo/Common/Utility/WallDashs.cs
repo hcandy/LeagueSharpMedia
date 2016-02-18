@@ -7,13 +7,13 @@ namespace Yasuo.Common.Utility
 
     using SharpDX;
 
+    using Color = System.Drawing.Color;
+
     static class WallDashs
     {
-        private static Obj_AI_Hero Player => ObjectManager.Player;
-
         public static bool IsWallDash(this Obj_AI_Base target, float dashRange, float minWallWidth = 50)
         {
-            var dashEndPos = ObjectManager.Player.Position.Extend(target.Position, dashRange);
+            var dashEndPos = Variables.Player.Position.Extend(target.Position, dashRange);
             var firstWallPoint = GetFirstWallPoint(ObjectManager.Player.Position, dashEndPos);
 
             if (firstWallPoint.Equals(Vector3.Zero))
@@ -51,10 +51,13 @@ namespace Yasuo.Common.Utility
                     var newPoint = start.Extend(end, i);
                     if (NavMesh.GetCollisionFlags(newPoint) == CollisionFlags.Wall)
                     {
+                        Drawing.DrawLine(Drawing.WorldToScreen(start), Drawing.WorldToScreen(end), 4f, Color.White);
+                        Drawing.DrawCircle(newPoint, 50, Color.Aqua);
                         return newPoint;
                     }
                 }
             }
+
             return Vector3.Zero;
         }
 
@@ -62,19 +65,21 @@ namespace Yasuo.Common.Utility
         {
             var thickness = 0f;
 
-            if (start.IsValid() && direction.IsValid())
+            if (!start.IsValid() || !direction.IsValid())
             {
-                for (var i = 0; i < maxWallWidth; i = i + step)
+                return thickness;
+            }
+
+            for (var i = 0; i < maxWallWidth; i = i + step)
+            {
+                if (NavMesh.GetCollisionFlags(start.Extend(direction, i)) == CollisionFlags.Wall || start.Extend(direction, i).IsWall())
                 {
-                    if (NavMesh.GetCollisionFlags(start.Extend(direction, i)) == CollisionFlags.Wall)
-                    {
-                        thickness += step;
-                    }
-                    else
-                    {
-                        Game.PrintChat("Thickness: " + thickness);
-                        return thickness;
-                    }
+                    thickness += step;
+                }
+                else
+                {
+                    Game.PrintChat("Thickness: " + thickness);
+                    return thickness;
                 }
             }
             //Drawing.DrawText(450, 450, Color.White, "Wall Thickness: " +thickness);

@@ -76,7 +76,7 @@ namespace Yasuo.Modules
                 new MenuItem(this.Name + "MouseCheck", "Check for mouse position").SetValue(false));
 
             this.Menu.AddItem(
-    new MenuItem(this.Name + "MinWallWidth", "Minimum wall width: ").SetValue(new Slider(50, 10, (int) Variables.Spells[SpellSlot.E].Range / 2)));
+    new MenuItem(this.Name + "MinWallWidth", "Minimum wall width: ").SetValue(new Slider(150, 10, (int) Variables.Spells[SpellSlot.E].Range / 2)));
 
             this.Menu.AddItem(new MenuItem(this.Name + "Helper", "How it works")
                 .SetTooltip("Hold down "+Menu.Item(this.Name+"Keybind").GetValue<KeyBind>()+ " to let the assembly perform a Dash over a unit that will be a WallDash"));
@@ -86,17 +86,17 @@ namespace Yasuo.Modules
 
         protected override void OnInitialize()
         {
-            Provider = new SweepingBladeLogicProvider();
+            Provider = new SweepingBladeLogicProvider(475);
             base.OnInitialize();
         }
 
         public void OnUpdate(EventArgs args)
         {
-            if (Variables.Player.IsDead || Variables.Player.IsDashing()) return;
+            
 
             var MouseCheck = Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
 
-            var units = Yasuo.Skills.Combo.SweepingBladeLogicProvider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
+            var units = Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
 
             if (Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
             {
@@ -107,7 +107,8 @@ namespace Yasuo.Modules
                     {
                         Execute(unit);
                     }
-                    else if (Game.CursorPos.Distance(unit.ServerPosition) < 500)
+                    // Summary: if Cursor position is near dash end position, dash. That is to prevent dashes over walls that were not intended.
+                    else if (Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range).Distance(Game.CursorPos) < Variables.Spells[SpellSlot.E].Range)
                     {
                         Execute(unit);
                     }
@@ -118,7 +119,23 @@ namespace Yasuo.Modules
 
         public void OnDraw(EventArgs args)
         {
-            
+            if (Variables.Player.IsDead || Variables.Player.IsDashing()) return;
+
+            var MouseCheck = Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
+
+            var units = Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
+
+            if (Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
+            {
+                foreach (var unit in units.Where(unit => unit.IsWallDash(Variables.Spells[SpellSlot.E].Range)))
+                {// Summary: if Cursor position is near dash end position, dash. That is to prevent dashes over walls that were not intended.
+                    if (Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range).Distance(Game.CursorPos) > Variables.Spells[SpellSlot.E].Range)
+                    {
+                        Drawing.DrawLine(Drawing.WorldToScreen(Variables.Player.Position), Drawing.WorldToScreen(unit.Position), 4f, System.Drawing.Color.White);
+                    }
+                }
+            }
+
         }
 
         private static void Execute(Obj_AI_Base target)

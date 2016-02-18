@@ -89,7 +89,7 @@
         /// <param name="minions">bool</param>
         /// <param name="champions">bool</param>
         /// <returns>List(Obj_Ai_Base)</returns>
-        public static List<Obj_AI_Base> GetUnits(Vector2 startPosition, bool minions = true, bool champions = true)
+        public List<Obj_AI_Base> GetUnits(Vector2 startPosition, bool minions = true, bool champions = true)
         {
             try
             {

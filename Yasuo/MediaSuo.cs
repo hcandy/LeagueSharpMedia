@@ -65,7 +65,6 @@ namespace Yasuo
         /// <param name="args"></param>
         private void OnGameLoad(EventArgs args)
         {
-
             var orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
             Menu.AddSubMenu(orbWalkingMenu);
 
