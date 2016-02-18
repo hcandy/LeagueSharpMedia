@@ -28,7 +28,7 @@ namespace Yasuo.Common.Utility
                 var wallWidth = GetWallWidth(firstWallPoint, dashEndPos);
 
                 if (wallWidth > minWallWidth
-                    && wallWidth - firstWallPoint.Distance(dashEndPos) < wallWidth * 0.7f)
+                    && wallWidth - firstWallPoint.Distance(dashEndPos) < wallWidth * 0.4f)
                 {
                     return true;
                 }

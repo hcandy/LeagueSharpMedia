@@ -44,10 +44,6 @@ namespace Yasuo
             info.AddItem(new MenuItem("Author", "Author: " + Variables.Author));
             Menu.AddSubMenu(info);
 
-            var orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
-            Menu.AddSubMenu(orbWalkingMenu);
-
-            Variables.Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalking"));
 
 
 
@@ -69,7 +65,12 @@ namespace Yasuo
         /// <param name="args"></param>
         private void OnGameLoad(EventArgs args)
         {
-                Menu.AddToMainMenu();
+
+            var orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
+            Menu.AddSubMenu(orbWalkingMenu);
+
+            Variables.Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalking"));
+            Menu.AddToMainMenu();
         }
 
         /// <summary>
