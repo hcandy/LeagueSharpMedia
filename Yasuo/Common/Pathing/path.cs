@@ -78,13 +78,15 @@ namespace Yasuo.Common.Pathing
             }
         }
 
+        //TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
             var StartDistance = this.ReturnUnit().Distance(StartPosition);
+            var EndDistance = this.ReturnLastUnit().Distance(EndPosition);
 
             if (StartDistance <= Variables.Spells[SpellSlot.E].Range)
             {
-                WalkLenght = StartDistance;
+                WalkLenght = StartDistance + EndDistance;
             }
         }
 

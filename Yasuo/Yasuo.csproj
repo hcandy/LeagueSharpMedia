@@ -93,7 +93,6 @@
     <Compile Include="Common\Utility\Enums\SkillMode.cs" />
     <Compile Include="Common\Utility\Helper.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
-    <Compile Include="Common\Utility\WallDashs.cs" />
     <Compile Include="Drawings.cs" />
     <Compile Include="EvadeSkills\SweepingBlade.cs" />
     <Compile Include="EvadeSkills\SweepingBladeLogicProvider.cs" />
@@ -103,13 +102,14 @@
     <Compile Include="Modules\Modules.cs" />
     <Compile Include="Modules\Potions.cs" />
     <Compile Include="Modules\Protector\Protector.cs" />
+    <Compile Include="Modules\Protector\SafeZone.cs" />
     <Compile Include="Modules\Protector\WindWallProtector.cs" />
     <Compile Include="Modules\Protector\SafeZoneLogicProvider.cs" />
-    <Compile Include="Modules\SafeZone.cs" />
     <Compile Include="Common\Child.cs" />
     <Compile Include="Common\Parent.cs" />
     <Compile Include="Common\Base.cs" />
-    <Compile Include="Modules\WallDash.cs" />
+    <Compile Include="Modules\WallDash\WallDash.cs" />
+    <Compile Include="Modules\WallDash\WallDashLogicProvider.cs" />
     <Compile Include="Skills\Combo\LastBreath.cs" />
     <Compile Include="Skills\Combo\LastBreathLogicProvider.cs" />
     <Compile Include="Skills\Combo\LastBreathSettings.cs" />

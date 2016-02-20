@@ -4,25 +4,18 @@
     using System.Linq;
 
     using LeagueSharp;
+    using LeagueSharp.SDK;
+    using LeagueSharp.SDK.Modes.Weights;
+
+    using SharpDX;
 
     using Yasuo.Modules;
     using Yasuo.Modules.Protector;
 
+    using Geometry = LeagueSharp.Common.Geometry;
+
     static class Extensions
     {
-        // TODO: REMOVE WALLDASH
-        /// <summary>
-        /// Returns if Dash over unit is a wall dash
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <param name="dashRange"></param>
-        /// <param name="minWallWidth"></param>
-        /// <returns>bool</returns>
-        //public static bool IsWallDash(this Obj_AI_Base unit, float dashRange, float minWallWidth = 50)
-        //{
-        //    return WallDash.CanWallDash(unit, dashRange, minWallWidth);
-        //}
-
         /// <summary>
         /// Returns the remaining airbone time from unit
         /// </summary>
@@ -48,6 +41,23 @@
         public static bool IsAirbone(this Obj_AI_Base unit) => unit.HasBuffOfType(BuffType.Knockup) || unit.HasBuffOfType(BuffType.Knockback);
 
         public static bool HasQ3(this Obj_AI_Hero hero) => ObjectManager.Player.HasBuff("YasuoQ3W");
+
+        public static Vector2 MisslePosition(this Skillshot skillshot)
+        {
+            if (!skillshot.HasMissile)
+            {
+                return Vector2.Zero;
+            }
+
+            var speed = skillshot.SData.MissileSpeed;
+            var distance = skillshot.StartPosition.Distance(skillshot.EndPosition);
+            var starttime = skillshot.StartTime;
+            var direction = skillshot.Direction;
+
+            var traveleddistance = (Game.Time - starttime) * speed;
+
+            return traveleddistance <= distance ? skillshot.StartPosition.Extend(direction, traveleddistance) : Vector2.Zero;
+        }
 
         /// <exception cref="Exception">A delegate callback throws an exception. </exception>
         public static void RaiseEvent(this EventHandler @event, object sender, EventArgs e)

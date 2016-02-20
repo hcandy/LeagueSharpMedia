@@ -50,6 +50,7 @@
                 var points = units.Select(unit => new Point(unit)).ToList();
                 points.Add(new Point(Variables.Player));
 
+                //TODO: Make that more dynamic (distance to next unit based on current player distance to possible first unit), what that does is a more correct pathing and cleaner drawings
                 foreach (var point in points)
                 {
                     foreach (var neighbour in points)
@@ -76,7 +77,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(@"[GetPath]: " +ex);
             }
             return null;
 
@@ -122,7 +123,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(@"[GetUnits]: "+ex);
             }
             return null;
         }

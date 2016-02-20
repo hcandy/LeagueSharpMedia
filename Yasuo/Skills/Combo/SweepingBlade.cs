@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -12,6 +13,8 @@
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Pathing;
     using Yasuo.Common.Utility;
+    using Yasuo.Modules;
+    using Yasuo.Modules.WallDash;
 
     internal class SweepingBlade : Child<Combo>
     {
@@ -133,9 +136,13 @@
             }
 
             GapClosePath = Provider.GetPath(dashVector);
+
+            // if a path is given, and the first unit of the path is in dash range, and the path time is faster than running to the given vector (dashVactor)
             if (GapClosePath != null
-                && Variables.Player.Distance(GapClosePath.FirstUnit) < Variables.Spells[SpellSlot.E].Range)
+                && Variables.Player.Distance(GapClosePath.FirstUnit) <= Variables.Spells[SpellSlot.E].Range
+                && GapClosePath.PathTime <= Helper.GetPathLenght(Variables.Player.GetPath(dashVector.To3D())) / Variables.Player.MoveSpeed)
             {
+                // if WallDash
                 if (GapClosePath.FirstUnit.IsWallDash(Variables.Spells[SpellSlot.E].Range))
                 {
                     if (

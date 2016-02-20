@@ -1,6 +1,6 @@
-﻿//TODO: Make class more accessable. And easier to use. Maybe add some Extensions?
+//TODO: Make class more accessable. And easier to use. Maybe add some Extensions?
 
-namespace Yasuo.Common.Utility
+namespace Yasuo.Modules.WallDash
 {
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -9,7 +9,7 @@ namespace Yasuo.Common.Utility
 
     using Color = System.Drawing.Color;
 
-    static class WallDashs
+    static class WallDashLogicProvider
     {
         public static bool IsWallDash(this Obj_AI_Base target, float dashRange, float minWallWidth = 50)
         {
@@ -41,7 +41,7 @@ namespace Yasuo.Common.Utility
             return false;
         }
 
-        internal static Vector3 GetFirstWallPoint(Vector3 start, Vector3 end, int step = 1)
+        public static Vector3 GetFirstWallPoint(Vector3 start, Vector3 end, int step = 1)
         {
             if (start.IsValid() && end.IsValid())
             {
@@ -61,7 +61,7 @@ namespace Yasuo.Common.Utility
             return Vector3.Zero;
         }
 
-        private static float GetWallWidth(Vector3 start, Vector3 direction, int maxWallWidth = 1000, int step = 1)
+        public static float GetWallWidth(Vector3 start, Vector3 direction, int maxWallWidth = 1000, int step = 1)
         {
             var thickness = 0f;
 
@@ -78,11 +78,9 @@ namespace Yasuo.Common.Utility
                 }
                 else
                 {
-                    Game.PrintChat("Thickness: " + thickness);
                     return thickness;
                 }
             }
-            //Drawing.DrawText(450, 450, Color.White, "Wall Thickness: " +thickness);
             return thickness;
         }
     }

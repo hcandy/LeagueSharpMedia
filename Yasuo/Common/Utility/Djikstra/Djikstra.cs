@@ -1,5 +1,6 @@
 ﻿namespace Yasuo.Common.Utility.Djikstra
 {
+    using System;
     using System.Collections.Generic;
 
     using LeagueSharp;
@@ -13,20 +14,27 @@
         /// <param name="points">List of all Points</param>
         public Dijkstra(List<Point> points, List<Connection> connections)
         {
-
-            this.Connections = connections;
-            this.Points = points;
-            this.Base = new List<Point>();
-            this.Dist = new Dictionary<Obj_AI_Base, double>();
-            this.Previous = new Dictionary<Obj_AI_Base, Point>();
-
-            // Adding Nodes
-            foreach (var n in this.Points)
+            try
             {
-                this.Previous.Add(n.Unit, null);
-                this.Base.Add(n);
-                this.Dist.Add(n.Unit, double.MaxValue);
+                this.Connections = connections;
+                this.Points = points;
+                this.Base = new List<Point>();
+                this.Dist = new Dictionary<Obj_AI_Base, float>();
+                this.Previous = new Dictionary<Obj_AI_Base, Point>();
+
+                foreach (var n in this.Points)
+                {
+                    this.Previous.Add(n.Unit, null);
+                    this.Base.Add(n);
+                    this.Dist.Add(n.Unit, float.MaxValue);
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(@"[Djikstra]: " +ex);
+            }
+
+
         }
 
         public List<Point> Points { get; set; }
@@ -35,7 +43,7 @@
 
         public List<Point> Base { get; set; }
 
-        public Dictionary<Obj_AI_Base, double> Dist { get; set; }
+        public Dictionary<Obj_AI_Base, float> Dist { get; set; }
 
         public Dictionary<Obj_AI_Base, Point> Previous { get; set; }
 
@@ -97,7 +105,7 @@
         /// <returns></returns>
         public Point GetNodeWithSmallestDistance()
         {
-            var distance = double.MaxValue;
+            var distance = float.MaxValue;
             Point smallest = null;
 
             foreach (var n in this.Base)
@@ -138,7 +146,7 @@
         /// <param name="o">Start Node</param>
         /// <param name="d">End Node</param>
         /// <returns></returns>
-        public double GetDistanceBetween(Point o, Point d)
+        public float GetDistanceBetween(Point o, Point d)
         {
             foreach (var e in this.Connections)
             {

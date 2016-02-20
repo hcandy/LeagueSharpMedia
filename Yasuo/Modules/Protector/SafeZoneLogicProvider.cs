@@ -6,11 +6,12 @@
 
 //    using LeagueSharp;
 //    using LeagueSharp.Common;
+//    using LeagueSharp.SDK;
 
 //    using SharpDX;
 
 //    using Yasuo.Common;
-//    using Yasuo.Evade;
+//    using Yasuo.Common.Extensions;
 
 //    using Geometry = LeagueSharp.Common.Geometry;
 
@@ -20,15 +21,17 @@
 
 //        public SafeZoneLogicProvider(List<Skillshot> skillshots, List<Obj_AI_Base> units)
 //        {
-//            foreach (var unit in units)
+//            if (units != null && skillshots != null)
 //            {
-//                foreach (var skillshot in skillshots)
+//                foreach (var unit in units)
 //                {
-//                    var eta = (int) Math.Min(skillshot.SpellData.Range / skillshot.SpellData.MissileSpeed, 
-//                                                unit.Distance(skillshot.GetMissilePosition(0) / skillshot.SpellData.MissileSpeed));
-//                    if (skillshot.IsAboutToHit(eta + Game.Ping, unit))
+//                    foreach (var skillshot in skillshots)
 //                    {
-//                        possibleCollisions.Add(skillshot, unit);
+//                        var eta = (int)unit.Distance(skillshot.MisslePosition() / skillshot.SData.MissileSpeed);
+//                        if (skillshot.IsAboutToHit(unit, eta + Game.Ping))
+//                        {
+//                            this.possibleCollisions.Add(skillshot, unit);
+//                        }
 //                    }
 //                }
 //            }
@@ -52,14 +55,14 @@
 //            }
 //        }
 
-        
+
 
 
 //        // TODO: Develope Target Selector for protecting allies. Maybe abuse our current TS for that. 
 //        public static Obj_AI_Base GetUnit(List<Obj_AI_Base> units)
 //        {
-            
-//            return units.Where(x => x is Obj_AI_Hero).MaxOrDefault(x => TargetSelector.GetPriority((Obj_AI_Hero) x));
+
+//            return units.Where(x => x is Obj_AI_Hero).MaxOrDefault(x => TargetSelector.GetPriority((Obj_AI_Hero)x));
 //        }
 //    }
 //}

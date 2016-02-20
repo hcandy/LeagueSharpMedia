@@ -1,6 +1,6 @@
 ﻿//TODO:  Djikstra
 
-namespace Yasuo.Modules
+namespace Yasuo.Modules.WallDash
 {
     using System;
     using System.Collections.Generic;
@@ -9,11 +9,8 @@ namespace Yasuo.Modules
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using SharpDX;
-
     using Yasuo.Common;
     using Yasuo.Common.Extensions;
-    using Yasuo.Common.Utility;
     using Yasuo.Skills.Combo;
 
     internal class WallDash : Child<Modules>
@@ -79,14 +76,14 @@ namespace Yasuo.Modules
     new MenuItem(this.Name + "MinWallWidth", "Minimum wall width: ").SetValue(new Slider(150, 10, (int) Variables.Spells[SpellSlot.E].Range / 2)));
 
             this.Menu.AddItem(new MenuItem(this.Name + "Helper", "How it works")
-                .SetTooltip("Hold down "+Menu.Item(this.Name+"Keybind").GetValue<KeyBind>()+ " to let the assembly perform a Dash over a unit that will be a WallDash"));
+                .SetTooltip("Hold down "+this.Menu.Item(this.Name+"Keybind").GetValue<KeyBind>()+ " to let the assembly perform a Dash over a unit that will be a WallDash"));
 
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
 
         protected override void OnInitialize()
         {
-            Provider = new SweepingBladeLogicProvider(475);
+            this.Provider = new SweepingBladeLogicProvider(475);
             base.OnInitialize();
         }
 
@@ -94,14 +91,14 @@ namespace Yasuo.Modules
         {
             
 
-            var MouseCheck = Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
+            var MouseCheck = this.Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
 
-            var units = Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
+            var units = this.Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
 
-            if (Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
+            if (this.Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
             {
                 Variables.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-                foreach (var unit in units.Where(unit => unit.IsWallDash(Variables.Spells[SpellSlot.E].Range)))
+                foreach (var unit in units.Where(unit => WallDashLogicProvider.IsWallDash(unit, Variables.Spells[SpellSlot.E].Range)))
                 {
                     if (!MouseCheck)
                     {
@@ -121,26 +118,11 @@ namespace Yasuo.Modules
         {
             if (Variables.Player.IsDead || Variables.Player.IsDashing()) return;
 
-            var MouseCheck = Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
-
-            var units = Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
-
-            if (Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
-            {
-                foreach (var unit in units.Where(unit => unit.IsWallDash(Variables.Spells[SpellSlot.E].Range)))
-                {// Summary: if Cursor position is near dash end position, dash. That is to prevent dashes over walls that were not intended.
-                    if (Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range).Distance(Game.CursorPos) > Variables.Spells[SpellSlot.E].Range)
-                    {
-                        Drawing.DrawLine(Drawing.WorldToScreen(Variables.Player.Position), Drawing.WorldToScreen(unit.Position), 4f, System.Drawing.Color.White);
-                    }
-                }
-            }
-
+            var units = this.Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
         }
 
         private static void Execute(Obj_AI_Base target)
         {
-            Game.PrintChat("[WallDash] Casting: " + target.Name);
             if (target.IsValidTarget())
             {
                 Variables.Spells[SpellSlot.E].CastOnUnit(target);

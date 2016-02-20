@@ -24,6 +24,6 @@
         /// <summary>
         /// Distance
         /// </summary>
-        public double Distance { get; set; }
+        public float Distance { get; set; }
     }
 }
