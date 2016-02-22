@@ -1,4 +1,4 @@
-﻿namespace Yasuo.Modules
+﻿namespace Yasuo.Common.Provider
 {
     using System;
 

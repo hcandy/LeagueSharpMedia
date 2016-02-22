@@ -86,6 +86,8 @@
     <Compile Include="Common\Classes\Child.cs" />
     <Compile Include="Common\Classes\IChild.cs" />
     <Compile Include="Common\Classes\Parent.cs" />
+    <Compile Include="Common\Classes\Template.cs" />
+    <Compile Include="Common\Data\Debuffs.cs" />
     <Compile Include="Common\Enums\ModuleMode.cs" />
     <Compile Include="Common\Enums\SkillMode.cs" />
     <Compile Include="Common\Extensions\Extensions.cs" />
@@ -93,7 +95,9 @@
     <Compile Include="Common\Pathing\path.cs" />
     <Compile Include="Common\Predictions\PredictionOktw.cs" />
     <Compile Include="Common\Provider\FlashLogicProvider.cs" />
+    <Compile Include="Common\Provider\FlowManager.cs" />
     <Compile Include="Common\Provider\LastBreathLogicProvider.cs" />
+    <Compile Include="Common\Provider\PotionLogicProvider.cs" />
     <Compile Include="Common\Provider\SteelTempestLogicProvider.cs" />
     <Compile Include="Common\Provider\SweepingBladeLogicProvider.cs" />
     <Compile Include="Common\Utility\AssemblyVersion.cs" />
@@ -106,9 +110,8 @@
     <Compile Include="Modules\Evade\SweepingBladeLogicProvider.cs" />
     <Compile Include="Modules\Evade\WindWall.cs" />
     <Compile Include="Modules\Evade\WindWallLogicProvider.cs" />
-    <Compile Include="Modules\FlowManager.cs" />
     <Compile Include="Modules\Modules.cs" />
-    <Compile Include="Modules\Potions.cs" />
+    <Compile Include="Modules\Auto\Potions.cs" />
     <Compile Include="Modules\Protector\Protector.cs" />
     <Compile Include="Modules\Protector\SafeZone.cs" />
     <Compile Include="Modules\Protector\WindWallProtector.cs" />
@@ -132,7 +135,6 @@
     <Compile Include="Skills\Combo\SteelTempest.cs" />
     <Compile Include="Skills\Combo\SweepingBlade.cs" />
     <Compile Include="Variables.cs" />
-    <Compile Include="Manager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

@@ -9,6 +9,7 @@
     using SharpDX;
 
     using Yasuo.Common.Classes;
+    using Yasuo.Common.Provider;
     using Yasuo.Modules;
 
     using Color = System.Drawing.Color;
