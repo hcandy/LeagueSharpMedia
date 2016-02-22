@@ -13,6 +13,7 @@
     using SharpDX;
 
     using Yasuo.Common.Extensions;
+    using Yasuo.Common.Provider;
     using Yasuo.Skills.Combo;
 
     using SpellDatabase = LeagueSharp.SDK.SpellDatabase;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SDK = LeagueSharp.SDK;
-using Yasuo.EvadeSkills;
+
 using Yasuo.Modules;
 
 namespace Yasuo

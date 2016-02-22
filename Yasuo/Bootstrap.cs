@@ -7,14 +7,20 @@ namespace Yasuo
 
     using LeagueSharp;
     using LeagueSharp.Common;
+    using LeagueSharp.SDK;
 
     using Yasuo.Common;
+    using Yasuo.Common.Classes;
     using Yasuo.Common.Utility;
     using Yasuo.Modules;
     using Yasuo.Modules.Protector;
     using Yasuo.Modules.WallDash;
-    using Yasuo.Skills;
     using Yasuo.Skills.Combo;
+    using Yasuo.Skills.LaneClear;
+    using Yasuo.Skills.JungleClear;
+    using Yasuo.Skills.Mixed;
+
+    using Notifications = LeagueSharp.Common.Notifications;
 
     internal class Bootstrap
     {
@@ -28,14 +34,20 @@ namespace Yasuo
 
                 #region parents
 
+                // Orbwalking Modes
                 var combo = new Combo();
+                var laneclear = new LaneClear();
+                var jungleclear = new JungleClear();
+                var mixed = new Mixed();
+
+                // Extra Features
                 var module = new Modules.Modules();
-                var protector = new Modules.Protector.Protector();
-                //var Items = new Yasuo.Items.Item();
+                var protector = new Protector();
 
                 #endregion
 
-
+                // TODO: Add Evade Skills (Sweeping Blade/Wind Wall)
+                // TODO: Add AntiGapCloser Skills (SweepingBlade)
                 #region features
 
                 CustomEvents.Game.OnGameLoad += delegate
@@ -43,15 +55,25 @@ namespace Yasuo
                         Variables.Assembly.Features.AddRange(
                             new List<IChild>
                                 {
-                                    new SteelTempest(combo),
-                                    new SweepingBlade(combo),
+                                    // Orbwalking Modes
+                                    new Skills.Combo.SteelTempest(combo),
+                                    new Skills.Combo.SweepingBlade(combo),
+                                    new Skills.Combo.LastBreath(combo),
+                                    new Skills.Combo.Flash(combo),
+
+                                    new Skills.LaneClear.SteelTempest(laneclear),
+                                    new Skills.LaneClear.SweepingBlade(laneclear),
+
+                                    new Skills.JungleClear.SteelTempest(jungleclear),
+                                    new Skills.JungleClear.SweepingBlade(jungleclear),
+                        
+                                    new Skills.Mixed.SteelTempest(mixed),
+                                    new Skills.Mixed.SweepingBlade(mixed),
+
+                                    // Extra Features
                                     new WallDash(module),
                                     new WindWallProtector(protector)
                                 });
-
-                        /*      new WindWall(evade),
-                        
-                        new LastBreath(combo)  */
 
                         foreach (var feature in Variables.Assembly.Features)
                         {

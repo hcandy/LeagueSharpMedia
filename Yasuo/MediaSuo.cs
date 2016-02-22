@@ -13,6 +13,7 @@ namespace Yasuo
     using System.Reflection;
 
     using Yasuo.Common;
+    using Yasuo.Common.Classes;
 
     class MediaSuo
     {
@@ -69,6 +70,7 @@ namespace Yasuo
             Menu.AddSubMenu(orbWalkingMenu);
 
             Variables.Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalking"));
+            Menu.GetMenu(Variables.Name, "Info").AddItem(new MenuItem("AmountFeatures", "Amount of features: " + Features.Count));
             Menu.AddToMainMenu();
         }
 

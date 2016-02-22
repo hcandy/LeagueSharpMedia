@@ -10,7 +10,9 @@ namespace Yasuo.Modules.WallDash
     using LeagueSharp.Common;
 
     using Yasuo.Common;
+    using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
+    using Yasuo.Common.Provider;
     using Yasuo.Skills.Combo;
 
     internal class WallDash : Child<Modules>
@@ -25,7 +27,7 @@ namespace Yasuo.Modules.WallDash
 
         public override string Name => "Wall Dash";
 
-        public Skills.Combo.SweepingBladeLogicProvider Provider;
+        public SweepingBladeLogicProvider Provider;
 
         protected override void OnEnable()
         {

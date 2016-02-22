@@ -10,8 +10,10 @@
     using SharpDX;
 
     using Yasuo.Common;
+    using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Pathing;
+    using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
     using Yasuo.Modules;
     using Yasuo.Modules.WallDash;
@@ -43,6 +45,7 @@
         protected override void OnDisable()
         {
             Game.OnUpdate -= this.OnUpdate;
+            Obj_AI_Base.OnProcessSpellCast -= this.OnProcessSpellCast;
             Drawing.OnDraw -= this.OnDraw;
             base.OnDisable();
         }
@@ -120,18 +123,18 @@
             {
                 return;
             }
-            var dashVector = Vector2.Zero;
+            var dashVector = Vector3.Zero;
 
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    dashVector = Game.CursorPos.To2D();
+                    dashVector = Game.CursorPos;
                     break;
                 case 1:
                     dashVector =
                         TargetSelector.GetTarget(
                             Variables.Spells[SpellSlot.Q].Range,
-                            TargetSelector.DamageType.Physical).ServerPosition.To2D();
+                            TargetSelector.DamageType.Physical).ServerPosition;
                     break;
             }
 
@@ -140,7 +143,7 @@
             // if a path is given, and the first unit of the path is in dash range, and the path time is faster than running to the given vector (dashVactor)
             if (GapClosePath != null
                 && Variables.Player.Distance(GapClosePath.FirstUnit) <= Variables.Spells[SpellSlot.E].Range
-                && GapClosePath.PathTime <= Helper.GetPathLenght(Variables.Player.GetPath(dashVector.To3D())) / Variables.Player.MoveSpeed)
+                && GapClosePath.PathTime <= Helper.GetPathLenght(Variables.Player.GetPath(dashVector)) / Variables.Player.MoveSpeed)
             {
                 // if WallDash
                 if (GapClosePath.FirstUnit.IsWallDash(Variables.Spells[SpellSlot.E].Range))
@@ -149,19 +152,21 @@
                         Helper.GetPathLenght(
                             Variables.Player.GetPath(
                                 Variables.Player.ServerPosition.Extend(
-                                    GapClosePath.FirstUnit.ServerPosition,
+                                    GapClosePath.FirstUnit,
                                     Variables.Spells[SpellSlot.E].Range),
-                                dashVector.To3D())) < Helper.GetPathLenght(Variables.Player.GetPath(dashVector.To3D())))
+                                dashVector)) < Helper.GetPathLenght(Variables.Player.GetPath(dashVector)))
                     {
                         Game.PrintChat(
                             "Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
-                        Execute(GapClosePath.ReturnUnit());
+                        Execute(MinionManager.GetMinions(GapClosePath.FirstUnit, 25, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None)
+                               .FirstOrDefault(x => x.ServerPosition == GapClosePath.FirstUnit));
                     }
                     //TODO: else, find new path
                 }
                 else
                 {
-                    Execute(GapClosePath.FirstUnit);
+                    Execute(MinionManager.GetMinions(GapClosePath.FirstUnit, 25, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None)
+                               .FirstOrDefault(x => x.ServerPosition == GapClosePath.FirstUnit));
                 }
             }
         }
@@ -173,7 +178,7 @@
                 return;
             }
 
-            if (this.GapClosePath != null && this.GapClosePath.Units.Contains((Obj_AI_Base)args.Target))
+            if (this.GapClosePath != null && this.GapClosePath.Units.Contains(args.Target))
             {
                 this.GapClosePath.RemoveUnit((Obj_AI_Base)args.Target);
             }
@@ -181,12 +186,12 @@
 
         public void OnDraw(EventArgs args)
         {
-            var dashVector = Vector2.Zero;
+            var dashVector = Vector3.Zero;
 
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    dashVector = Game.CursorPos.To2D();
+                    dashVector = Game.CursorPos;
                     break;
                 case 1:
                     if (HeroManager.Enemies.Count > 0)
@@ -194,11 +199,11 @@
                         dashVector =
                             TargetSelector.GetTarget(
                                 Variables.Spells[SpellSlot.Q].Range,
-                                TargetSelector.DamageType.Physical).ServerPosition.To2D();
+                                TargetSelector.DamageType.Physical).ServerPosition;
                     }
                     else
                     {
-                        dashVector = Game.CursorPos.To2D();
+                        dashVector = Game.CursorPos;
                     }
 
                     break;

@@ -4,6 +4,7 @@
     using System.Linq;
 
     using LeagueSharp;
+    using LeagueSharp.Common;
     using LeagueSharp.SDK;
     using LeagueSharp.SDK.Modes.Weights;
 
@@ -13,9 +14,17 @@
     using Yasuo.Modules.Protector;
 
     using Geometry = LeagueSharp.Common.Geometry;
+    using MinionTypes = LeagueSharp.Common.MinionTypes;
 
     static class Extensions
     {
+
+        public static int CountMinionsInRange(this Vector3 position, float range)
+        {
+            var minionList = MinionManager.GetMinions(position, range);
+
+            return minionList?.Count ?? 0;
+        }
         /// <summary>
         /// Returns the remaining airbone time from unit
         /// </summary>
@@ -56,7 +65,7 @@
 
             var traveleddistance = (Game.Time - starttime) * speed;
 
-            return traveleddistance <= distance ? skillshot.StartPosition.Extend(direction, traveleddistance) : Vector2.Zero;
+            return traveleddistance <= distance ? LeagueSharp.SDK.Extensions.Extend(skillshot.StartPosition, direction, traveleddistance) : Vector2.Zero;
         }
 
         /// <exception cref="Exception">A delegate callback throws an exception. </exception>

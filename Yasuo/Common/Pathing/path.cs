@@ -1,4 +1,5 @@
 ﻿// TODO: Add Dash End Positions as list. Maybe think about positive things when I change Obj_AI_Base to Connection or Point.
+// TODO: Rework Calculations based on Dash End Positions.
 
 namespace Yasuo.Common.Pathing
 {
@@ -13,21 +14,23 @@ namespace Yasuo.Common.Pathing
 
     public class Path
     {
-        public Vector2 StartPosition;
+        public Vector3 StartPosition;
 
-        public Vector2 EndPosition;
+        public Vector3 EndPosition;
 
-        public List<Obj_AI_Base> Units;
+        public List<Vector3> Positions;
 
-        public Path(List<Obj_AI_Base> units, Vector2 startPosition, Vector2 endPosition)
+        public List<Obj_AI_Base> Units; 
+
+        public Path(List<Vector3> positions, Vector3 startPosition, Vector3 endPosition)
         {
-            Units = units;
+            this.Positions = positions;
             StartPosition = startPosition;
             EndPosition = endPosition;
 
-            FirstUnit = this.ReturnUnit();
+            FirstUnit = this.ReturnPosition();
         }
-        public Obj_AI_Base FirstUnit { get; private set; }
+        public Vector3 FirstUnit { get; private set; }
 
         public int DangerValue { get; private set; }
 
@@ -43,9 +46,23 @@ namespace Yasuo.Common.Pathing
 
         public float PathLenght { get; private set; }
 
+        public void VecToUnits()
+        {
+            foreach (var position in Positions)
+            {
+                var allminions = MinionManager.GetMinions(position, 50, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None);
+                var minion = allminions.MinOrDefault(x => x.Distance(position));
+
+                if (minion != null)
+                {
+                    Units.Add(minion);
+                }
+            }
+        }
+
         public void SetDangerValue()
         {
-            foreach (var unit in Units.Where(x => x.CountEnemiesInRange(Variables.Spells[SpellSlot.E].Range) > 0))
+            foreach (var unit in this.Positions.Where(x => x.CountEnemiesInRange(Variables.Spells[SpellSlot.E].Range) > 0))
             {
                 foreach (var hero in HeroManager.Enemies.Where(y => y.Distance(unit) <= Variables.Spells[SpellSlot.E].Range))
                 {
@@ -72,7 +89,7 @@ namespace Yasuo.Common.Pathing
 
         public void SetDashLength()
         {
-            foreach (var unit in Units)
+            foreach (var unit in this.Positions)
             {
                 DashLenght += 475;
             }
@@ -81,12 +98,26 @@ namespace Yasuo.Common.Pathing
         //TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
-            var StartDistance = this.ReturnUnit().Distance(StartPosition);
+            var StartDistance = this.ReturnPosition().Distance(StartPosition);
             var EndDistance = this.ReturnLastUnit().Distance(EndPosition);
+
+            var x = 0f;
+
+            for (int i = 0; i < this.Positions.Count - 1; i++)
+            {
+                x += this.Positions[i].Distance(this.Positions[i + 1]);
+            }
+
+            var inbetweenDistance = (float) x - DashLenght;
 
             if (StartDistance <= Variables.Spells[SpellSlot.E].Range)
             {
                 WalkLenght = StartDistance + EndDistance;
+
+                if (inbetweenDistance > 0)
+                {
+                    WalkLenght += inbetweenDistance;
+                }
             }
         }
 
@@ -99,6 +130,8 @@ namespace Yasuo.Common.Pathing
         {
             try
             {
+                this.VecToUnits();
+
                 this.SetDashLength();
                 this.SetWalkLength();
                 this.SetPathLengtht();
@@ -115,24 +148,24 @@ namespace Yasuo.Common.Pathing
             }
         }
 
-        public Obj_AI_Base ReturnUnit()
+        public Vector3 ReturnPosition()
         {
-            return Units.FirstOrDefault(x => x.Name != Variables.Player.Name);
+            return this.Positions.FirstOrDefault(x => x != Variables.Player.ServerPosition);
         }
 
-        public Obj_AI_Base ReturnLastUnit()
+        public Vector3 ReturnLastUnit()
         {
-            return Units.LastOrDefault();
+            return this.Positions.LastOrDefault();
         }
 
         public void RemoveUnit(Obj_AI_Base unit)
         {
-            Units.Remove(unit);
+            this.Positions.Remove(unit.ServerPosition);
         }
 
         public void AddUnit(Obj_AI_Base unit)
         {
-            Units.Add(unit);
+            this.Positions.Add(unit.ServerPosition);
         }
 
     }

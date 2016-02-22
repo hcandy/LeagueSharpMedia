@@ -8,8 +8,10 @@ namespace Yasuo.Skills.Combo
     using LeagueSharp.Common;
 
     using Yasuo.Common;
+    using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Predictions;
+    using Yasuo.Common.Provider;
 
     using HitChance = Yasuo.Common.Predictions.HitChance;
 

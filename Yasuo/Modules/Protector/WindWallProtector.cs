@@ -6,10 +6,15 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using SharpDX;
+
     using SDK = LeagueSharp.SDK;
 
     using Yasuo.Common;
+    using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
+    using Yasuo.Common.Provider;
+    using Yasuo.Skills.Combo;
 
     internal class WindWallProtector : Child<Protector>
     {
@@ -20,6 +25,8 @@
         }
 
         public override string Name => "Wind Wall";
+
+        public SweepingBladeLogicProvider Provider;
 
         public SafeZone SafeZone;
 
@@ -44,6 +51,7 @@
         protected override void OnInitialize()
         {
             Tracker = new SDK.Tracker();
+            Provider = new SweepingBladeLogicProvider(Variables.Spells[SpellSlot.E].Range * 2);
             base.OnInitialize();
         }
 
@@ -74,39 +82,60 @@
             Parent.Menu.AddSubMenu(Menu);
         }
 
-        public bool CheckForCollision(GameObjectProcessSpellCastEventArgs args)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                if (SDK.SpellDatabase.GetByName(args.SData.Name).CollisionObjects[i]
-                    == SDK.CollisionableObjects.YasuoWall)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public void OnUpdate(EventArgs args)
         {
+            if (SDK.Tracker.DetectedSkillshots == null)
+            {
+                return;
+            }
+            
+            if (SDK.Tracker.DetectedSkillshots.Count > 0)
+            {
+                Game.PrintChat("[WindWallProtector]: Skillshots detected: " +SDK.Tracker.DetectedSkillshots.Count);
+            }
+
+
             foreach (var skillshot in SDK.Tracker.DetectedSkillshots)
             {
+                var time = (int) skillshot.MisslePosition().Distance(Variables.Player.ServerPosition) / skillshot.SData.MissileSpeed;
+                Game.PrintChat(time.ToString());
+
                 foreach (var ally in HeroManager.Allies)
                 {
-                    var time = (int) skillshot.MisslePosition().Distance(ally.ServerPosition) / skillshot.SData.MissileSpeed;
-
-                    if (skillshot.IsAboutToHit(ally, time))
+                    if (skillshot.IsAboutToHit(ally, 1000))
                     {
-                        Game.PrintChat("Ally is about to get hit by a skillshot in: " +time);
-                        SafeZone = new SafeZone(Variables.Player.ServerPosition.To2D(), skillshot.SData.Range, skillshot.SData.Radius);
+                        var GapClosePath = this.Provider.GetPath(ally.ServerPosition);
+
+                        Game.PrintChat("Someone is about to get hit by a skillshot in: " + time);
+
+                        if (GapClosePath != null && GapClosePath.PathTime < time)
+                        {
+                            Game.PrintChat("Can gapclose in time to protect ally");
+                        }
+                        
+                        this.SafeZone = new SafeZone(skillshot.StartPosition, skillshot.SData.Range, skillshot.SData.Radius);
+
+                        if (this.SafeZone != null && this.SafeZone.AlliesInside.Contains(ally))
+                        {
+                            this.Execute(this.SafeZone.CastPosition);
+                        }
                     }
                 }
+                    
             }
         }
 
         public void OnDraw(EventArgs args)
         {
-            SafeZone.Draw();
+            this.SafeZone?.Draw();
+        }
+
+        public void Execute(Vector2 CastPosition)
+        {
+            if (Variables.Spells[SpellSlot.W].IsReady())
+            {
+                Variables.Spells[SpellSlot.W].Cast(CastPosition);
+            }
         }
     }
 }

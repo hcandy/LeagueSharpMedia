@@ -29,6 +29,8 @@ namespace Yasuo.Modules.Protector
 
         public List<Obj_AI_Base> EnemiesInside;
 
+        public Vector2 CastPosition;
+
         public SafeZone(Vector2 start, float range, float additionalWidth)
         {
             this.Start = start;
@@ -38,17 +40,20 @@ namespace Yasuo.Modules.Protector
             this.AdditionalWidth = additionalWidth;
 
             this.Create();
+
+            this.CheckAllies();
         }
 
         private void Create()
         {
-            var wwCenter = Geometry.Extend(ObjectManager.Player.ServerPosition, this.Start.To3D(), 300);
+            var wwCenter = Geometry.Extend(Variables.Player.ServerPosition, this.Start.To3D(), 300);
+            CastPosition = wwCenter.To2D();
 
-            var wwPerpend = (wwCenter - ObjectManager.Player.ServerPosition).Normalized();
+            var wwPerpend = (wwCenter - Variables.Player.ServerPosition).Normalized();
             wwPerpend.X = -wwPerpend.X;
 
-            var leftInnerBound = Geometry.Extend(wwCenter, wwPerpend, 250 + this.AdditionalWidth);
-            var rightInnerBound = Geometry.Extend(wwCenter, wwPerpend, -250 + this.AdditionalWidth);
+            var leftInnerBound = Geometry.Extend(wwCenter, wwPerpend, (Variables.Spells[SpellSlot.W].Width / 2) + this.AdditionalWidth);
+            var rightInnerBound = Geometry.Extend(wwCenter, wwPerpend, -(Variables.Spells[SpellSlot.W].Width / 2) - this.AdditionalWidth);
 
             var leftOuterBound = Geometry.Extend(this.Start, leftInnerBound.To2D(), this.Range);
             var rightOuterBound = Geometry.Extend(this.Start, rightInnerBound.To2D(), this.Range);
@@ -61,6 +66,17 @@ namespace Yasuo.Modules.Protector
             safeZone.Add(new Geometry.Polygon.Arc(leftOuterBound, this.Start, 250 * (float)Math.PI / 180, this.Range));
 
             Polygon = safeZone;
+        }
+
+        private void CheckAllies()
+        {
+            foreach (var ally in HeroManager.Allies)
+            {
+                if (Polygon.IsInside(ally.ServerPosition.To2D()))
+                {
+                    AlliesInside.Add(ally);   
+                }
+            }
         }
 
         public void Draw()

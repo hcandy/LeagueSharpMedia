@@ -13,7 +13,12 @@ namespace Yasuo.Modules.WallDash
     {
         public static bool IsWallDash(this Obj_AI_Base target, float dashRange, float minWallWidth = 50)
         {
-            var dashEndPos = Variables.Player.Position.Extend(target.Position, dashRange);
+            return IsWallDash(target.ServerPosition, dashRange, minWallWidth);
+        }
+
+        public static bool IsWallDash(this Vector3 position, float dashRange, float minWallWidth = 50)
+        {
+            var dashEndPos = Variables.Player.Position.Extend(position, dashRange);
             var firstWallPoint = GetFirstWallPoint(ObjectManager.Player.Position, dashEndPos);
 
             if (firstWallPoint.Equals(Vector3.Zero))
