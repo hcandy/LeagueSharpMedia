@@ -51,22 +51,29 @@
 
         public static bool HasQ3(this Obj_AI_Hero hero) => ObjectManager.Player.HasBuff("YasuoQ3W");
 
-        public static Vector2 MisslePosition(this Skillshot skillshot)
+        /// <summary>
+        /// Returns the missile position after time time.
+        /// </summary>
+        public static Vector2 MissilePosition(this Skillshot skillshot, bool allowNegative = false, float delay = 0)
         {
-            if (!skillshot.HasMissile)
+            //TODO: Rework
+            if (skillshot.HasMissile)
             {
-                return Vector2.Zero;
+                
+                if (skillshot.SData.SpellType == SpellType.SkillshotLine
+                    || skillshot.SData.SpellType == SpellType.SkillshotMissileLine)
+                {
+                    Game.PrintChat("test");
+                    var t = Math.Max(0, Utils.TickCount + delay - skillshot.StartTime - skillshot.SData.Delay);
+                    t = (int)Math.Max(0, Math.Min(skillshot.EndPosition.Distance(skillshot.StartPosition), t * skillshot.SData.MissileSpeed / 1000));
+                    return skillshot.StartPosition + skillshot.Direction * t;
+
+                }
             }
-
-            var speed = skillshot.SData.MissileSpeed;
-            var distance = skillshot.StartPosition.Distance(skillshot.EndPosition);
-            var starttime = skillshot.StartTime;
-            var direction = skillshot.Direction;
-
-            var traveleddistance = (Game.Time - starttime) * speed;
-
-            return traveleddistance <= distance ? LeagueSharp.SDK.Extensions.Extend(skillshot.StartPosition, direction, traveleddistance) : Vector2.Zero;
+            return Vector2.Zero;
         }
+
+
 
         /// <exception cref="Exception">A delegate callback throws an exception. </exception>
         public static void RaiseEvent(this EventHandler @event, object sender, EventArgs e)

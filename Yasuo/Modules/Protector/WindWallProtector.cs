@@ -1,6 +1,7 @@
 ﻿namespace Yasuo.Modules.Protector
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using LeagueSharp;
@@ -16,6 +17,8 @@
     using Yasuo.Common.Provider;
     using Yasuo.Skills.Combo;
 
+    using Color = System.Drawing.Color;
+
     internal class WindWallProtector : Child<Protector>
     {
         public WindWallProtector(Protector parent)
@@ -25,6 +28,8 @@
         }
 
         public override string Name => "Wind Wall";
+
+        private List<GameObject> DetectedObjects; 
 
         public SweepingBladeLogicProvider Provider;
 
@@ -37,13 +42,15 @@
         protected override void OnEnable()
         {
             Game.OnUpdate += this.OnUpdate;
+            //GameObject.OnCreate += this.OnCreate;
             Drawing.OnDraw += this.OnDraw;
             base.OnEnable();
         }
 
         protected override void OnDisable()
         {
-            Game.OnUpdate -= OnUpdate;
+            Game.OnUpdate -= this.OnUpdate;
+            //GameObject.OnCreate -= this.OnCreate;
             Drawing.OnDraw -= this.OnDraw;
             base.OnDisable();
         }
@@ -94,15 +101,33 @@
                 Game.PrintChat("[WindWallProtector]: Skillshots detected: " +SDK.Tracker.DetectedSkillshots.Count);
             }
 
+            //var endPos = missile.EndPosition;
+
+            //if (missile.StartPosition.Distance(endPos) < missile.SData.CastRange)
+            //{
+            //    endPos = missile.StartPosition.Extend(missile.EndPosition, missile.SData.CastRange);
+            //}
+
+            //var time = 1000 * missile.Position.Distance(endPos) / missile.SData.MissileSpeed - Game.Ping / 2 + missile.SData.CastFrame / 30f;
 
             foreach (var skillshot in SDK.Tracker.DetectedSkillshots)
             {
-                var time = (int) skillshot.MisslePosition().Distance(Variables.Player.ServerPosition) / skillshot.SData.MissileSpeed;
-                Game.PrintChat(time.ToString());
-
+                Render.Circle.DrawCircle(skillshot.MissilePosition(false).To3D(), 6000, Color.Cyan);
+                Drawing.DrawCircle(skillshot.MissilePosition(false).To3D(), 6000, Color.Aqua);
+                
+                Drawing.DrawText(550, 550, Color.AliceBlue, "Missile Position: "+skillshot.MissilePosition(false));
                 foreach (var ally in HeroManager.Allies)
                 {
-                    if (skillshot.IsAboutToHit(ally, 1000))
+                    var endPos = skillshot.EndPosition;
+
+                    if (skillshot.StartPosition.Distance(endPos) < skillshot.SData.Range)
+                    {
+                        endPos = skillshot.StartPosition.Extend(skillshot.EndPosition, skillshot.SData.Range);
+                    }
+
+                    int time = (int)(1000 * skillshot.MissilePosition(false).Distance(endPos) / skillshot.SData.MissileSpeed - Game.Ping / 2);
+
+                    if (skillshot.IsAboutToHit(ally, time))
                     {
                         var GapClosePath = this.Provider.GetPath(ally.ServerPosition);
 
@@ -125,9 +150,25 @@
             }
         }
 
+        //public void OnCreate(GameObject sender, EventArgs args)
+        //{
+        //    if (sender.IsMe || sender.IsValid || sender.IsAlly)
+        //    {
+        //        return;
+        //    }
+            
+        //    DetectedObjects.Add(sender);          
+        //}
+
         public void OnDraw(EventArgs args)
         {
-            this.SafeZone?.Draw();
+            foreach (var skillshot in SDK.Tracker.DetectedSkillshots)
+            {
+                Render.Circle.DrawCircle(skillshot.MissilePosition(false).To3D(), 50, Color.White);
+                Drawing.DrawCircle(skillshot.MissilePosition(false).To3D(), 50, Color.White);
+
+                Drawing.DrawText(550, 550, Color.AliceBlue, "Missile Position: " + skillshot.MissilePosition(false));
+            }
         }
 
         public void Execute(Vector2 CastPosition)

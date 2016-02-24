@@ -7,6 +7,7 @@
 
     using LeagueSharp;
     using LeagueSharp.Common;
+    using SDK = LeagueSharp.SDK;
 
     using Microsoft.SqlServer.Server;
 
@@ -15,8 +16,6 @@
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Provider;
     using Yasuo.Skills.Combo;
-
-    using SpellDatabase = LeagueSharp.SDK.SpellDatabase;
 
     public class Helper
     {
@@ -169,7 +168,7 @@
         {
             if (SpellName != null)
             {
-                return SpellDatabase.GetByName(SpellName).Range;
+                return SDK.SpellDatabase.GetByName(SpellName).Range;
             }
             return 0;
         }
@@ -183,7 +182,7 @@
         {
             if (MissileName != null)
             {
-                return SpellDatabase.GetByMissileName(MissileName).Range;
+                return SDK.SpellDatabase.GetByMissileName(MissileName).Range;
             }
             return 0;
         }
@@ -207,7 +206,7 @@
             {
                 return 90;
             }
-            return SpellName != null ? SpellDatabase.GetByName(SpellName).Width : 0;
+            return SpellName != null ? SDK.SpellDatabase.GetByName(SpellName).Width : 0;
         }
 
         /// <summary>
@@ -226,7 +225,7 @@
                 case "YasuoQ2":
                     return 1400;
                 default:
-                    return SpellDatabase.GetByName(SpellName).MissileSpeed;
+                    return SDK.SpellDatabase.GetByName(SpellName).MissileSpeed;
             }
         }
 
@@ -239,7 +238,7 @@
         {
             if (SpellName != null)
             {
-                return SpellDatabase.GetByName(SpellName).Delay;
+                return SDK.SpellDatabase.GetByName(SpellName).Delay;
             }
             return 0;
         }

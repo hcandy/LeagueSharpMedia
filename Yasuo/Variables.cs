@@ -19,7 +19,7 @@ namespace Yasuo
 
     class Variables : Helper
     {
-        public static MediaSuo Assembly = null;
+        public static Assembly Assembly = null;
 
         public static Orbwalking.Orbwalker Orbwalker { get; internal set; }
 

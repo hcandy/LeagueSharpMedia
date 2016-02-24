@@ -130,8 +130,7 @@
     <Compile Include="Skills\Combo\Flash.cs" />
     <Compile Include="Skills\Combo\LastBreath.cs" />
     <Compile Include="Skills\Combo\Combo.cs" />
-    <Compile Include="MediaSuo.cs" />
-    <Compile Include="SafeZone.cs" />
+    <Compile Include="Assembly.cs" />
     <Compile Include="Skills\Combo\SteelTempest.cs" />
     <Compile Include="Skills\Combo\SweepingBlade.cs" />
     <Compile Include="Variables.cs" />

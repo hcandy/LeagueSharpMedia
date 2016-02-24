@@ -15,11 +15,10 @@ namespace Yasuo
     using Yasuo.Common;
     using Yasuo.Common.Classes;
 
-    class MediaSuo
+    class Assembly
     {
         /**
         * TODO:
-        MOST PRIO: FIX OrbWalker
         * E: Dont Dash into Wall || Dash if E hits wall if distance shorter than before || if Evade E check for Wall || Evade with E behind own wall
         * Q: Q on multiple target || E for Q (ref: Bubba Kush Lee Sin > Flash R into multiple targets
         * E through Trundle / J4 / Anivia Walls
@@ -29,29 +28,30 @@ namespace Yasuo
         */
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MediaSuo"/> class.
+        /// Initializes a new instance of the <see cref="Assembly"/> class.
         /// </summary>
-        public MediaSuo(string Name = null)
+        public Assembly(string Name = null)
         {
-            if (Name == null)
+            try
             {
-                Name = Assembly.GetExecutingAssembly().GetName().ToString();
+                Menu = new Menu(Name, Name, true);
+
+                var info = new Menu("Info", Name + " Info", false);
+                info.AddItem(new MenuItem("Version", "Version: " + 1337));
+                info.AddItem(new MenuItem("Author", "Author: " + Variables.Author));
+                Menu.AddSubMenu(info);
+
+                CustomEvents.Game.OnGameLoad += OnGameLoad;
+                CustomEvents.Game.OnGameEnd += OnGameEnd;
+
+                Game.OnUpdate += OnUpdate;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
             }
 
-            Menu = new Menu(Name, Name, true);
-
-            var info = new Menu("Info", Name + " Info", false);         
-            info.AddItem(new MenuItem("Version", "Version: " + 1337));
-            info.AddItem(new MenuItem("Author", "Author: " + Variables.Author));
-            Menu.AddSubMenu(info);
-
-
-
-
-            CustomEvents.Game.OnGameLoad += OnGameLoad;
-            CustomEvents.Game.OnGameEnd +=  OnGameEnd;
-
-            Game.OnUpdate += OnUpdate;
         }
 
         public event EventHandler<Base.UnloadEventArgs> OnUnload;
@@ -66,12 +66,21 @@ namespace Yasuo
         /// <param name="args"></param>
         private void OnGameLoad(EventArgs args)
         {
-            var orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
-            Menu.AddSubMenu(orbWalkingMenu);
+            try
+            {
+                var orbWalkingMenu = new Menu("Orbwalking", "Orbwalking");
+                Menu.AddSubMenu(orbWalkingMenu);
 
-            Variables.Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalking"));
-            Menu.GetMenu(Variables.Name, "Info").AddItem(new MenuItem("AmountFeatures", "Amount of features: " + Features.Count));
-            Menu.AddToMainMenu();
+                Variables.Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalking"));
+
+                Menu.AddToMainMenu();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+
         }
 
         /// <summary>

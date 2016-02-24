@@ -28,7 +28,7 @@ namespace Yasuo
         {
             try
             {
-                Variables.Assembly = new MediaSuo("Yasuo");
+                Variables.Assembly = new Assembly("Yasuo");
 
                 LoadedSuccessfully(Variables.Name + " by "+Variables.Author, 1337, 2500);
 
@@ -66,7 +66,7 @@ namespace Yasuo
 
                                     new Skills.JungleClear.SteelTempest(jungleclear),
                                     new Skills.JungleClear.SweepingBlade(jungleclear),
-                        
+
                                     new Skills.Mixed.SteelTempest(mixed),
                                     new Skills.Mixed.SweepingBlade(mixed),
 
@@ -97,7 +97,7 @@ namespace Yasuo
                 string.Format("[{0}] {1} - loaded successfully!", name, version),
                 displayTime,
                 true);
-
+            //Menu.GetMenu(Variables.Name, "Info").AddItem(new MenuItem("AmountFeatures", "Amount of features: " + Variables.Assembly.Features.Count));
             if (Game.Time < 1000 * 60)
                 // Assuming Game.Time 1000 = 1s
             {
