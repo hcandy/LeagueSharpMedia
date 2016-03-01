@@ -1,6 +1,8 @@
 ﻿namespace Yasuo.Skills.LaneClear
 {
     using System;
+    using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -13,6 +15,7 @@
     using Yasuo.Common.Provider;
 
     using HitChance = Yasuo.Common.Predictions.HitChance;
+    using ItemData = LeagueSharp.Common.Data.ItemData;
 
     internal class SteelTempest : Child<LaneClear>
     {
@@ -50,10 +53,15 @@
             this.Menu.AddItem(
                 new MenuItem(this.Name + "AOE", "Try to hit multiple").SetValue(true)
                     .SetTooltip(
-                        "If predicted hit count > slider, it will try to hit multiple, else it will aim for a single champion"));
+                        "If predicted hit count > slider, it will try to hit multiple, else it will aim for a single minion"));
 
             this.Menu.AddItem(
                 new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
+
+            this.Menu.AddItem(
+    new MenuItem(this.Name + "EQ", "Do EQ").SetValue(true)
+        .SetTooltip(
+            "If this is enabled, the assembly will try to hit minions while dashing"));
 
             // Prediction Mode
             //this.Menu.AddItem(new MenuItem(this.Name + "Prediction", "Prediction").SetValue(new StringList(Variables.Predictions, 0)));
@@ -71,65 +79,57 @@
 
         public void OnUpdate(EventArgs args)
         {
-
-            var target = TargetSelector.GetTarget(
-                Variables.Spells[SpellSlot.Q].Range,
-                TargetSelector.DamageType.Physical);
-            var pred = PredictionOKTW.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
-
-            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo 
-                || target == null || !target.IsValidTarget())
+            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear || !Variables.Spells[SpellSlot.Q].IsReady())
             {
                 return;
             }
 
+            var minions = MinionManager.GetMinions(
+                Variables.Player.ServerPosition,
+                Variables.Spells[SpellSlot.Q].Range,
+                MinionTypes.All,
+                MinionTeam.Enemy,
+                MinionOrderTypes.None);
+
+            if (minions.Count == 0 || minions == null)
+            {
+                return;
+            }
+            
             #region EQ
 
-            if (!Variables.Spells[SpellSlot.Q].IsReady())
-            {
-                return;
-            }
-
             // EQ > Synergyses with the E function in SweepingBlade/LogicProvider.cs
-            if (Variables.Player.IsDashing() && pred.UnitPosition.Distance(ObjectManager.Player.ServerPosition) <= Variables.Spells[SpellSlot.Q].Range)
+            if (Menu.Item(this.Name + "EQ").GetValue<bool>() &&
+                (Variables.Player.IsDashing() && minions.Where(x => x.Health <= ProviderQ.GetDamage(x)).Count(x => x.Distance(Variables.Player) <= 375) > 2))
             {
-                CastSteelTempest(target);
-            }
-            if (!Variables.Player.IsDashing())
-            {
-                if (this.Menu.Item(this.Name + "AOE").GetValue<bool>()
-                    && Variables.Player.CountEnemiesInRange(Variables.Spells[SpellSlot.Q].Range)
-                    >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value)
-                {
-                    CastSteelTempest(target, Variables.Player.HasQ3(), true);
-                }
-                CastSteelTempest(target, Variables.Player.HasQ3());
+                Execute(minions.Where(x => x.Distance(Variables.Player) <= 375).MinOrDefault(x => x.Health));
             }
 
             #endregion
+
+            else
+            {
+                if (Variables.Player.Spellbook.IsAutoAttacking || Variables.Player.Spellbook.IsCharging || Variables.Player.Spellbook.IsChanneling) return;
+                
+                if (Menu.Item(this.Name + "AOE").GetValue<bool>())
+                {
+                    Execute(minions.MinOrDefault(x => x.Health));
+                }
+            }
+
+
+
         }
 
-        private static void CastSteelTempest(Obj_AI_Base target, bool HasQ3 = false, bool AOE = false)
+        private static void Execute(Obj_AI_Base unit, bool AOE = false)
         {
-            var pred = PredictionOKTW.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
-
-            if (HasQ3)
+            if (AOE)
             {
-                if (AOE)
-                {
-                    Variables.Spells[SpellSlot.Q].CastOnBestTarget(aoe: true);
-                }
-                else
-                {
-                    Variables.Spells[SpellSlot.Q].Cast(pred.CastPosition);
-                }
+                Variables.Spells[SpellSlot.Q].CastOnBestTarget(aoe: true);
             }
             else
             {
-                if (pred.Hitchance >= HitChance.High)
-                {
-                    Variables.Spells[SpellSlot.Q].Cast(pred.CastPosition);
-                }
+                
             }
         }
     }

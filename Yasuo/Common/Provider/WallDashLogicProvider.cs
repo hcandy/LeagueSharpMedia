@@ -1,6 +1,6 @@
 //TODO: Make class more accessable. And easier to use. Maybe add some Extensions?
 
-namespace Yasuo.Modules.WallDash
+namespace Yasuo.Common.Provider
 {
     using LeagueSharp;
     using LeagueSharp.Common;

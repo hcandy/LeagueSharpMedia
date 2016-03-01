@@ -112,6 +112,7 @@
 
             foreach (var skillshot in SDK.Tracker.DetectedSkillshots)
             {
+                //TODO: Does not work because SDK is missing too much. Solution: Pull Request or finding an alternative way of doing this
                 Render.Circle.DrawCircle(skillshot.MissilePosition(false).To3D(), 6000, Color.Cyan);
                 Drawing.DrawCircle(skillshot.MissilePosition(false).To3D(), 6000, Color.Aqua);
                 
@@ -149,16 +150,6 @@
                     
             }
         }
-
-        //public void OnCreate(GameObject sender, EventArgs args)
-        //{
-        //    if (sender.IsMe || sender.IsValid || sender.IsAlly)
-        //    {
-        //        return;
-        //    }
-            
-        //    DetectedObjects.Add(sender);          
-        //}
 
         public void OnDraw(EventArgs args)
         {

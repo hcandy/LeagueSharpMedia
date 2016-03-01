@@ -15,6 +15,8 @@ namespace Yasuo.Common.Utility
     {
         public Version LocalVersion;
 
+        public bool Updated = false;
+
         public AssemblyVersion(Version assemblyVersion = null)
         {
             if (assemblyVersion == null)
@@ -25,59 +27,21 @@ namespace Yasuo.Common.Utility
             this.LocalVersion = assemblyVersion;
         }
 
-        public void Check(string name, int displayTime, string path)
+        public void Check(string path)
         {
             try
             {
-                var gitVersion = this.GetNewVersion(path);
-                var version = Convert.ToInt32(this.LocalVersion);
-
-                var versionRaisedBy = gitVersion - version;
-
-                if (versionRaisedBy == 0)
-                {
-                    return;
-                }
-
-                if (versionRaisedBy < 0)
-                {
-                    Notifications.AddNotification(
-                        string.Format("[{0}] Recent change got Reverted: {1} => {2}!", name, version, gitVersion),
-                        displayTime);
-                }
-
                 CustomEvents.Game.OnGameLoad += delegate
                     {
-                        switch (versionRaisedBy)
-                        {
-                            case 1:
-                                Notifications.AddNotification(
-                                    string.Format(
-                                        "[{0}] Bugfix/Small update available: {1} => {2}!", name, version, gitVersion),
-                                    displayTime);
-                                break;
+                        var gitVersion = this.GetNewVersion(path);
+                        var version = LocalVersion;
 
-                            case 10:
-                                Notifications.AddNotification(
-                                    string.Format("[{0}] Hotfix available: {1} => {2}!", name, version, gitVersion),
-                                    displayTime);
-                                break;
-                            case 100:
-                                Notifications.AddNotification(
-                                    string.Format("[{0}] New Feature available: {1} => {2}!", name, version, gitVersion),
-                                    displayTime);
-                                break;
-                            case 1000:
-                                Notifications.AddNotification(
-                                    string.Format("[{0}] Milestone reached: {1} => {2}!", name, version, gitVersion),
-                                    displayTime);
-                                break;
-                            default:
-                                Notifications.AddNotification(
-                                    string.Format("[{0}] Update available: {1} => {2}!", name, version, gitVersion),
-                                    displayTime);
-                                break;
+                        if (gitVersion.Equals(version))
+                        {
+                            return;
                         }
+
+                        Updated = true;
                     };
             }
             catch (Exception ex)
@@ -86,7 +50,7 @@ namespace Yasuo.Common.Utility
             }
         }
 
-        public int GetNewVersion(string path)
+        public Version GetNewVersion(string path)
         {
             try
             {
@@ -98,25 +62,19 @@ namespace Yasuo.Common.Utility
 
                     var gitVersion =
                         Version.Parse(
-                            new Regex("AssemblyFileVersion\\((\"(.+?)\")\\)").Match(data).Groups[1].Value.Replace( "\"", ""));
+                            new Regex("AssemblyFileVersion\\((\"(.+?)\")\\)").Match(data).Groups[1].Value.Replace(
+                                "\"",
+                                ""));
 
-                    return Convert.ToInt32(gitVersion);
+                    return gitVersion;
                 }
-
-                }
+            }
             catch (Exception ex)
             {
-
                 Console.WriteLine(ex);
             }
             return 0;
         }
-
-        //public static int GetVersion()
-        //{
-            
-        //    return Convert.ToInt32(Assembly.GetExecutingAssembly().GetName().Version);
-        //}
     }
 }
 

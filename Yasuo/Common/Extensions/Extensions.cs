@@ -6,6 +6,7 @@
     using LeagueSharp;
     using LeagueSharp.Common;
     using LeagueSharp.SDK;
+    using LeagueSharp.SDK.Core.Utils;
     using LeagueSharp.SDK.Modes.Weights;
 
     using SharpDX;
@@ -56,19 +57,19 @@
         /// </summary>
         public static Vector2 MissilePosition(this Skillshot skillshot, bool allowNegative = false, float delay = 0)
         {
-            //TODO: Rework
-            if (skillshot.HasMissile)
+            //TODO: That returns weird things. Prolly some value is not as I thought it would be.
+            if (!skillshot.HasMissile)
             {
-                
-                if (skillshot.SData.SpellType == SpellType.SkillshotLine
-                    || skillshot.SData.SpellType == SpellType.SkillshotMissileLine)
-                {
-                    Game.PrintChat("test");
-                    var t = Math.Max(0, Utils.TickCount + delay - skillshot.StartTime - skillshot.SData.Delay);
-                    t = (int)Math.Max(0, Math.Min(skillshot.EndPosition.Distance(skillshot.StartPosition), t * skillshot.SData.MissileSpeed / 1000));
-                    return skillshot.StartPosition + skillshot.Direction * t;
+                return Vector2.Zero;
+            }
 
-                }
+            if (skillshot.SData.SpellType == SpellType.SkillshotLine
+                || skillshot.SData.SpellType == SpellType.SkillshotMissileLine)
+            {
+                Game.PrintChat("test");
+                var t = Math.Max(0, Utils.TickCount + delay - skillshot.StartTime - skillshot.SData.Delay);
+                t = (int)Math.Max(0, Math.Min(skillshot.EndPosition.Distance(skillshot.StartPosition), t * skillshot.SData.MissileSpeed / 1000));
+                return skillshot.StartPosition + skillshot.Direction * t;
             }
             return Vector2.Zero;
         }

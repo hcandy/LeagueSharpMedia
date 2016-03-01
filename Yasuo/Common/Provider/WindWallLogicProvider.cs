@@ -182,6 +182,6 @@
 //    }
 //}
 
-namespace Yasuo.Modules.Evade
+namespace Yasuo.Common.Provider
 {
 }

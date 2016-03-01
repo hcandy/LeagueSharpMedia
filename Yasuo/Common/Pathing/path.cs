@@ -18,6 +18,10 @@ namespace Yasuo.Common.Pathing
 
         public Vector3 EndPosition;
 
+        public Geometry.Polygon GeometryPath;
+
+        public Path RealPath;
+
         public List<Vector3> Positions;
 
         public List<Obj_AI_Base> Units; 
@@ -28,8 +32,9 @@ namespace Yasuo.Common.Pathing
             StartPosition = startPosition;
             EndPosition = endPosition;
 
-            FirstUnit = this.ReturnPosition();
+            FirstUnit = this.ReturnFirstPosition();
         }
+
         public Vector3 FirstUnit { get; private set; }
 
         public int DangerValue { get; private set; }
@@ -98,8 +103,8 @@ namespace Yasuo.Common.Pathing
         //TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
-            var StartDistance = this.ReturnPosition().Distance(StartPosition);
-            var EndDistance = this.ReturnLastUnit().Distance(EndPosition);
+            var StartDistance = this.ReturnFirstPosition().Distance(StartPosition);
+            var EndDistance = Positions.LastOrDefault().Distance(EndPosition);
 
             var x = 0f;
 
@@ -126,6 +131,30 @@ namespace Yasuo.Common.Pathing
             PathLenght = WalkLenght + PathLenght;
         }
 
+        public void SetRealPath()
+        {
+            if (StartPosition == null)
+            {
+                return;
+            }
+            RealPath.StartPosition = Variables.Player.ServerPosition;
+            for (int i = 0; i < this.Units.Count; i++)
+            {
+                var oldPosition = Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range);
+                var unit = this.Units[i + 1];
+                if (this.Units[i].Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range)
+                {
+                    
+                    RealPath.AddPosition(oldPosition);
+                }
+                if (i == Units.Count - 1)
+                {
+                    RealPath.RemovePosition(oldPosition);
+                    RealPath.EndPosition = oldPosition;
+                }
+            }
+        }
+
         public void SetAll()
         {
             try
@@ -148,24 +177,53 @@ namespace Yasuo.Common.Pathing
             }
         }
 
-        public Vector3 ReturnPosition()
+        public Vector3 ReturnFirstPosition()
         {
-            return this.Positions.FirstOrDefault(x => x != Variables.Player.ServerPosition);
-        }
-
-        public Vector3 ReturnLastUnit()
-        {
-            return this.Positions.LastOrDefault();
+            if (Positions != null)
+            {
+                return this.Positions.FirstOrDefault(x => x != Variables.Player.ServerPosition);
+            }
+            return Vector3.Zero;
         }
 
         public void RemoveUnit(Obj_AI_Base unit)
         {
-            this.Positions.Remove(unit.ServerPosition);
+            if (Positions.Contains(unit.ServerPosition))
+            {
+                this.Positions.Remove(unit.ServerPosition);
+            }
         }
 
         public void AddUnit(Obj_AI_Base unit)
         {
-            this.Positions.Add(unit.ServerPosition);
+            if (!Positions.Contains(unit.ServerPosition))
+            {
+                this.Positions.Add(unit.ServerPosition);
+            }
+        }
+
+        public void RemovePosition(Vector3 position)
+        {
+            if (!Positions.Contains(position))
+            {
+                return;   
+            }
+            Positions.Remove(position);
+        }
+
+        public void AddPosition(Vector3 position)
+        {
+            if (Positions.Contains(position))
+            {
+                return;
+            }
+            Positions.Add(position);
+        }
+
+        //TODO: Add color, Line width, end and start point boolean
+        public void Draw()
+        {
+            
         }
 
     }

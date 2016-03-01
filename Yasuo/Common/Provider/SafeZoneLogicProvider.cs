@@ -66,3 +66,7 @@
 //        }
 //    }
 //}
+
+namespace Yasuo.Common.Provider
+{
+}

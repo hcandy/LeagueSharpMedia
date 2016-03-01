@@ -14,6 +14,7 @@ namespace Yasuo
 
     using Yasuo.Common;
     using Yasuo.Common.Classes;
+    using Yasuo.Common.Utility;
 
     class Assembly
     {
@@ -35,9 +36,14 @@ namespace Yasuo
             try
             {
                 Menu = new Menu(Name, Name, true);
+                Version = new AssemblyVersion();
+                Version.Check(Variables.GitHubPath);
 
                 var info = new Menu("Info", Name + " Info", false);
-                info.AddItem(new MenuItem("Version", "Version: " + 1337));
+                info.AddItem(
+                    this.Version.Updated
+                        ? new MenuItem("Version", "Version: " + 1337)
+                        : new MenuItem("Version", "Version is outdated"));
                 info.AddItem(new MenuItem("Author", "Author: " + Variables.Author));
                 Menu.AddSubMenu(info);
 
@@ -49,10 +55,11 @@ namespace Yasuo
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                throw;
             }
 
         }
+
+        public AssemblyVersion Version;
 
         public event EventHandler<Base.UnloadEventArgs> OnUnload;
 
@@ -78,7 +85,6 @@ namespace Yasuo
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                throw;
             }
 
         }
