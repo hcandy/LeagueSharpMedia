@@ -25,6 +25,8 @@ namespace Yasuo
 
         public static Obj_AI_Hero Player => ObjectManager.Player;
 
+        public static readonly DateTime AssemblyLoadTime = DateTime.Now;
+
         public static string ChampionName = "Yasuo";
         public static string GitHubPath = "Media/LeagueSharpMedia/master/Yasuo";
         public static string Name => "MediaSuo";

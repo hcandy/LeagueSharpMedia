@@ -22,6 +22,8 @@
             this.OnLoad();
         }
 
+        public FlowLogicProvider Provider;
+
         public override string Name => "Drawings";
 
         protected override void OnEnable()
@@ -47,6 +49,7 @@
 
         protected override void OnInitialize()
         {
+            Provider = new FlowLogicProvider();
             base.OnInitialize();
         }
 
@@ -63,11 +66,17 @@
 
             #endregion
 
+            #region Yasuo Passive Shield (Flow)
+
             //Max Flow Distance
-            if (FlowManager.GetRemainingUnits() > 0)
+            if (Provider.GetRemainingUnits() > 0)
             {
-                Render.Circle.DrawCircle(Variables.Player.Position, FlowManager.GetRemainingUnits(), Color.White);
+                Render.Circle.DrawCircle(Variables.Player.Position, Provider.GetRemainingUnits(), Color.White);
             }
+
+            #endregion
+
+            #region Spells
 
             //if (Variables.Spells[SpellSlot.Q].Level >= 1)
             //{
@@ -90,6 +99,7 @@
                 Render.Circle.DrawCircle(Variables.Player.ServerPosition, spell.Value.Range, Color.White);
             }
 
+            #endregion
         }
     }
 }

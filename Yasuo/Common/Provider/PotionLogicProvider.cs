@@ -8,12 +8,12 @@
     {
         public int PotionValue(int amount)
         {
-            var Value = 150;
+            var value = 150;
             var mod = (int) Variables.Player.FlatHPRegenMod;
             
             // TODO: Add Resolve Masteries
 
-            return (Value * mod) * amount;
+            return (value * mod) * amount;
         }
 
         public float HealthRecovered(int time = int.MaxValue, int amount = 0)

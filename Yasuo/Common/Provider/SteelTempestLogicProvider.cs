@@ -1,12 +1,14 @@
 ﻿namespace Yasuo.Common.Provider
 {
+    using System.Linq;
+
     using LeagueSharp;
     using LeagueSharp.Common;
     using LeagueSharp.SDK.Core.Wrappers.Damages;
 
-    internal class SteelTempestLogicProvider
+    public class SteelTempestLogicProvider
     {
-        internal float GetDamage(Obj_AI_Base unit)
+        public float GetDamage(Obj_AI_Base unit)
         {
             var physicalDmg = 0f;
             var magicDmg = 0f;
@@ -153,6 +155,21 @@
                 magicDmg = (float)Variables.Player.CalculateDamage(unit, DamageType.Magical, magicDmg);
             }
             return Variables.Spells[SpellSlot.Q].GetDamage(unit) + physicalDmg + magicDmg;            
+        }
+
+        public bool HasQ3() => Variables.Player.HasBuff("yasuoq3w");
+
+        public float BuffTime()
+        {
+            if (this.HasQ3())
+            {
+                BuffInstance first = Variables.Player.Buffs.FirstOrDefault(x => x.Name == "yasuoq3w");
+                if (first != null)
+                {
+                    return first.EndTime - Game.Time;
+                }
+            }
+            return float.MaxValue;
         }
     }
 }

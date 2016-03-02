@@ -31,15 +31,15 @@ namespace Yasuo
         /// <summary>
         /// Initializes a new instance of the <see cref="Assembly"/> class.
         /// </summary>
-        public Assembly(string Name = null)
+        public Assembly(string name = null)
         {
             try
             {
-                Menu = new Menu(Name, Name, true);
+                Menu = new Menu(name, name, true);
                 Version = new AssemblyVersion();
                 Version.Check(Variables.GitHubPath);
 
-                var info = new Menu("Info", Name + " Info", false);
+                var info = new Menu("Info", name + " Info", false);
                 info.AddItem(
                     this.Version.Updated
                         ? new MenuItem("Version", "Version: " + 1337)

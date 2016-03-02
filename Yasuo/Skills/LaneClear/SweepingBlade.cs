@@ -91,12 +91,19 @@
 
         public void OnUpdate(EventArgs args)
         {
-            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear)
+            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear
+                || !Variables.Spells[SpellSlot.E].IsReady())
             {
                 return;
             }
 
             Obj_AI_Base minion = null;
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(
+                Variables.Player.ServerPosition,
+                Variables.Spells[SpellSlot.E].Range,
+                MinionTypes.All,
+                MinionTeam.Enemy,
+                MinionOrderTypes.None);
 
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {
@@ -116,13 +123,46 @@
             }
 
             // if EQ will hit more than X units
-            if (
+            if (Menu.Item(this.Name + "EQ").GetValue<bool>() && 
                 Variables.Player.ServerPosition.Extend(minion.ServerPosition, Variables.Spells[SpellSlot.E].Range)
-                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range)
-                > Menu.Item(Name + "MinHitAOE").GetValue<int>())
+                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range) > Menu.Item(Name + "MinHitAOE").GetValue<int>())
             {
                 Execute(minion);
             }
+
+            // Smart Last Hit
+            if (Menu.Item(this.Name + "LastHit").GetValue<bool>())
+            {
+                if (minions == null)
+                {
+                    return;
+                }
+
+                var enemies = HeroManager.Enemies.Where(x => x.Health > 0).ToList();
+                List<Obj_AI_Base> possibleExecutions = new List<Obj_AI_Base>();
+
+                foreach (var x in minions)
+                {
+                    foreach (var y in enemies.Where(z => z.HealthPercent > 10))
+                    {
+                        var newPos = Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range);
+                        if (newPos.Distance(y.ServerPosition) < y.AttackRange)
+                        {
+                            possibleExecutions.Add(x);
+                        }
+                    }
+                        
+                }
+
+                if (possibleExecutions.Count < 0)
+                {
+                    return;
+                }
+
+                Execute(possibleExecutions.MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
+            }
+
+
         }
 
         public void OnDraw(EventArgs args)

@@ -95,7 +95,7 @@ namespace Yasuo.Skills.Combo
             var target = TargetSelector.GetTarget(
                 Variables.Spells[SpellSlot.Q].Range,
                 TargetSelector.DamageType.Physical);
-            var pred = PredictionOKTW.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
+            var pred = PredictionOktw.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
 
             if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo 
                 || target == null || !target.IsValidTarget())
@@ -129,13 +129,13 @@ namespace Yasuo.Skills.Combo
             #endregion
         }
 
-        private static void CastSteelTempest(Obj_AI_Base target, bool HasQ3 = false, bool AOE = false)
+        private static void CastSteelTempest(Obj_AI_Base target, bool hasQ3 = false, bool aoe = false)
         {
-            var pred = PredictionOKTW.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
+            var pred = PredictionOktw.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
 
-            if (HasQ3)
+            if (hasQ3)
             {
-                if (AOE)
+                if (aoe)
                 {
                     Variables.Spells[SpellSlot.Q].CastOnBestTarget(aoe: true);
                 }

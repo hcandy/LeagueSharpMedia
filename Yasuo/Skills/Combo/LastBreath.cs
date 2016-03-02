@@ -126,18 +126,18 @@
             {
                 if (Menu.Item(Name + "OverkillCheck").GetValue<bool>())
                 {
-                    var HealthAll = Provider.GetEnemiesAround(target).Sum(x => x.Health);
-                    var DamageAll = 0f;
+                    var healthAll = Provider.GetEnemiesAround(target).Sum(x => x.Health);
+                    var damageAll = 0f;
 
                     foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R))
                     {
                         foreach (var enemy in Provider.GetEnemiesAround(target))
                         {
-                            DamageAll += spell.Value.GetDamage(enemy);
+                            damageAll += spell.Value.GetDamage(enemy);
                         }
                     }
 
-                    if (HealthAll > DamageAll)
+                    if (healthAll > damageAll)
                     {
                         CastLastBreath(target);
                     }

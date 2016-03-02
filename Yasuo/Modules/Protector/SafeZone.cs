@@ -23,7 +23,7 @@ namespace Yasuo.Modules.Protector
 
         public float AdditionalWidth;
 
-        private Geometry.Polygon Polygon;
+        private Geometry.Polygon polygon;
 
         public List<Obj_AI_Base> AlliesInside;
 
@@ -65,14 +65,14 @@ namespace Yasuo.Modules.Protector
             safeZone.Add(rightOuterBound);
             safeZone.Add(new Geometry.Polygon.Arc(leftOuterBound, this.Start, 250 * (float)Math.PI / 180, this.Range));
 
-            Polygon = safeZone;
+            this.polygon = safeZone;
         }
 
         private void CheckAllies()
         {
             foreach (var ally in HeroManager.Allies)
             {
-                if (Polygon.IsInside(ally.ServerPosition.To2D()))
+                if (this.polygon.IsInside(ally.ServerPosition.To2D()))
                 {
                     AlliesInside.Add(ally);   
                 }
@@ -81,7 +81,7 @@ namespace Yasuo.Modules.Protector
 
         public void Draw()
         {
-            Polygon.Draw(Color.Aqua, 2);
+            this.polygon.Draw(Color.Aqua, 2);
         }
     }
 }

@@ -74,9 +74,9 @@
             //Instant Ult in 1 v 1 because armor pen and less time for enemies to get spells up
             if (target.CountEnemiesInRange(900) == 0)
             {
-                var GapClosePath = new SweepingBladeLogicProvider(target.Distance(Variables.Player)).GetPath(target.ServerPosition);
+                var gapClosePath = new SweepingBladeLogicProvider(target.Distance(Variables.Player)).GetPath(target.ServerPosition);
 
-                if (GapClosePath.PathTime >= target.RemainingAirboneTime())
+                if (gapClosePath.PathTime >= target.RemainingAirboneTime())
                 {
                     return true;
                 }

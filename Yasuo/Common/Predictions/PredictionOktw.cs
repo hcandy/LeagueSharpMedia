@@ -68,8 +68,8 @@ namespace Yasuo.Common.Predictions
 
     public class PredictionInput
     {
-        private Vector3 _from;
-        private Vector3 _rangeCheckFrom;
+        private Vector3 @from;
+        private Vector3 rangeCheckFrom;
 
         /// <summary>
         ///     Set to true make the prediction hit as many enemy heroes as posible.
@@ -134,8 +134,8 @@ namespace Yasuo.Common.Predictions
         /// </summary>
         public Vector3 From
         {
-            get { return this._from.To2D().IsValid() ? this._from : ObjectManager.Player.ServerPosition; }
-            set { this._from = value; }
+            get { return this.@from.To2D().IsValid() ? this.@from : ObjectManager.Player.ServerPosition; }
+            set { this.@from = value; }
         }
 
         /// <summary>
@@ -145,11 +145,11 @@ namespace Yasuo.Common.Predictions
         {
             get
             {
-                return this._rangeCheckFrom.To2D().IsValid()
-                    ? this._rangeCheckFrom
+                return this.rangeCheckFrom.To2D().IsValid()
+                    ? this.rangeCheckFrom
                     : (this.From.To2D().IsValid() ? this.From : ObjectManager.Player.ServerPosition);
             }
-            set { this._rangeCheckFrom = value; }
+            set { this.rangeCheckFrom = value; }
         }
 
         internal float RealRadius
@@ -161,8 +161,8 @@ namespace Yasuo.Common.Predictions
     public class PredictionOutput
     {
         internal int _aoeTargetsHitCount;
-        private Vector3 _castPosition;
-        private Vector3 _unitPosition;
+        private Vector3 castPosition;
+        private Vector3 unitPosition;
 
         /// <summary>
         ///     The list of the targets that the spell will hit (only if aoe was enabled).
@@ -188,11 +188,11 @@ namespace Yasuo.Common.Predictions
         {
             get
             {
-                return this._castPosition.IsValid() && this._castPosition.To2D().IsValid()
-                    ? this._castPosition.SetZ()
+                return this.castPosition.IsValid() && this.castPosition.To2D().IsValid()
+                    ? this.castPosition.SetZ()
                     : this.Input.Unit.ServerPosition;
             }
-            set { this._castPosition = value; }
+            set { this.castPosition = value; }
         }
 
         /// <summary>
@@ -208,15 +208,15 @@ namespace Yasuo.Common.Predictions
         /// </summary>
         public Vector3 UnitPosition
         {
-            get { return this._unitPosition.To2D().IsValid() ? this._unitPosition.SetZ() : this.Input.Unit.ServerPosition; }
-            set { this._unitPosition = value; }
+            get { return this.unitPosition.To2D().IsValid() ? this.unitPosition.SetZ() : this.Input.Unit.ServerPosition; }
+            set { this.unitPosition = value; }
         }
     }
 
     /// <summary>
     ///     Class used for calculating the position of the given unit after a delay.
     /// </summary>
-    public static class PredictionOKTW
+    public static class PredictionOktw
     {
         public static PredictionOutput GetPrediction(Obj_AI_Base unit, float delay)
         {
@@ -634,19 +634,19 @@ namespace Yasuo.Common.Predictions
 
         internal static double GetAngle(Vector3 from, Obj_AI_Base target)
         {
-            var C = target.ServerPosition.To2D();
-            var A = target.GetWaypoints().Last();
+            var c = target.ServerPosition.To2D();
+            var a = target.GetWaypoints().Last();
 
-            if (C == A)
+            if (c == a)
                 return 60;
 
-            var B = from.To2D();
+            var b = from.To2D();
 
-            var AB = Math.Pow((double)A.X - (double)B.X, 2) + Math.Pow((double)A.Y - (double)B.Y, 2);
-            var BC = Math.Pow((double)B.X - (double)C.X, 2) + Math.Pow((double)B.Y - (double)C.Y, 2);
-            var AC = Math.Pow((double)A.X - (double)C.X, 2) + Math.Pow((double)A.Y - (double)C.Y, 2);
+            var ab = Math.Pow((double)a.X - (double)b.X, 2) + Math.Pow((double)a.Y - (double)b.Y, 2);
+            var bc = Math.Pow((double)b.X - (double)c.X, 2) + Math.Pow((double)b.Y - (double)c.Y, 2);
+            var ac = Math.Pow((double)a.X - (double)c.X, 2) + Math.Pow((double)a.Y - (double)c.Y, 2);
 
-            return Math.Cos((AB + BC - AC) / (2 * Math.Sqrt(AB) * Math.Sqrt(BC))) * 180 / Math.PI;
+            return Math.Cos((ab + bc - ac) / (2 * Math.Sqrt(ab) * Math.Sqrt(bc))) * 180 / Math.PI;
         }
 
         internal static double UnitIsImmobileUntil(Obj_AI_Base unit)
@@ -811,7 +811,7 @@ namespace Yasuo.Common.Predictions
                         h.IsValidTarget((input.Range + 200 + input.RealRadius), true, input.RangeCheckFrom)))
             {
                 input.Unit = enemy;
-                var prediction = PredictionOKTW.GetPrediction(input, false, false);
+                var prediction = PredictionOktw.GetPrediction(input, false, false);
                 if (prediction.Hitchance >= HitChance.High)
                 {
                     result.Add(new PossibleTarget { Position = prediction.UnitPosition.To2D(), Unit = enemy });
@@ -824,7 +824,7 @@ namespace Yasuo.Common.Predictions
         {
             public static PredictionOutput GetPrediction(PredictionInput input)
             {
-                var mainTargetPrediction = PredictionOKTW.GetPrediction(input, false, true);
+                var mainTargetPrediction = PredictionOktw.GetPrediction(input, false, true);
                 var posibleTargets = new List<PossibleTarget>
                 {
                     new PossibleTarget { Position = mainTargetPrediction.UnitPosition.To2D(), Unit = input.Unit }
@@ -888,7 +888,7 @@ namespace Yasuo.Common.Predictions
 
             public static PredictionOutput GetPrediction(PredictionInput input)
             {
-                var mainTargetPrediction = PredictionOKTW.GetPrediction(input, false, true);
+                var mainTargetPrediction = PredictionOktw.GetPrediction(input, false, true);
                 var posibleTargets = new List<PossibleTarget>
                 {
                     new PossibleTarget { Position = mainTargetPrediction.UnitPosition.To2D(), Unit = input.Unit }
@@ -985,7 +985,7 @@ namespace Yasuo.Common.Predictions
 
             public static PredictionOutput GetPrediction(PredictionInput input)
             {
-                var mainTargetPrediction = PredictionOKTW.GetPrediction(input, false, true);
+                var mainTargetPrediction = PredictionOktw.GetPrediction(input, false, true);
                 var posibleTargets = new List<PossibleTarget>
                 {
                     new PossibleTarget { Position = mainTargetPrediction.UnitPosition.To2D(), Unit = input.Unit }
@@ -1143,7 +1143,7 @@ namespace Yasuo.Common.Predictions
                                     var bonusRadius = 20;
                                     if (minion.IsMoving)
                                     {
-                                        minionPos = PredictionOKTW.GetPrediction(input, false, false).CastPosition;
+                                        minionPos = PredictionOktw.GetPrediction(input, false, false).CastPosition;
                                         bonusRadius = 60 + (int)input.Radius;
                                     }
 
@@ -1166,7 +1166,7 @@ namespace Yasuo.Common.Predictions
                                 )
                             {
                                 input.Unit = hero;
-                                var prediction = PredictionOKTW.GetPrediction(input, false, false);
+                                var prediction = PredictionOktw.GetPrediction(input, false, false);
                                 if (
                                     prediction.UnitPosition.To2D()
                                         .Distance(input.From.To2D(), position.To2D(), true, true) <=
@@ -1201,10 +1201,10 @@ namespace Yasuo.Common.Predictions
         public float Time { get; set; }
     }
 
-    internal class SpellsOKTW
+    internal class SpellsOktw
     {
-        public string name { get; set; }
-        public double duration { get; set; }
+        public string Name { get; set; }
+        public double Duration { get; set; }
     }
 
     internal class UnitTrackerInfo
@@ -1221,40 +1221,40 @@ namespace Yasuo.Common.Predictions
     internal static class UnitTracker
     {
         public static List<UnitTrackerInfo> UnitTrackerInfoList = new List<UnitTrackerInfo>();
-        private static List<Obj_AI_Hero> Champion = new List<Obj_AI_Hero>();
-        private static List<SpellsOKTW> spells = new List<SpellsOKTW>();
-        private static List<PathInfo> PathBank = new List<PathInfo>();
+        private static List<Obj_AI_Hero> champion = new List<Obj_AI_Hero>();
+        private static List<SpellsOktw> spells = new List<SpellsOktw>();
+        private static List<PathInfo> pathBank = new List<PathInfo>();
         static UnitTracker()
         {
-            spells.Add(new SpellsOKTW() { name = "katarinar", duration = 1 }); //Katarinas R
-            spells.Add(new SpellsOKTW() { name = "drain", duration = 1 }); //Fiddle W
-            spells.Add(new SpellsOKTW() { name = "crowstorm", duration = 1 }); //Fiddle R
-            spells.Add(new SpellsOKTW() { name = "consume", duration = 0.5 }); //Nunu Q
-            spells.Add(new SpellsOKTW() { name = "absolutezero", duration = 1 }); //Nunu R
-            spells.Add(new SpellsOKTW() { name = "staticfield", duration = 0.5 }); //Blitzcrank R
-            spells.Add(new SpellsOKTW() { name = "cassiopeiapetrifyinggaze", duration = 0.5 }); //Cassio's R
-            spells.Add(new SpellsOKTW() { name = "ezrealtrueshotbarrage", duration = 1 }); //Ezreal's R
-            spells.Add(new SpellsOKTW() { name = "galioidolofdurand", duration = 1 }); //Ezreal's R                                                                   
-            spells.Add(new SpellsOKTW() { name = "luxmalicecannon", duration = 1 }); //Lux R
-            spells.Add(new SpellsOKTW() { name = "reapthewhirlwind", duration = 1 }); //Jannas R
-            spells.Add(new SpellsOKTW() { name = "jinxw", duration = 0.6 }); //jinxW
-            spells.Add(new SpellsOKTW() { name = "jinxr", duration = 0.6 }); //jinxR
-            spells.Add(new SpellsOKTW() { name = "missfortunebullettime", duration = 1 }); //MissFortuneR
-            spells.Add(new SpellsOKTW() { name = "shenstandunited", duration = 1 }); //ShenR
-            spells.Add(new SpellsOKTW() { name = "threshe", duration = 0.4 }); //ThreshE
-            spells.Add(new SpellsOKTW() { name = "threshrpenta", duration = 0.75 }); //ThreshR
-            spells.Add(new SpellsOKTW() { name = "threshq", duration = 0.75 }); //ThreshQ
-            spells.Add(new SpellsOKTW() { name = "infiniteduress", duration = 1 }); //Warwick R
-            spells.Add(new SpellsOKTW() { name = "meditate", duration = 1 }); //yi W
-            spells.Add(new SpellsOKTW() { name = "alzaharnethergrasp", duration = 1 }); //Malza R
-            spells.Add(new SpellsOKTW() { name = "lucianq", duration = 0.5 }); //Lucian Q
-            spells.Add(new SpellsOKTW() { name = "caitlynpiltoverpeacemaker", duration = 0.5 }); //Caitlyn Q
-            spells.Add(new SpellsOKTW() { name = "velkozr", duration = 0.5 }); //Velkoz R 
-            spells.Add(new SpellsOKTW() { name = "jhinr", duration = 2 }); //Velkoz R 
+            spells.Add(new SpellsOktw() { Name = "katarinar", Duration = 1 }); //Katarinas R
+            spells.Add(new SpellsOktw() { Name = "drain", Duration = 1 }); //Fiddle W
+            spells.Add(new SpellsOktw() { Name = "crowstorm", Duration = 1 }); //Fiddle R
+            spells.Add(new SpellsOktw() { Name = "consume", Duration = 0.5 }); //Nunu Q
+            spells.Add(new SpellsOktw() { Name = "absolutezero", Duration = 1 }); //Nunu R
+            spells.Add(new SpellsOktw() { Name = "staticfield", Duration = 0.5 }); //Blitzcrank R
+            spells.Add(new SpellsOktw() { Name = "cassiopeiapetrifyinggaze", Duration = 0.5 }); //Cassio's R
+            spells.Add(new SpellsOktw() { Name = "ezrealtrueshotbarrage", Duration = 1 }); //Ezreal's R
+            spells.Add(new SpellsOktw() { Name = "galioidolofdurand", Duration = 1 }); //Ezreal's R                                                                   
+            spells.Add(new SpellsOktw() { Name = "luxmalicecannon", Duration = 1 }); //Lux R
+            spells.Add(new SpellsOktw() { Name = "reapthewhirlwind", Duration = 1 }); //Jannas R
+            spells.Add(new SpellsOktw() { Name = "jinxw", Duration = 0.6 }); //jinxW
+            spells.Add(new SpellsOktw() { Name = "jinxr", Duration = 0.6 }); //jinxR
+            spells.Add(new SpellsOktw() { Name = "missfortunebullettime", Duration = 1 }); //MissFortuneR
+            spells.Add(new SpellsOktw() { Name = "shenstandunited", Duration = 1 }); //ShenR
+            spells.Add(new SpellsOktw() { Name = "threshe", Duration = 0.4 }); //ThreshE
+            spells.Add(new SpellsOktw() { Name = "threshrpenta", Duration = 0.75 }); //ThreshR
+            spells.Add(new SpellsOktw() { Name = "threshq", Duration = 0.75 }); //ThreshQ
+            spells.Add(new SpellsOktw() { Name = "infiniteduress", Duration = 1 }); //Warwick R
+            spells.Add(new SpellsOktw() { Name = "meditate", Duration = 1 }); //yi W
+            spells.Add(new SpellsOktw() { Name = "alzaharnethergrasp", Duration = 1 }); //Malza R
+            spells.Add(new SpellsOktw() { Name = "lucianq", Duration = 0.5 }); //Lucian Q
+            spells.Add(new SpellsOktw() { Name = "caitlynpiltoverpeacemaker", Duration = 0.5 }); //Caitlyn Q
+            spells.Add(new SpellsOktw() { Name = "velkozr", Duration = 0.5 }); //Velkoz R 
+            spells.Add(new SpellsOktw() { Name = "jhinr", Duration = 2 }); //Velkoz R 
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
             {
-                Champion.Add(hero);
+                champion.Add(hero);
                 UnitTrackerInfoList.Add(new UnitTrackerInfo() { NetworkId = hero.NetworkId, AaTick = Utils.TickCount, StopMoveTick = Utils.TickCount, NewPathTick = Utils.TickCount, SpecialSpellFinishTick = Utils.TickCount, LastInvisableTick = Utils.TickCount });
             }
 
@@ -1295,24 +1295,24 @@ namespace Yasuo.Common.Predictions
                 UnitTrackerInfoList.Find(x => x.NetworkId == sender.NetworkId).AaTick = Utils.TickCount;
             else
             {
-                var foundSpell = spells.Find(x => args.SData.Name.ToLower() == x.name.ToLower());
+                var foundSpell = spells.Find(x => args.SData.Name.ToLower() == x.Name.ToLower());
                 if (foundSpell != null)
                 {
-                    UnitTrackerInfoList.Find(x => x.NetworkId == sender.NetworkId).SpecialSpellFinishTick = Utils.TickCount + (int)(foundSpell.duration * 1000);
+                    UnitTrackerInfoList.Find(x => x.NetworkId == sender.NetworkId).SpecialSpellFinishTick = Utils.TickCount + (int)(foundSpell.Duration * 1000);
                 }
             }
         }
 
         public static bool SpamSamePlace(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
-            if (TrackerUnit.PathBank.Count < 3)
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            if (trackerUnit.PathBank.Count < 3)
                 return false;
 
-            if (TrackerUnit.PathBank[2].Time - TrackerUnit.PathBank[0].Time < 0.4f 
-                && TrackerUnit.PathBank[2].Time + 0.15f < Game.Time  
-                && TrackerUnit.PathBank[0].Position.Distance(TrackerUnit.PathBank[1].Position) < 100
-                && TrackerUnit.PathBank[1].Position.Distance(TrackerUnit.PathBank[2].Position) < 100)
+            if (trackerUnit.PathBank[2].Time - trackerUnit.PathBank[0].Time < 0.4f 
+                && trackerUnit.PathBank[2].Time + 0.15f < Game.Time  
+                && trackerUnit.PathBank[0].Position.Distance(trackerUnit.PathBank[1].Position) < 100
+                && trackerUnit.PathBank[1].Position.Distance(trackerUnit.PathBank[2].Position) < 100)
             {
                 return true;
             }
@@ -1322,14 +1322,14 @@ namespace Yasuo.Common.Predictions
 
         public static bool PathCalc(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
-            if (TrackerUnit.PathBank.Count < 3)
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            if (trackerUnit.PathBank.Count < 3)
                 return false;
 
-            if (TrackerUnit.PathBank[2].Time - TrackerUnit.PathBank[0].Time < 0.3f && Game.Time - TrackerUnit.PathBank[2].Time < 0.15 && Game.Time - TrackerUnit.PathBank[2].Time > 0.08)
+            if (trackerUnit.PathBank[2].Time - trackerUnit.PathBank[0].Time < 0.3f && Game.Time - trackerUnit.PathBank[2].Time < 0.15 && Game.Time - trackerUnit.PathBank[2].Time > 0.08)
             {
-                var dis = unit.Distance(TrackerUnit.PathBank[2].Position);
-                if (TrackerUnit.PathBank[1].Position.Distance(TrackerUnit.PathBank[2].Position) > dis && TrackerUnit.PathBank[0].Position.Distance(TrackerUnit.PathBank[1].Position) > dis)
+                var dis = unit.Distance(trackerUnit.PathBank[2].Position);
+                if (trackerUnit.PathBank[1].Position.Distance(trackerUnit.PathBank[2].Position) > dis && trackerUnit.PathBank[0].Position.Distance(trackerUnit.PathBank[1].Position) > dis)
                     return true;
                 else
                     return false;
@@ -1340,10 +1340,10 @@ namespace Yasuo.Common.Predictions
 
         public static List<Vector2> GetPathWayCalc(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
             Vector2 sr;
-            sr.X = (TrackerUnit.PathBank[0].Position.X + TrackerUnit.PathBank[1].Position.X + TrackerUnit.PathBank[2].Position.X) / 3;
-            sr.Y = (TrackerUnit.PathBank[0].Position.Y + TrackerUnit.PathBank[1].Position.Y + TrackerUnit.PathBank[2].Position.Y) / 3;
+            sr.X = (trackerUnit.PathBank[0].Position.X + trackerUnit.PathBank[1].Position.X + trackerUnit.PathBank[2].Position.X) / 3;
+            sr.Y = (trackerUnit.PathBank[0].Position.Y + trackerUnit.PathBank[1].Position.Y + trackerUnit.PathBank[2].Position.Y) / 3;
             var points = new List<Vector2>();
             points.Add(sr);
             return points;
@@ -1351,34 +1351,34 @@ namespace Yasuo.Common.Predictions
 
         public static double GetSpecialSpellEndTime(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
-            return (TrackerUnit.SpecialSpellFinishTick - Utils.TickCount) / 1000d;
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            return (trackerUnit.SpecialSpellFinishTick - Utils.TickCount) / 1000d;
         }
 
         public static double GetLastAutoAttackTime(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
-            return (Utils.TickCount - TrackerUnit.AaTick) / 1000d;
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            return (Utils.TickCount - trackerUnit.AaTick) / 1000d;
         }
 
         public static double GetLastNewPathTime(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
-            return (Utils.TickCount - TrackerUnit.NewPathTick) / 1000d;
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            return (Utils.TickCount - trackerUnit.NewPathTick) / 1000d;
         }
 
         public static double GetLastVisableTime(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
 
-            return (Utils.TickCount - TrackerUnit.LastInvisableTick) / 1000d;
+            return (Utils.TickCount - trackerUnit.LastInvisableTick) / 1000d;
         }
 
         public static double GetLastStopMoveTime(Obj_AI_Base unit)
         {
-            var TrackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
+            var trackerUnit = UnitTrackerInfoList.Find(x => x.NetworkId == unit.NetworkId);
 
-            return (Utils.TickCount - TrackerUnit.StopMoveTick) / 1000d;
+            return (Utils.TickCount - trackerUnit.StopMoveTick) / 1000d;
         }
     }
 

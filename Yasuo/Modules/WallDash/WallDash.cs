@@ -93,7 +93,7 @@ namespace Yasuo.Modules.WallDash
         {
             
 
-            var MouseCheck = this.Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
+            var mouseCheck = this.Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
 
             var units = this.Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
 
@@ -102,7 +102,7 @@ namespace Yasuo.Modules.WallDash
                 Variables.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 foreach (var unit in units.Where(unit => WallDashLogicProvider.IsWallDash(unit, Variables.Spells[SpellSlot.E].Range)))
                 {
-                    if (!MouseCheck)
+                    if (!mouseCheck)
                     {
                         Execute(unit);
                     }

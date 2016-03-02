@@ -78,7 +78,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
-    <Compile Include="Clear.cs" />
     <Compile Include="Common\Algorithm\Djikstra\Connection.cs" />
     <Compile Include="Common\Algorithm\Djikstra\Djikstra.cs" />
     <Compile Include="Common\Algorithm\Djikstra\Point.cs" />
@@ -92,10 +91,10 @@
     <Compile Include="Common\Enums\SkillMode.cs" />
     <Compile Include="Common\Extensions\Extensions.cs" />
     <Compile Include="Common\Extensions\AddToolTip.cs" />
-    <Compile Include="Common\Pathing\path.cs" />
+    <Compile Include="Common\Pathing\Path.cs" />
     <Compile Include="Common\Predictions\PredictionOktw.cs" />
     <Compile Include="Common\Provider\FlashLogicProvider.cs" />
-    <Compile Include="Common\Provider\FlowManager.cs" />
+    <Compile Include="Common\Provider\FlowLogicProvider.cs" />
     <Compile Include="Common\Provider\LastBreathLogicProvider.cs" />
     <Compile Include="Common\Provider\PotionLogicProvider.cs" />
     <Compile Include="Common\Provider\SafeZoneLogicProvider.cs" />
@@ -157,6 +156,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

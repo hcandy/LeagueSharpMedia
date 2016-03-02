@@ -100,11 +100,11 @@ namespace Yasuo.Common.Pathing
             }
         }
 
-        //TODO: Get lengts inbetween units
+        // TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
-            var StartDistance = this.ReturnFirstPosition().Distance(StartPosition);
-            var EndDistance = Positions.LastOrDefault().Distance(EndPosition);
+            var startDistance = this.ReturnFirstPosition().Distance(StartPosition);
+            var endDistance = Positions.LastOrDefault().Distance(EndPosition);
 
             var x = 0f;
 
@@ -115,9 +115,9 @@ namespace Yasuo.Common.Pathing
 
             var inbetweenDistance = (float) x - DashLenght;
 
-            if (StartDistance <= Variables.Spells[SpellSlot.E].Range)
+            if (startDistance <= Variables.Spells[SpellSlot.E].Range)
             {
-                WalkLenght = StartDistance + EndDistance;
+                WalkLenght = startDistance + endDistance;
 
                 if (inbetweenDistance > 0)
                 {
@@ -131,6 +131,7 @@ namespace Yasuo.Common.Pathing
             PathLenght = WalkLenght + PathLenght;
         }
 
+        // TODO: No clue if that works
         public void SetRealPath()
         {
             if (StartPosition == null)
@@ -138,19 +139,26 @@ namespace Yasuo.Common.Pathing
                 return;
             }
             RealPath.StartPosition = Variables.Player.ServerPosition;
+            var oldPosition = Variables.Player.ServerPosition;
+
             for (int i = 0; i < this.Units.Count; i++)
             {
-                var oldPosition = Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range);
+                // new unit
                 var unit = this.Units[i + 1];
-                if (this.Units[i].Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range)
+                var newPosition = oldPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range);
+
+                // new end position
+                if (oldPosition.Distance(unit.ServerPosition) < Variables.Spells[SpellSlot.E].Range)
                 {
-                    
-                    RealPath.AddPosition(oldPosition);
+                    oldPosition = newPosition;
+                    RealPath.AddPosition(newPosition);
                 }
+
+                // last unit reached
                 if (i == Units.Count - 1)
                 {
-                    RealPath.RemovePosition(oldPosition);
-                    RealPath.EndPosition = oldPosition;
+                    RealPath.RemovePosition(newPosition);
+                    RealPath.EndPosition = newPosition;
                 }
             }
         }

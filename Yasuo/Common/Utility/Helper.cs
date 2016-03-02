@@ -25,19 +25,24 @@
 
         public static string GetCurrentMethod() => MethodBase.GetCurrentMethod().Name;
 
+        internal static float GetTick()
+        {
+            return (int)DateTime.Now.Subtract(Variables.AssemblyLoadTime).TotalMilliseconds;
+        }
+
         #endregion
 
         #region vectors
 
-        public static float GetPathLenght(Vector3[] Path)
+        public static float GetPathLenght(Vector3[] path)
         {
             float result = 0f;
 
-            for (int i = 0; i < Path.Count(); i++)
+            for (int i = 0; i < path.Count(); i++)
             {
-                if (i + 1 != Path.Count())
+                if (i + 1 != path.Count())
                 {
-                    result += Path[i].Distance(Path[i + 1]);
+                    result += path[i].Distance(path[i + 1]);
                 }
             }
             return result;
@@ -162,13 +167,13 @@
         /// <summary>
         ///     Returns Spell Range by Spell Name
         /// </summary>
-        /// <param name="SpellName"></param>
+        /// <param name="spellName"></param>
         /// <returns>float</returns>
-        internal static float GetSpellRange(string SpellName)
+        internal static float GetSpellRange(string spellName)
         {
-            if (SpellName != null)
+            if (spellName != null)
             {
-                return SDK.SpellDatabase.GetByName(SpellName).Range;
+                return SDK.SpellDatabase.GetByName(spellName).Range;
             }
             return 0;
         }
@@ -176,13 +181,13 @@
         /// <summary>
         ///     Returns Spell Range by Missile Name
         /// </summary>
-        /// <param name="MissileName"></param>
+        /// <param name="missileName"></param>
         /// <returns>float</returns>
-        internal static float GetSpellRange2(string MissileName)
+        internal static float GetSpellRange2(string missileName)
         {
-            if (MissileName != null)
+            if (missileName != null)
             {
-                return SDK.SpellDatabase.GetByMissileName(MissileName).Range;
+                return SDK.SpellDatabase.GetByMissileName(missileName).Range;
             }
             return 0;
         }
@@ -190,33 +195,33 @@
         /// <summary>
         ///     Returns Spell Width based on Spell Name
         /// </summary>
-        /// <param name="SpellName"></param>
+        /// <param name="spellName"></param>
         /// <returns>float</returns>
-        internal static float GetSpellWidth(string SpellName)
+        internal static float GetSpellWidth(string spellName)
         {
-            if (SpellName == "YasuoWMovingWall")
+            if (spellName == "YasuoWMovingWall")
             {
                 return (250 + (50 * Variables.Spells[SpellSlot.W].Level));
             }
-            if (SpellName == "YasuoQ")
+            if (spellName == "YasuoQ")
             {
                 return 20;
             }
-            if (SpellName == "YasuoQ2")
+            if (spellName == "YasuoQ2")
             {
                 return 90;
             }
-            return SpellName != null ? SDK.SpellDatabase.GetByName(SpellName).Width : 0;
+            return spellName != null ? SDK.SpellDatabase.GetByName(spellName).Width : 0;
         }
 
         /// <summary>
         ///     Returns Missile Speed based on Spell Name
         /// </summary>
-        /// <param name="SpellName"></param>
+        /// <param name="spellName"></param>
         /// <returns>float</returns>
-        internal static float GetMissileSpeed(string SpellName)
+        internal static float GetMissileSpeed(string spellName)
         {
-            switch (SpellName)
+            switch (spellName)
             {
                 case "YasuoDash":
                     return 1000 + (ObjectManager.Player.MoveSpeed - 345);
@@ -225,20 +230,20 @@
                 case "YasuoQ2":
                     return 1400;
                 default:
-                    return SDK.SpellDatabase.GetByName(SpellName).MissileSpeed;
+                    return SDK.SpellDatabase.GetByName(spellName).MissileSpeed;
             }
         }
 
         /// <summary>
         ///     Returns the Spell Delay based on Spell Name
         /// </summary>
-        /// <param name="SpellName"></param>
+        /// <param name="spellName"></param>
         /// <returns>float</returns>
-        internal static float GetSpellDelay(string SpellName)
+        internal static float GetSpellDelay(string spellName)
         {
-            if (SpellName != null)
+            if (spellName != null)
             {
-                return SDK.SpellDatabase.GetByName(SpellName).Delay;
+                return SDK.SpellDatabase.GetByName(spellName).Delay;
             }
             return 0;
         }

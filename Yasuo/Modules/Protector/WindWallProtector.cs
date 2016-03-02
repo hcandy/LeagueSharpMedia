@@ -29,7 +29,7 @@
 
         public override string Name => "Wind Wall";
 
-        private List<GameObject> DetectedObjects; 
+        private List<GameObject> detectedObjects; 
 
         public SweepingBladeLogicProvider Provider;
 
@@ -130,11 +130,11 @@
 
                     if (skillshot.IsAboutToHit(ally, time))
                     {
-                        var GapClosePath = this.Provider.GetPath(ally.ServerPosition);
+                        var gapClosePath = this.Provider.GetPath(ally.ServerPosition);
 
                         Game.PrintChat("Someone is about to get hit by a skillshot in: " + time);
 
-                        if (GapClosePath != null && GapClosePath.PathTime < time)
+                        if (gapClosePath != null && gapClosePath.PathTime < time)
                         {
                             Game.PrintChat("Can gapclose in time to protect ally");
                         }
@@ -162,11 +162,11 @@
             }
         }
 
-        public void Execute(Vector2 CastPosition)
+        public void Execute(Vector2 castPosition)
         {
             if (Variables.Spells[SpellSlot.W].IsReady())
             {
-                Variables.Spells[SpellSlot.W].Cast(CastPosition);
+                Variables.Spells[SpellSlot.W].Cast(castPosition);
             }
         }
     }

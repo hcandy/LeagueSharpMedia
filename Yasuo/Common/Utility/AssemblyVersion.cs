@@ -73,7 +73,7 @@ namespace Yasuo.Common.Utility
             {
                 Console.WriteLine(ex);
             }
-            return 0;
+            return new Version();
         }
     }
 }
