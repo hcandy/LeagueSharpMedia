@@ -83,11 +83,9 @@ namespace Yasuo.Skills.Combo
                 new MenuItem(this.Name + "ModeTarget", "Dash to: ").SetValue(new StringList(new[] { "Mouse", "Enemy" }))
                     .SetTooltip("The assembly will try to E on a minion in order to Q"));
 
-            new MenuItem(this.Name + "ModeAlgo", "Algorithmus: ").SetValue(
-                new StringList(new[] { "Media (Pre-Calc Path)", "Valvrave/Brian Sharp", "YasuoPro" }))
-                .SetTooltip(
-                    "Setting the Algorithmus to Media will make " + Variables.Name
-                    + " calculate a path around Skillshots or Dangerous Zones.");
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "PathAroundSkillShots", "[Disabled] Try to Path around Skillshots").SetValue(true)
+                    .SetTooltip("if this is enabled, the assembly will path around a skillshot if a path is given"));
 
             // EQ
 
@@ -133,10 +131,21 @@ namespace Yasuo.Skills.Combo
                     dashVector = Game.CursorPos;
                     break;
                 case 1:
-                    dashVector =
-                        TargetSelector.GetTarget(
-                            Variables.Spells[SpellSlot.Q].Range,
-                            TargetSelector.DamageType.Physical).ServerPosition;
+
+
+                    var target = TargetSelector.GetTarget(
+                        Variables.Spells[SpellSlot.Q].Range,
+                        TargetSelector.DamageType.Physical);
+
+                    if (Menu.Item(this.Name + "Prediction").GetValue<bool>())
+                    {
+                        dashVector = Prediction.GetPrediction(target, Variables.Player.Distance(target) / 1000).UnitPosition;
+                    }
+                    else
+                    {
+                        dashVector = target.ServerPosition;
+                    }
+                    
                     break;
             }
 

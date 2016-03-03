@@ -10,7 +10,6 @@ C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\bin\Release\SharpDX.Direct3
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\bin\Release\LeagueSharp.Sandbox.dll
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\bin\Release\Newtonsoft.Json.dll
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\bin\Release\LeagueSharp.xml
-C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.csprojResolveAssemblyReference.cache
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.Properties.Resources.resources
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.csproj.GenerateResource.Cache
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.exe
