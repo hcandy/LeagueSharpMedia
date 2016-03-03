@@ -133,7 +133,8 @@ namespace Yasuo.Skills.Combo
 
             if (targetE != null
                 && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
-                && Variables.Spells[SpellSlot.Q].IsReady())
+                && Variables.Spells[SpellSlot.Q].IsReady()
+                && !targetE.HasBuff("YasuoDashWrapper"))
             {
                 Execute(targetE);
             }
