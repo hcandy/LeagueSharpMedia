@@ -13,6 +13,7 @@ namespace Yasuo
     using Yasuo.Common.Classes;
     using Yasuo.Common.Utility;
     using Yasuo.Modules;
+    using Yasuo.Modules.Auto;
     using Yasuo.Modules.Protector;
     using Yasuo.Modules.WallDash;
     using Yasuo.Skills.Combo;
@@ -70,8 +71,11 @@ namespace Yasuo
                                     new Skills.Mixed.SteelTempest(mixed),
                                     new Skills.Mixed.SweepingBlade(mixed),
 
+                                    new Potions(module),
+                                    new KillSteal(module),
+                                    new WallDash(module),
+                                    
                                     // Extra Features - Disabled due to SDK/Core problems
-                                    //new WallDash(module),
                                     //new WindWallProtector(protector)
                                 });
 

@@ -117,6 +117,9 @@
     <Compile Include="Modules\Protector\SafeZone.cs" />
     <Compile Include="Modules\Protector\WindWallProtector.cs" />
     <Compile Include="Modules\WallDash\WallDash.cs" />
+    <Compile Include="Skills\LastHit\LastHit.cs" />
+    <Compile Include="Skills\LastHit\SteelTempest.cs" />
+    <Compile Include="Skills\LastHit\SweepingBlade.cs" />
     <Compile Include="Skills\Mixed\Mixed.cs" />
     <Compile Include="Skills\Mixed\SteelTempest.cs" />
     <Compile Include="Skills\Mixed\SweepingBlade.cs" />
@@ -172,7 +175,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Ressources\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
