@@ -124,6 +124,17 @@ namespace Yasuo.Skills.Combo
                 return;
             }
             var dashVector = Vector3.Zero;
+            var targetE = TargetSelector.GetTarget(
+                        Variables.Spells[SpellSlot.E].Range,
+                        TargetSelector.DamageType.Physical);
+
+            if (targetE != null
+                && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
+                && Variables.Spells[SpellSlot.Q].IsReady())
+            {
+                Execute(targetE);
+            }
+
 
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {

@@ -57,7 +57,7 @@
                 }
                 MenuExtensions.AddToolTip(
                     blacklist,
-                    "Setting a champion to 'on', will make the script not using R for him anymore");
+                    "Setting a champion to 'on', will make the script not using Flash for him anymore");
             }
             this.Menu.AddSubMenu(blacklist);
 
