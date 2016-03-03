@@ -90,6 +90,10 @@
                 new MenuItem(this.Name + "EQ", "Do EQ").SetValue(true)
                     .SetTooltip("If this is enabled, the assembly will try to hit minions while dashing"));
 
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "EQNoQ3", "Only EQ if Q not charged").SetValue(true)
+                    .SetTooltip("If this is enabled, the assembly won't do EQ if you have stacked/charged Q"));
+
             // Prediction Mode
             //this.Menu.AddItem(new MenuItem(this.Name + "Prediction", "Prediction").SetValue(new StringList(Variables.Predictions, 0)));
             //Menu.AddItem(new MenuItem(Name + "Prediction Mode", "Prediction Mode").SetValue(new Slider(5, 0, 0)));
@@ -123,6 +127,14 @@
                     && minions.Where(x => x.Health <= ProviderQ.GetDamage(x))
                            .Count(x => x.Distance(Variables.Player) <= 375) > 2))
             {
+                // Won't waste Q3
+                // TODO: Add a Logic to do it if an enemy can get hit
+                if (Menu.Item(this.Name + "EQNoQ3").GetValue<bool>()
+                    && ProviderQ.HasQ3())
+                {
+                    return;
+                }
+
                 Execute(minions);
             }
 
@@ -147,6 +159,7 @@
                         <= minions.Where(x => !x.InAutoAttackRange()).ToList().Count)
                     {
                         // Check for the minions centered position and wait until we are a bit away
+                        // TODO: Add values like Spread of the minions
                         if (Menu.Item(this.Name + "CenterCheck").GetValue<bool>()
                             && Variables.Player.Distance(Helper.GetMeanVector2(minions)) > 450
                             || minions.Where(x => !x.InAutoAttackRange()).ToList().Count > 15
@@ -155,6 +168,7 @@
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
                             Execute(minions, true);
                         }
+                        // Alternative Logic if the Menu Item is disabled
                         else if (!Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
                         {
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
