@@ -188,30 +188,7 @@ namespace Yasuo.Skills.Combo
 
         public void OnDraw(EventArgs args)
         {
-            var dashVector = Vector3.Zero;
-
-            switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
-            {
-                case 0:
-                    dashVector = Game.CursorPos;
-                    break;
-                case 1:
-                    if (HeroManager.Enemies.Count > 0)
-                    {
-                        dashVector =
-                            TargetSelector.GetTarget(
-                                Variables.Spells[SpellSlot.Q].Range,
-                                TargetSelector.DamageType.Physical).ServerPosition;
-                    }
-                    else
-                    {
-                        dashVector = Game.CursorPos;
-                    }
-
-                    break;
-            }
-
-            var path = this.Provider.GetPath(dashVector);
+            var path = this.GapClosePath;
 
             if (path == null)
             {
@@ -220,23 +197,11 @@ namespace Yasuo.Skills.Combo
 
             for (var i = 0; i < path.Units.Count; i++)
             {
-                int index2;
-
-                var index = i;
-                if (i + 1 <= path.Units.Count)
-                {
-                    index2 = i + 1;
-                }
-                else
-                {
-                    index2 = index;
-                }
-
                 try
                 {
                     Drawing.DrawLine(
-                        Drawing.WorldToScreen(path.Units[index].Position),
-                        Drawing.WorldToScreen(path.Units[index2].Position),
+                        Drawing.WorldToScreen(path.Units[i].Position),
+                        Drawing.WorldToScreen(path.Units[i + 1].Position),
                         4f,
                         System.Drawing.Color.White);
                 }

@@ -53,8 +53,6 @@
             this.Menu.AddItem(
                 new MenuItem(this.Name + "ModeTarget", "Dash to: ").SetValue(new StringList(new[] { "Mouse", "Auto" })));
 
-            // EQ
-
             #region EQ
 
             this.Menu.AddItem(

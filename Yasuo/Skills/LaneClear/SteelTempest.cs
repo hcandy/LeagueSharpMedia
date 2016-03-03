@@ -168,6 +168,7 @@
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
                             Execute(minions, true);
                         }
+
                         // Alternative Logic if the Menu Item is disabled
                         else if (!Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
                         {
@@ -206,18 +207,15 @@
             }
             if (tryStacking)
             {
-                var predPositions = Minion.GetMinionsPredictedPositions(
-                    units,
-                    Variables.Spells[SpellSlot.Q].Delay,
-                    Variables.Spells[SpellSlot.Q].Width,
-                    Variables.Spells[SpellSlot.Q].Speed,
-                    Variables.Player.ServerPosition,
-                    Variables.Spells[SpellSlot.Q].Range,
-                    false,
-                    SkillshotType.SkillshotLine);
+                // Get the minion that is furthest away and killable
+                var minion = ObjectManager.Get<Obj_AI_Minion>()
+                             .Where(x => x.Health <= ProviderQ.GetDamage(x))
+                             .MaxOrDefault(x => x.Distance(Variables.Player.ServerPosition));
 
-                var pred = predPositions.MaxOrDefault(x => x.Distance(Variables.Player));
-                Variables.Spells[SpellSlot.Q].Cast(pred);
+                if (minion != null)
+                {
+                    Variables.Spells[SpellSlot.Q].Cast(minion);
+                }
             }
         }
 

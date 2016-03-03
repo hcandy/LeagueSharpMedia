@@ -43,7 +43,6 @@
             this.Menu = new Menu(this.Name, this.Name);
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
-            
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
 
