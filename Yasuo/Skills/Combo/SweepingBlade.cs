@@ -135,7 +135,6 @@ namespace Yasuo.Skills.Combo
                 && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
                 && Variables.Spells[SpellSlot.Q].IsReady())
             {
-                Game.PrintChat("Cast on enemy champion");
                 Execute(targetE);
             }
 
@@ -249,8 +248,15 @@ namespace Yasuo.Skills.Combo
 
         private void Execute(Obj_AI_Base target)
         {
-            if (target.IsValidTarget() && Helper.IsUnderTowerSafe(target.ServerPosition))
+            if (target.IsValidTarget())
             {
+                if (!Helper.IsUnderTowerSafe(target.ServerPosition))
+                {
+                    Game.PrintChat("Its not safe to cast");
+                    return;
+                }
+                Game.PrintChat("Its safe to cast");
+
                 Variables.Spells[SpellSlot.E].CastOnUnit(target);
             }
         }
