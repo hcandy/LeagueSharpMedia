@@ -14,7 +14,7 @@
 
     using Point = Yasuo.Common.Algorithm.Djikstra.Point;
 
-    //TODO: Add Waypoint System
+    // TODO: Add Waypoint System
     public class SweepingBladeLogicProvider
     {
         public static float CalculationRange;

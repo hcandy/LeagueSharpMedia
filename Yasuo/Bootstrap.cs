@@ -70,9 +70,9 @@ namespace Yasuo
                                     new Skills.Mixed.SteelTempest(mixed),
                                     new Skills.Mixed.SweepingBlade(mixed),
 
-                                    // Extra Features
-                                    new WallDash(module),
-                                    new WindWallProtector(protector)
+                                    // Extra Features - Disabled due to SDK/Core problems
+                                    //new WallDash(module),
+                                    //new WindWallProtector(protector)
                                 });
 
                         foreach (var feature in Variables.Assembly.Features)

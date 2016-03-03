@@ -108,6 +108,7 @@
     <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Drawings\Draws.cs" />
     <Compile Include="Drawings\Drawings.cs" />
+    <Compile Include="Modules\Auto\Killsteal.cs" />
     <Compile Include="Modules\Evade\SweepingBlade.cs" />
     <Compile Include="Modules\Evade\WindWall.cs" />
     <Compile Include="Modules\Modules.cs" />

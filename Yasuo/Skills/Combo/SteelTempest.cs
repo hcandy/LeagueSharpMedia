@@ -57,7 +57,7 @@ namespace Yasuo.Skills.Combo
             {
                 foreach (var x in HeroManager.Enemies)
                 {
-                    blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
+                    blacklist.AddItem(new MenuItem(blacklist.Name + x.ChampionName, x.ChampionName).SetValue(false));
                 }
                 MenuExtensions.AddToolTip(
                     blacklist,

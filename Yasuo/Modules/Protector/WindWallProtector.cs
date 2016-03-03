@@ -91,16 +91,11 @@
 
         public void OnUpdate(EventArgs args)
         {
-            if (SDK.Tracker.DetectedSkillshots == null)
+            if (SDK.Tracker.DetectedSkillshots == null || SDK.Tracker.DetectedSkillshots.Count == 0)
             {
                 return;
             }
             
-            if (SDK.Tracker.DetectedSkillshots.Count > 0)
-            {
-                Game.PrintChat("[WindWallProtector]: Skillshots detected: " +SDK.Tracker.DetectedSkillshots.Count);
-            }
-
             //var endPos = missile.EndPosition;
 
             //if (missile.StartPosition.Distance(endPos) < missile.SData.CastRange)
@@ -113,10 +108,7 @@
             foreach (var skillshot in SDK.Tracker.DetectedSkillshots)
             {
                 //TODO: Does not work because SDK is missing too much. Solution: Pull Request or finding an alternative way of doing this
-                Render.Circle.DrawCircle(skillshot.MissilePosition(false).To3D(), 6000, Color.Cyan);
-                Drawing.DrawCircle(skillshot.MissilePosition(false).To3D(), 6000, Color.Aqua);
                 
-                Drawing.DrawText(550, 550, Color.AliceBlue, "Missile Position: "+skillshot.MissilePosition(false));
                 foreach (var ally in HeroManager.Allies)
                 {
                     var endPos = skillshot.EndPosition;
@@ -132,11 +124,9 @@
                     {
                         var gapClosePath = this.Provider.GetPath(ally.ServerPosition);
 
-                        Game.PrintChat("Someone is about to get hit by a skillshot in: " + time);
-
                         if (gapClosePath != null && gapClosePath.PathTime < time)
                         {
-                            Game.PrintChat("Can gapclose in time to protect ally");
+                            //Game.PrintChat("Can gapclose in time to protect ally");
                         }
                         
                         this.SafeZone = new SafeZone(skillshot.StartPosition, skillshot.SData.Range, skillshot.SData.Radius);

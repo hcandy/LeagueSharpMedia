@@ -42,84 +42,6 @@
 
         #region Public Methods and Operators
 
-        public void OnUpdate(EventArgs args)
-        {
-            if (Variables.Orbwalker.ActiveMode != LeagueSharp.Common.Orbwalking.OrbwalkingMode.LaneClear || !Variables.Spells[SpellSlot.Q].IsReady())
-            {
-                return;
-            }
-
-            var minions = MinionManager.GetMinions(
-                Variables.Player.ServerPosition,
-                Variables.Spells[SpellSlot.Q].Range,
-                MinionTypes.All,
-                MinionTeam.Enemy,
-                MinionOrderTypes.None);
-
-            if (minions.Count == 0 || minions == null)
-            {
-                return;
-            }
-
-            #region EQ
-
-            // EQ > Synergyses with the E function in SweepingBlade/LogicProvider.cs
-            if (Menu.Item(this.Name + "EQ").GetValue<bool>()
-                && (Variables.Player.IsDashing()
-                    && minions.Where(x => x.Health <= ProviderQ.GetDamage(x))
-                           .Count(x => x.Distance(Variables.Player) <= 375) > 2))
-            {
-                Execute(minions);
-            }
-
-                #endregion
-            
-                #region Unstacked Q and Stacked Q
-
-            else
-            {
-                if (Variables.Player.Spellbook.IsAutoAttacking || Variables.Player.Spellbook.IsCharging
-                    || Variables.Player.Spellbook.IsChanneling)
-                {
-                    return;
-                }
-
-                // Mass lane clear logic
-                if (ProviderQ.HasQ3())
-                {
-                    // if AOE is enabled and more than X units are around us.
-                    if (Menu.Item(this.Name + "AOE").GetValue<bool>()
-                        && Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value
-                        <= minions.Where(x => !x.InAutoAttackRange()).ToList().Count)
-                    {
-                        // Check for the minions centered position and wait until we are a bit away
-                        if (Menu.Item(this.Name + "CenterCheck").GetValue<bool>()
-                            && Variables.Player.Distance(Helper.GetMeanVector2(minions)) > 450
-                            || minions.Where(x => !x.InAutoAttackRange()).ToList().Count > 15
-                            || ProviderQ.BuffTime() <= 10)
-                        {
-                            minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
-                            Execute(minions, true);
-                        }
-                        else if (!Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
-                        {
-                            minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
-                            Execute(minions, true);
-                        }
-                    }
-                }
-
-                // Stack Logic
-                // TODO: Add Health Prediction
-                else
-                {
-                    Execute(minions, tryStacking: true);
-                }
-            }
-
-            #endregion
-        }
-
         #endregion
 
         #region Methods
@@ -172,6 +94,84 @@
             //this.Menu.AddItem(new MenuItem(this.Name + "Prediction", "Prediction").SetValue(new StringList(Variables.Predictions, 0)));
             //Menu.AddItem(new MenuItem(Name + "Prediction Mode", "Prediction Mode").SetValue(new Slider(5, 0, 0)));
             this.Parent.Menu.AddSubMenu(this.Menu);
+        }
+
+        public void OnUpdate(EventArgs args)
+        {
+            if (Variables.Orbwalker.ActiveMode != LeagueSharp.Common.Orbwalking.OrbwalkingMode.LaneClear || !Variables.Spells[SpellSlot.Q].IsReady())
+            {
+                return;
+            }
+
+            var minions = MinionManager.GetMinions(
+                Variables.Player.ServerPosition,
+                Variables.Spells[SpellSlot.Q].Range,
+                MinionTypes.All,
+                MinionTeam.Enemy,
+                MinionOrderTypes.None);
+
+            if (minions.Count == 0 || minions == null)
+            {
+                return;
+            }
+
+            #region EQ
+
+            // EQ > Synergyses with the E function in SweepingBlade/LogicProvider.cs
+            if (Menu.Item(this.Name + "EQ").GetValue<bool>()
+                && (Variables.Player.IsDashing()
+                    && minions.Where(x => x.Health <= ProviderQ.GetDamage(x))
+                           .Count(x => x.Distance(Variables.Player) <= 375) > 2))
+            {
+                Execute(minions);
+            }
+
+            #endregion
+
+            #region Unstacked Q and Stacked Q
+
+            else
+            {
+                if (Variables.Player.Spellbook.IsAutoAttacking || Variables.Player.Spellbook.IsCharging
+                    || Variables.Player.Spellbook.IsChanneling)
+                {
+                    return;
+                }
+
+                // Mass lane clear logic
+                if (ProviderQ.HasQ3())
+                {
+                    // if AOE is enabled and more than X units are around us.
+                    if (Menu.Item(this.Name + "AOE").GetValue<bool>()
+                        && Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value
+                        <= minions.Where(x => !x.InAutoAttackRange()).ToList().Count)
+                    {
+                        // Check for the minions centered position and wait until we are a bit away
+                        if (Menu.Item(this.Name + "CenterCheck").GetValue<bool>()
+                            && Variables.Player.Distance(Helper.GetMeanVector2(minions)) > 450
+                            || minions.Where(x => !x.InAutoAttackRange()).ToList().Count > 15
+                            || ProviderQ.BuffTime() <= 10)
+                        {
+                            minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
+                            Execute(minions, true);
+                        }
+                        else if (!Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
+                        {
+                            minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
+                            Execute(minions, true);
+                        }
+                    }
+                }
+
+                // Stack Logic
+                // TODO: Add Health Prediction
+                else
+                {
+                    Execute(minions, tryStacking: true);
+                }
+            }
+
+            #endregion
         }
 
         private void Execute(List<Obj_AI_Base> units, bool aoe = false, bool circular = false, bool tryStacking = false)

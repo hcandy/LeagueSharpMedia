@@ -1,4 +1,6 @@
-﻿namespace Yasuo.Skills.Combo
+﻿// TODO: Add Multi Pathing System. The Idea is to get some paths that are equally good and compare them then. This way you could do things like if Path A is safer than Path B in Situation X choose Path A
+
+namespace Yasuo.Skills.Combo
 {
     using System;
     using System.Collections.Generic;
@@ -66,7 +68,7 @@
             {
                 foreach (var x in HeroManager.Enemies)
                 {
-                    blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
+                    blacklist.AddItem(new MenuItem(blacklist.Name + x.ChampionName, x.ChampionName).SetValue(false));
                 }
                 MenuExtensions.AddToolTip(
                     blacklist,
