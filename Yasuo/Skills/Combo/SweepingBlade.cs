@@ -212,9 +212,9 @@ namespace Yasuo.Skills.Combo
             }
         }
 
-        private static void Execute(Obj_AI_Base target)
+        private void Execute(Obj_AI_Base target)
         {
-            if (target.IsValidTarget())
+            if (target.IsValidTarget() && Helper.IsUnderTowerSafe(target.ServerPosition))
             {
                 Variables.Spells[SpellSlot.E].CastOnUnit(target);
             }
