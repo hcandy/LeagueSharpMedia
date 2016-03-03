@@ -230,6 +230,7 @@ namespace Yasuo.Skills.Combo
                 return;
             }
 
+            path.Draw();
             for (var i = 0; i < path.Units.Count; i++)
             {
                 try
