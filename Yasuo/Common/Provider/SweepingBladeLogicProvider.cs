@@ -11,6 +11,7 @@
 
     using Yasuo.Common.Algorithm.Djikstra;
     using Yasuo.Common.Pathing;
+    using Yasuo.Common.Utility;
 
     using Point = Yasuo.Common.Algorithm.Djikstra.Point;
 
@@ -31,11 +32,11 @@
         /// <param name="minions"></param>
         /// <param name="champions"></param>
         /// <returns>Obj_AI_Base</returns>
-        public Path GetPath(Vector3 position, bool minions = true, bool champions = true)
+        public Path GetPath(Vector3 position, bool minions = true, bool champions = true, bool aroundSkillshots = false)
         {
             try
             {
-                var units = this.GetUnits(ObjectManager.Player.ServerPosition.To2D(), minions, champions);
+                var units = this.GetUnits(ObjectManager.Player.ServerPosition.To2D(), minions, champions, aroundSkillshots);
                 var connections = new List<Connection>();
 
                 if (units == null || units.Count == 0)
@@ -46,7 +47,7 @@
                 var points = units.Select(Position => new Point(Position.ServerPosition)).ToList();
                 points.Add(new Point(Variables.Player.ServerPosition));
 
-                //TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing and cleaner drawings
+                //TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
                 foreach (var point in points)
                 {
                     foreach (var neighbour in points)
@@ -86,7 +87,7 @@
         /// <param name="minions">bool</param>
         /// <param name="champions">bool</param>
         /// <returns>List(Obj_Ai_Base)</returns>
-        public List<Obj_AI_Base> GetUnits(Vector2 startPosition, bool minions = true, bool champions = true)
+        public List<Obj_AI_Base> GetUnits(Vector2 startPosition, bool minions = true, bool champions = true, bool noSkillshots = false)
         {
             try
             {
@@ -108,13 +109,19 @@
                     units.AddRange(HeroManager.Enemies);
                 }
 
-                else
+                if (noSkillshots)
                 {
-                    foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper")))
+                    foreach (var x in units.Where(x => x.isInSkillshot()))
                     {
                         units.Remove(x);
                     }
                 }
+
+                foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper")))
+                {
+                    units.Remove(x);
+                }
+
                 return units;
             }
             catch (Exception ex)

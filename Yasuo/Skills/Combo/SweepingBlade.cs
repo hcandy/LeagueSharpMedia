@@ -149,13 +149,23 @@ namespace Yasuo.Skills.Combo
                     break;
             }
 
-            GapClosePath = Provider.GetPath(dashVector);
+            if (Menu.Item(this.Name + "PathAroundSkillShots").GetValue<bool>())
+            {
+                GapClosePath = Provider.GetPath(dashVector, aroundSkillshots: true);
+            }
+            else
+            {
+                GapClosePath = Provider.GetPath(dashVector);
+            }
+
+            
 
             // if a path is given, and the first unit of the path is in dash range, and the path time is faster than running to the given vector (dashVactor)
             if (GapClosePath != null
                 && Variables.Player.Distance(GapClosePath.FirstUnit) <= Variables.Spells[SpellSlot.E].Range
                 && GapClosePath.PathTime <= Helper.GetPathLenght(Variables.Player.GetPath(dashVector)) / Variables.Player.MoveSpeed)
             {
+                #region WallCheck
                 // if WallDash
                 if (GapClosePath.FirstUnit.IsWallDash(Variables.Spells[SpellSlot.E].Range))
                 {
@@ -179,6 +189,7 @@ namespace Yasuo.Skills.Combo
                     Execute(MinionManager.GetMinions(GapClosePath.FirstUnit, 25, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None)
                                .FirstOrDefault(x => x.ServerPosition == GapClosePath.FirstUnit));
                 }
+                #endregion
             }
         }
 

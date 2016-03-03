@@ -22,7 +22,13 @@
             this.OnLoad();
         }
 
-        public FlowLogicProvider Provider;
+        public FlashLogicProvider ProviderF;
+        public FlowLogicProvider ProviderP;
+        public LastBreathLogicProvider ProviderR; 
+        public PotionLogicProvider ProviderPotion;
+        public SteelTempestLogicProvider ProviderQ;
+        public WindWallLogicProvider ProviderW;
+        public SweepingBladeLogicProvider ProviderE;
 
         public override string Name => "Drawings";
 
@@ -43,12 +49,25 @@
             this.Menu = new Menu(this.Name, this.Name);
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
+            foreach (var spell in Variables.Spells)
+            {
+                Menu.AddItem(
+                    new MenuItem(this.Name + spell.Key.ToString(), spell.Key.ToString() + " Enabled").SetValue(true)
+                        .SetTooltip("Disabling this spell will disable drawings for this spell"));
+            }
+
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
 
         protected override void OnInitialize()
         {
-            Provider = new FlowLogicProvider();
+            this.ProviderF = new FlashLogicProvider();
+            this.ProviderP = new FlowLogicProvider();
+            this.ProviderR = new LastBreathLogicProvider();
+            this.ProviderPotion = new PotionLogicProvider();
+            this.ProviderQ = new SteelTempestLogicProvider();
+            this.ProviderW = new WindWallLogicProvider();
+            this.ProviderE = new SweepingBladeLogicProvider();
             base.OnInitialize();
         }
 
@@ -68,34 +87,22 @@
             #region Yasuo Passive Shield (Flow)
 
             //Max Flow Distance
-            if (Provider.GetRemainingUnits() > 0)
+            if (this.ProviderP.GetRemainingUnits() > 0)
             {
-                Render.Circle.DrawCircle(Variables.Player.Position, Provider.GetRemainingUnits(), Color.White);
+                Render.Circle.DrawCircle(Variables.Player.Position, this.ProviderP.GetRemainingUnits(), Color.White);
             }
 
             #endregion
 
             #region Spells
 
-            //if (Variables.Spells[SpellSlot.Q].Level >= 1)
-            //{
-            //    Render.Circle.DrawCircle(Variables.Player.Position, Program.Q.Range, Color.White);
-            //}
-
-
-            //if (Variables.Spells[SpellSlot.W].Level > 1)
-            //{
-            //    Render.Circle.DrawCircle(Variables.Player.Position, Program.W.Range, Color.White);
-            //}
-
-            //if (Variables.Spells[SpellSlot.R].Level > 1)
-            //{
-            //    Render.Circle.DrawCircle(Variables.Player.Position, Program.R.Range, Color.White);
-            //}
-
-            foreach (var spell in Variables.Spells.Where(spell => spell.Value.Level > 0).Where(spell => spell.Value.Range > 0))
+            //if Skillshot has a Range greater than Zero and Level is Higher than Zero. Need to connect that with the Menu.
+            foreach (var spell in Variables.Spells.Where(spell => spell.Value.Level > 0 && spell.Value.Range > 0))
             {
-                Render.Circle.DrawCircle(Variables.Player.ServerPosition, spell.Value.Range, Color.White);
+                if (Menu.Item(this.Name + spell.Key.ToString()).GetValue<bool>())
+                {
+                    Render.Circle.DrawCircle(Variables.Player.Position, spell.Value.Range, Color.White);
+                }
             }
 
             #endregion

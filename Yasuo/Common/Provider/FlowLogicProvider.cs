@@ -11,6 +11,7 @@
 
     class FlowLogicProvider
     {
+        //TODO: For some reasons its a bit inaccurate after some time. Need to watch it live and decide what to do.
         public float GetUnitsUntilMaxFlow()
         {
             return Variables.Player.Level >= 13 ? 4600f : (Variables.Player.Level >= 7 ? 5200f : 5900f);
@@ -31,7 +32,7 @@
 
         public void CheckFlow()
         {
-            if (Variables.Player.Mana == Variables.Player.MaxMana)
+            if ((int)Variables.Player.Mana == (int)Variables.Player.MaxMana)
             {
                 Reset();
                 return;
