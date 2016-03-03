@@ -119,11 +119,14 @@ namespace Yasuo.Skills.Combo
 
         public void OnUpdate(EventArgs args)
         {
-            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
+            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo
+                || !Variables.Spells[SpellSlot.E].IsReady())
             {
                 return;
             }
+
             var dashVector = Vector3.Zero;
+
             var targetE = TargetSelector.GetTarget(
                         Variables.Spells[SpellSlot.E].Range,
                         TargetSelector.DamageType.Physical);
@@ -132,6 +135,7 @@ namespace Yasuo.Skills.Combo
                 && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
                 && Variables.Spells[SpellSlot.Q].IsReady())
             {
+                Game.PrintChat("Cast on enemy champion");
                 Execute(targetE);
             }
 
