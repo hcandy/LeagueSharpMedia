@@ -6,6 +6,7 @@
 
     using LeagueSharp;
     using LeagueSharp.Common;
+    using SDK = LeagueSharp.SDK;
 
     using SharpDX;
 
@@ -80,6 +81,8 @@
 
         }
 
+        // TODO: Not sure if .ToList() is a performance issue. Maybe work with a lock. 
+        // TODO: But that could be worse.. maybe add a second List and loop through it to prevent modifying the old list while looping
         /// <summary>
         ///     Returns a list containing all units
         /// </summary>
@@ -129,6 +132,15 @@
                 Console.WriteLine(@"[GetUnits]: "+ex);
             }
             return null;
+        }
+
+        public double GetDamage(Obj_AI_Base unit)
+        {
+            return Variables.Player.CalcDamage(
+                unit,
+                Damage.DamageType.Magical,
+                (50 + 20 * Variables.Spells[SpellSlot.E].Level) * (1 + Math.Max(0, Variables.Player.GetBuffCount("YasuoDashScalar") * 0.25))
+                + 0.6 * Variables.Player.FlatMagicDamageMod);
         }
     }
 }

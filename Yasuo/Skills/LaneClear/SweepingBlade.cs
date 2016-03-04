@@ -153,7 +153,7 @@ namespace Yasuo.Skills.LaneClear
                 var enemies = HeroManager.Enemies.Where(x => x.Health > 0).ToList();
                 List<Obj_AI_Base> possibleExecutions = new List<Obj_AI_Base>();
 
-                foreach (var x in minions.Where(unit => unit.Health <= Variables.Spells[SpellSlot.E].GetDamage(unit) 
+                foreach (var x in minions.Where(unit => unit.Health <= Provider.GetDamage(unit) 
                                                 && unit.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range))
                 {
                     if (enemies.Count(enemy => enemy.Distance(Variables.Player.ServerPosition) <= 1000) > 0)
