@@ -134,9 +134,14 @@ namespace Yasuo.Skills.LaneClear
             // if EQ will hit more than X units
             if (Menu.Item(this.Name + "EQ").GetValue<bool>() && 
                 Variables.Player.ServerPosition.Extend(minion.ServerPosition, Variables.Spells[SpellSlot.E].Range)
-                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range) > Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value)
+                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range) > Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value
+                    && Variables.Player.Health > 100)
             {
-                Execute(minion);
+                if (Variables.Spells[SpellSlot.Q].IsReady() && Variables.Spells[SpellSlot.Q].Level > 0)
+                {
+                    Execute(minion);
+                }
+
             }
 
             // Smart Last Hit
