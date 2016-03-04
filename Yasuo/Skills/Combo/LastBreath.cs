@@ -107,7 +107,7 @@
             // Targetselector
             if (Menu.Item(Name + "AOE").GetValue<bool>())
             {
-                if (enemies.Count >= Menu.Item(Name + "MinHitAOE").GetValue<int>())
+                if (enemies.Count >= Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value)
                 {
                     if (this.Provider.MostDamageDealt(enemies).CountEnemiesInRange(Variables.Spells[SpellSlot.R].Range) >= 2)
                     {
@@ -122,7 +122,7 @@
                 return;
             }
 
-            if (Variables.Player.HealthPercent >= Menu.Item(Name +"MinPlayerHealth").GetValue<int>())
+            if (Variables.Player.HealthPercent >= Menu.Item(Name +"MinPlayerHealth").GetValue<Slider>().Value)
             {
                 if (Menu.Item(Name + "OverkillCheck").GetValue<bool>())
                 {
