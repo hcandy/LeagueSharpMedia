@@ -124,6 +124,7 @@ namespace Yasuo.Skills.Combo
             if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo
                 || !Variables.Spells[SpellSlot.E].IsReady())
             {
+                GapClosePath = null;
                 return;
             }
 

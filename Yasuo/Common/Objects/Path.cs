@@ -236,15 +236,32 @@ namespace Yasuo.Common.Pathing
         //TODO: Add color, Line width, end and start point boolean
         public void Draw()
         {
-            if (Units == null) return;
-            for (var i = 0; i < Units.Count; i++)
+            try
             {
-                Drawing.DrawLine(
-                    Drawing.WorldToScreen(Units[i].Position),
-                    Drawing.WorldToScreen(Units[i + 1].Position),
-                    4f,
-                    System.Drawing.Color.White);
+                Drawing.DrawText(500, 500, System.Drawing.Color.White, "Positions: "+Positions.Count);
+                if (Positions != null && Positions.Count > 0)
+                {
+                    for (var i = 0; i < Positions.Count; i++)
+                    {
+                        if (Positions.Count > i + 1 && Positions[i + 1].IsValid())
+                        {
+                            Drawing.DrawLine(
+                            Drawing.WorldToScreen(Positions[i]),
+                            Drawing.WorldToScreen(Positions[i + 1]),
+                                4f,
+                            System.Drawing.Color.White);
+                        }
+
+                    }
+                }
+
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+
 
         }
 

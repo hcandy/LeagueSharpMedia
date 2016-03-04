@@ -30,8 +30,6 @@ namespace Yasuo.Skills.LaneClear
 
         public List<Obj_AI_Base> BlacklistUnits;
 
-        public Path GapClosePath;
-
         public override string Name => "Sweeping Blade";
 
         public SweepingBladeLogicProvider Provider;
@@ -68,7 +66,7 @@ namespace Yasuo.Skills.LaneClear
                     .SetTooltip("The assembly will try to E on a minion in order to Q"));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(3, 2, 15)));
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(1, 2, 15)));
 
             #endregion
 
@@ -134,7 +132,7 @@ namespace Yasuo.Skills.LaneClear
             // if EQ will hit more than X units
             if (Menu.Item(this.Name + "EQ").GetValue<bool>() && 
                 Variables.Player.ServerPosition.Extend(minion.ServerPosition, Variables.Spells[SpellSlot.E].Range)
-                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range) > Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value
+                    .CountMinionsInRange(375) > Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value
                     && Variables.Player.Health > 100)
             {
                 if (Variables.Spells[SpellSlot.Q].IsReady() && Variables.Spells[SpellSlot.Q].Level > 0)
@@ -192,7 +190,14 @@ namespace Yasuo.Skills.LaneClear
 
         public void OnDraw(EventArgs args)
         {
-            
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(
+                Variables.Player.ServerPosition,
+                1000,
+                MinionTypes.All,
+                MinionTeam.Enemy,
+                MinionOrderTypes.None);
+            var Meanvector = Helper.GetMeanVector3(minions);
+            Drawing.DrawCircle(Meanvector, 150, System.Drawing.Color.White);
         }
 
         private void Execute(Obj_AI_Base unit)

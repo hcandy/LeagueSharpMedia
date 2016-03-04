@@ -79,7 +79,7 @@
                         "If predicted hit count > slider, it will try to hit multiple, else it will aim for a single minion"));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 15)));
 
             this.Menu.AddItem(
                 new MenuItem(this.Name + "CenterCheck", "Check for the minions mean vector").SetValue(true)
