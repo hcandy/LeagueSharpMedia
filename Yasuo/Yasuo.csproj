@@ -91,7 +91,8 @@
     <Compile Include="Common\Enums\SkillMode.cs" />
     <Compile Include="Common\Extensions\Extensions.cs" />
     <Compile Include="Common\Extensions\AddToolTip.cs" />
-    <Compile Include="Common\Pathing\Path.cs" />
+    <Compile Include="Common\Objects\Dash.cs" />
+    <Compile Include="Common\Objects\Path.cs" />
     <Compile Include="Common\Predictions\PredictionOktw.cs" />
     <Compile Include="Common\Provider\FlashLogicProvider.cs" />
     <Compile Include="Common\Provider\FlowLogicProvider.cs" />
