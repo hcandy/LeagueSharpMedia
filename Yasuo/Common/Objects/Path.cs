@@ -236,6 +236,7 @@ namespace Yasuo.Common.Pathing
         //TODO: Add color, Line width, end and start point boolean
         public void Draw()
         {
+            if (Units == null) return;
             for (var i = 0; i < Units.Count; i++)
             {
                 Drawing.DrawLine(
