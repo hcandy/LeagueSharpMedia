@@ -190,14 +190,6 @@ namespace Yasuo.Skills.LaneClear
 
         public void OnDraw(EventArgs args)
         {
-            List<Obj_AI_Base> minions = MinionManager.GetMinions(
-                Variables.Player.ServerPosition,
-                1000,
-                MinionTypes.All,
-                MinionTeam.Enemy,
-                MinionOrderTypes.None);
-            var Meanvector = Helper.GetMeanVector3(minions);
-            Drawing.DrawCircle(Meanvector, 150, System.Drawing.Color.White);
         }
 
         private void Execute(Obj_AI_Base unit)
