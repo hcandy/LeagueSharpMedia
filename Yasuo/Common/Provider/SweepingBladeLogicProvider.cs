@@ -111,13 +111,13 @@
 
                 if (noSkillshots)
                 {
-                    foreach (var x in units.Where(x => x.isInSkillshot()))
+                    foreach (var x in units.Where(x => x.isInSkillshot()).ToList())
                     {
                         units.Remove(x);
                     }
                 }
 
-                foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper")))
+                foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper") || x.IsDead || x.Health == 0).ToList())
                 {
                     units.Remove(x);
                 }

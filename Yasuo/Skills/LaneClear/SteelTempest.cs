@@ -134,7 +134,6 @@
                 {
                     return;
                 }
-                Game.PrintChat("EQ EXECUTE Q");
                 Execute(minions);
             }
 
@@ -166,7 +165,6 @@
                             || ProviderQ.BuffTime() <= 10)
                         {
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
-                            Game.PrintChat("Q3 EXECUTE");
                             Execute(minions, true);
                         }
 
@@ -174,7 +172,6 @@
                         else if (!Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
                         {
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
-                            Game.PrintChat("Q3 EXECUTE");
                             Execute(minions, true);
                         }
                     }
@@ -184,7 +181,6 @@
                 // TODO: Add Health Prediction
                 else
                 {
-                    Game.PrintChat("Q EXECUTE");
                     Execute(minions, tryStacking: true);
                 }
             }
