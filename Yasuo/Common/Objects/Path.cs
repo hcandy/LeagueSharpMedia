@@ -53,16 +53,21 @@ namespace Yasuo.Common.Pathing
 
         public void VecToUnits()
         {
+            int count = 0;
             foreach (var position in Positions)
             {
                 var allminions = MinionManager.GetMinions(position, 50, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None);
-                var minion = allminions.MinOrDefault(x => x.Distance(position));
+                var position1 = position;
+                var minion = allminions.MinOrDefault(x => x.Distance(position1));
 
-                if (minion != null)
+                if (minion != null && minion.IsValid)
                 {
                     Units.Add(minion);
                 }
+
+                count++;
             }
+            Game.PrintChat("Converted Vectors to Units amount: "+count);
         }
 
         public void SetDangerValue()
@@ -96,7 +101,7 @@ namespace Yasuo.Common.Pathing
         {
             foreach (var unit in this.Positions)
             {
-                DashLenght += 475;
+                DashLenght += Variables.Spells[SpellSlot.E].Range;
             }
         }
 
@@ -233,11 +238,11 @@ namespace Yasuo.Common.Pathing
         {
             for (var i = 0; i < Units.Count; i++)
             {
-                    Drawing.DrawLine(
-                        Drawing.WorldToScreen(Units[i].Position),
-                        Drawing.WorldToScreen(Units[i + 1].Position),
-                        4f,
-                        System.Drawing.Color.White);
+                Drawing.DrawLine(
+                    Drawing.WorldToScreen(Units[i].Position),
+                    Drawing.WorldToScreen(Units[i + 1].Position),
+                    4f,
+                    System.Drawing.Color.White);
             }
 
         }

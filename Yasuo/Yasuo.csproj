@@ -123,9 +123,6 @@
     <Compile Include="Skills\Mixed\Mixed.cs" />
     <Compile Include="Skills\Mixed\SteelTempest.cs" />
     <Compile Include="Skills\Mixed\SweepingBlade.cs" />
-    <Compile Include="Skills\JungleClear\JungleClear.cs" />
-    <Compile Include="Skills\JungleClear\SteelTempest.cs" />
-    <Compile Include="Skills\JungleClear\SweepingBlade.cs" />
     <Compile Include="Skills\LaneClear\LaneClear.cs" />
     <Compile Include="Skills\LaneClear\SteelTempest.cs" />
     <Compile Include="Skills\LaneClear\SweepingBlade.cs" />

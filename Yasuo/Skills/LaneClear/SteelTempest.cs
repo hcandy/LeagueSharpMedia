@@ -114,7 +114,7 @@
                 MinionTeam.Enemy,
                 MinionOrderTypes.None);
 
-            if (minions.Count == 0 || minions == null)
+            if (minions.Count == 0)
             {
                 return;
             }
@@ -134,7 +134,7 @@
                 {
                     return;
                 }
-
+                Game.PrintChat("EQ EXECUTE Q");
                 Execute(minions);
             }
 
@@ -166,6 +166,7 @@
                             || ProviderQ.BuffTime() <= 10)
                         {
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
+                            Game.PrintChat("Q3 EXECUTE");
                             Execute(minions, true);
                         }
 
@@ -173,6 +174,7 @@
                         else if (!Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
                         {
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
+                            Game.PrintChat("Q3 EXECUTE");
                             Execute(minions, true);
                         }
                     }
@@ -182,6 +184,7 @@
                 // TODO: Add Health Prediction
                 else
                 {
+                    Game.PrintChat("Q EXECUTE");
                     Execute(minions, tryStacking: true);
                 }
             }
@@ -208,13 +211,13 @@
             if (tryStacking)
             {
                 // Get the minion that is furthest away and killable
-                var minion = ObjectManager.Get<Obj_AI_Minion>()
-                             .Where(x => x.Health <= ProviderQ.GetDamage(x))
+                var minion = MinionManager.GetMinions(Variables.Player.ServerPosition, Variables.Spells[SpellSlot.Q].Range)
+                             .Where(x => x.Health <= ProviderQ.GetDamage(x) && x.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.Q].Range)
                              .MaxOrDefault(x => x.Distance(Variables.Player.ServerPosition));
 
                 if (minion != null)
                 {
-                    Variables.Spells[SpellSlot.Q].Cast(minion);
+                    Variables.Spells[SpellSlot.Q].Cast(minion.ServerPosition);
                 }
             }
         }

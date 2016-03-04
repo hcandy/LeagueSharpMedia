@@ -86,7 +86,7 @@
 
         public void OnUpdate(EventArgs args)
         {
-            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear)
+            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Mixed)
             {
                 return;
             }

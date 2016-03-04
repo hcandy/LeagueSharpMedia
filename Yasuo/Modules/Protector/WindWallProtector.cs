@@ -154,7 +154,8 @@
 
         public void Execute(Vector2 castPosition)
         {
-            if (Variables.Spells[SpellSlot.W].IsReady())
+            if (Variables.Spells[SpellSlot.W].IsReady() 
+                && castPosition.IsValid() && castPosition != Vector2.Zero)
             {
                 Variables.Spells[SpellSlot.W].Cast(castPosition);
             }

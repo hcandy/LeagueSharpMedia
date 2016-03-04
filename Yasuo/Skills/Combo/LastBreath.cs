@@ -94,7 +94,7 @@
 
         public void OnUpdate(EventArgs args)
         {
-            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
+            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo || !Variables.Spells[SpellSlot.R].IsReady())
             {
                 return;
             }
@@ -151,9 +151,9 @@
 
         private void CastLastBreath(Obj_AI_Hero target)
         {
-            if (target.IsValid && !target.IsZombie)
+            if (target.IsValid && !target.IsZombie && target.IsAirbone())
             {
-                Variables.Spells[SpellSlot.R].Cast(target);
+                Variables.Spells[SpellSlot.R].CastOnUnit(target);
             }
         }
     }

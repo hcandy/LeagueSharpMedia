@@ -3,6 +3,7 @@
 namespace Yasuo.Common.Utility
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Net;
     using System.Reflection;
     using System.Text.RegularExpressions;
@@ -71,7 +72,7 @@ namespace Yasuo.Common.Utility
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(@"MediaSuo: Failed to get new Version!");
             }
             return new Version();
         }

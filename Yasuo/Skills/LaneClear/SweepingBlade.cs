@@ -1,4 +1,6 @@
-﻿namespace Yasuo.Skills.LaneClear
+﻿// TODO: Add new Dash Object to make things easier
+
+namespace Yasuo.Skills.LaneClear
 {
     using System;
     using System.Collections.Generic;
@@ -52,7 +54,6 @@
         {
             this.Menu = new Menu(this.Name, this.Name);
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
-
             
             // Mode
             this.Menu.AddItem(
@@ -76,6 +77,14 @@
             this.Menu.AddItem(
                 new MenuItem(this.Name + "LastHit", "Smart Lasthit").SetValue(true)
                     .SetTooltip("The assembly will only Lasthit a minion if Q is not up and the end position of the dash is not too close to the enemy and is not inside a skillshot"));
+
+            #endregion
+
+            #region Misc
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "NoWallJump", "Anti WallDash").SetValue(true)
+                    .SetTooltip("if this is enabled, the assembly won't use Sweeping Blade on a unit if it is a walljump. This is especially useful when doing jungle clear"));
 
             #endregion
 
@@ -125,7 +134,7 @@
             // if EQ will hit more than X units
             if (Menu.Item(this.Name + "EQ").GetValue<bool>() && 
                 Variables.Player.ServerPosition.Extend(minion.ServerPosition, Variables.Spells[SpellSlot.E].Range)
-                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range) > Menu.Item(Name + "MinHitAOE").GetValue<int>())
+                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range) > Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value)
             {
                 Execute(minion);
             }
@@ -141,20 +150,31 @@
                 var enemies = HeroManager.Enemies.Where(x => x.Health > 0).ToList();
                 List<Obj_AI_Base> possibleExecutions = new List<Obj_AI_Base>();
 
-                foreach (var x in minions)
+                foreach (var x in minions.Where(unit => unit.Health <= Variables.Spells[SpellSlot.E].GetDamage(unit) 
+                                                && unit.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range))
                 {
-                    foreach (var y in enemies.Where(z => z.HealthPercent > 10))
+                    if (enemies.Count(enemy => enemy.Distance(Variables.Player.ServerPosition) <= 1000) > 0)
                     {
-                        var newPos = Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range);
-                        if (newPos.Distance(y.ServerPosition) < y.AttackRange)
+                        foreach (var y in enemies.Where(z => z.HealthPercent > 10))
                         {
-                            possibleExecutions.Add(x);
+                            var newPos = Variables.Player.ServerPosition.Extend(
+                                x.ServerPosition,
+                                Variables.Spells[SpellSlot.E].Range);
+                            if (newPos.Distance(y.ServerPosition) < y.AttackRange)
+                            {
+                                possibleExecutions.Add(x);
+                            }
                         }
                     }
+                    else
+                    {
+                        possibleExecutions.Add(minion);
+                    }
+
                         
                 }
 
-                if (possibleExecutions.Count < 0)
+                if (possibleExecutions.Count == 0)
                 {
                     return;
                 }
@@ -170,11 +190,19 @@
             
         }
 
-        private static void Execute(Obj_AI_Base target)
+        private void Execute(Obj_AI_Base unit)
         {
-            if (target.IsValidTarget())
+            if (unit.IsValidTarget() && unit != null
+                && Helper.IsUnderTowerSafe(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
             {
-                Variables.Spells[SpellSlot.E].CastOnUnit(target);
+                if (Menu.Item(this.Name + "NoWallJump").GetValue<bool>())
+                {
+                    if (unit.IsWallDash(Variables.Spells[SpellSlot.E].Range, 20))
+                    {
+                        return;
+                    }
+                }
+                Variables.Spells[SpellSlot.E].CastOnUnit(unit);
             }
         }
     }

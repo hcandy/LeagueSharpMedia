@@ -20,6 +20,8 @@ namespace Yasuo.Skills.Combo
     using Yasuo.Modules;
     using Yasuo.Modules.WallDash;
 
+    using Color = System.Drawing.Color;
+
     internal class SweepingBlade : Child<Combo>
     {
         public SweepingBlade(Combo parent)
@@ -146,8 +148,6 @@ namespace Yasuo.Skills.Combo
                     dashVector = Game.CursorPos;
                     break;
                 case 1:
-
-
                     var target = TargetSelector.GetTarget(
                         Variables.Spells[SpellSlot.Q].Range,
                         TargetSelector.DamageType.Physical);
@@ -223,44 +223,26 @@ namespace Yasuo.Skills.Combo
 
         public void OnDraw(EventArgs args)
         {
-            var path = this.GapClosePath;
-
-            if (path == null)
-            {
-                return;
-            }
-
-            path.Draw();
-            for (var i = 0; i < path.Units.Count; i++)
-            {
-                try
-                {
-                    Drawing.DrawLine(
-                        Drawing.WorldToScreen(path.Units[i].Position),
-                        Drawing.WorldToScreen(path.Units[i + 1].Position),
-                        4f,
-                        System.Drawing.Color.White);
-                }
-                catch (ArgumentOutOfRangeException argumentOutOfRangeException)
-                {
-                    Console.WriteLine(@"Exception in drawing method: " + argumentOutOfRangeException);
-                }
-            }
+            this.GapClosePath?.Draw();
         }
 
-        private void Execute(Obj_AI_Base target)
+        private static void Execute(Obj_AI_Base target)
         {
-            if (target.IsValidTarget())
+            try
             {
-                if (!Helper.IsUnderTowerSafe(target.ServerPosition))
+                if (!target.IsValidTarget() || !Helper.IsUnderTowerSafe(target.ServerPosition))
                 {
-                    Game.PrintChat("Its not safe to cast");
                     return;
                 }
-                Game.PrintChat("Its safe to cast");
 
                 Variables.Spells[SpellSlot.E].CastOnUnit(target);
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(@"Skills/Combo/SweepingBlade/Execute: "+ex);
+                throw;
+            }
+
         }
     }
 }
