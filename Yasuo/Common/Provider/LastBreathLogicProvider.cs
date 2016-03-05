@@ -68,7 +68,7 @@
         // TODO: Add winding up and Q and E time into consideration
         public bool ShouldCastNow(Obj_AI_Hero target, int buffer = 10)
         {
-            if (!target.IsAirbone())
+            if (!target.IsAirbone() || !target.IsValid)
             {
                 return false;
             }
@@ -78,20 +78,15 @@
             {
                 var gapClosePath = new SweepingBladeLogicProvider(target.Distance(Variables.Player)).GetPath(target.ServerPosition);
 
+                Game.PrintChat("[Ult] PathTime: "+gapClosePath.PathTime);
+                Game.PrintChat("[Ult] AirboneTime: "+target.RemainingAirboneTime());
                 if (gapClosePath.PathTime >= target.RemainingAirboneTime())
                 {
                     return true;
                 }
             }
 
-            if (target.RemainingAirboneTime() <= Game.Ping + buffer)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return target.RemainingAirboneTime() <= Game.Ping + buffer;
         }
 
         public Vector3 GetExecutionPosition(Obj_AI_Hero target)

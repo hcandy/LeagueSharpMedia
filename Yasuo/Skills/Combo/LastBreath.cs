@@ -12,6 +12,7 @@
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Predictions;
     using Yasuo.Common.Provider;
+    using Yasuo.Common.Objects;
 
     using HitChance = Yasuo.Common.Predictions.HitChance;
 
@@ -102,22 +103,33 @@
             List<Obj_AI_Hero> enemies = new List<Obj_AI_Hero>();
             enemies.AddRange(ObjectManager.Player.GetEnemiesInRange(Variables.Spells[SpellSlot.R].Range).Where(x => x.IsAirbone()));
 
-            Obj_AI_Hero target = null;
+            List<Yasuo.Common.Objects.LastBreath> possibleExecutions = enemies.Select(enemy => new Yasuo.Common.Objects.LastBreath(enemy)).ToList();
+            List<Yasuo.Common.Objects.LastBreath> validatedExecutions = new List<Common.Objects.LastBreath>();
 
-            // Targetselector
+            Yasuo.Common.Objects.LastBreath Execution = new Yasuo.Common.Objects.LastBreath(null);
+
             if (Menu.Item(Name + "AOE").GetValue<bool>())
             {
-                if (enemies.Count >= Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value)
+                foreach (var entry in possibleExecutions)
                 {
-                    if (this.Provider.MostDamageDealt(enemies).CountEnemiesInRange(Variables.Spells[SpellSlot.R].Range) >= 2)
+                    if (entry.EnemiesInUlt >= Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value)
                     {
-                        target = this.Provider.MostDamageDealt(enemies);
+                        validatedExecutions.Add(entry);
                     }
-                    target = this.Provider.MostKnockedUp(enemies);
                 }
             }
+            else
+            {
+                validatedExecutions = possibleExecutions;
+            }
 
-            if (target == null || !Provider.ShouldCastNow(target))
+            #region TargetSelector
+
+            Execution = validatedExecutions.MaxOrDefault(x => x.DamageDealt);
+
+            #endregion
+
+            if (Execution == null || !Provider.ShouldCastNow(Execution.Target))
             {
                 return;
             }
@@ -126,12 +138,12 @@
             {
                 if (Menu.Item(Name + "OverkillCheck").GetValue<bool>())
                 {
-                    var healthAll = Provider.GetEnemiesAround(target.ServerPosition).Sum(x => x.Health);
+                    var healthAll = Provider.GetEnemiesAround(Execution.EndPosition).Sum(x => x.Health);
                     var damageAll = 0f;
 
-                    foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R))
+                    foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R && x.Value.Slot != SpellSlot.W))
                     {
-                        foreach (var enemy in Provider.GetEnemiesAround(target.ServerPosition))
+                        foreach (var enemy in Provider.GetEnemiesAround(Execution.EndPosition))
                         {
                             damageAll += spell.Value.GetDamage(enemy);
                         }
@@ -139,17 +151,17 @@
 
                     if (healthAll > damageAll)
                     {
-                        CastLastBreath(target);
+                        this.Execute(Execution.Target);
                     }
                 }
                 else
                 {
-                    this.CastLastBreath(target);
+                    this.Execute(Execution.Target);
                 }
             }
         }
 
-        private void CastLastBreath(Obj_AI_Hero target)
+        private void Execute(Obj_AI_Hero target)
         {
             if (target.IsValid && !target.IsZombie && target.IsAirbone())
             {
