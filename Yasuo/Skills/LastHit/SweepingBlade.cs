@@ -118,12 +118,20 @@
                 return;
             }
 
-            // if EQ will hit more than X units
-            if (this.Menu.Item(this.Name + "EQ").GetValue<bool>() && 
-                Variables.Player.ServerPosition.Extend(minion.ServerPosition, Variables.Spells[SpellSlot.E].Range)
-                    .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range) > this.Menu.Item(this.Name + "MinHitAOE").GetValue<int>())
+            // if EQ will hit more than X units and X units die
+            if (this.Menu.Item(this.Name + "EQ").GetValue<bool>())
             {
-                Execute(minion);
+                var minionsEQ =
+                    MinionManager.GetMinions(
+                        Variables.Player.ServerPosition.Extend(
+                            minion.ServerPosition,
+                            Variables.Spells[SpellSlot.E].Range),
+                        375).Where(x => x.Health <= Provider.GetDamage(x));
+
+                if (minionsEQ != null && minionsEQ.Count() >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<int>())
+                {
+                    Execute(minion);
+                }
             }
 
             // Smart Last Hit

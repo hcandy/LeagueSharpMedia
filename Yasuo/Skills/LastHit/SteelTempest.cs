@@ -155,7 +155,7 @@
                     // if AOE is enabled and more than X units are around us.
                     if (this.Menu.Item(this.Name + "AOE").GetValue<bool>()
                         && this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value
-                        <= minions.Where(x => !x.InAutoAttackRange()).ToList().Count)
+                        <= minions.Where(x => !x.InAutoAttackRange() && x.Health > ProviderQ.GetDamage(x)).ToList().Count)
                     {
                         // Check for the minions centered position and wait until we are a bit away
                         // TODO: Add values like Spread of the minions

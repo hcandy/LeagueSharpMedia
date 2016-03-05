@@ -14,5 +14,4 @@ C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.Properties.
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.csproj.GenerateResource.Cache
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.exe
 C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.pdb
-C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\bin\Release\Yasuo.exe.CodeAnalysisLog.xml
-C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\bin\Release\Yasuo.exe.lastcodeanalysissucceeded
+C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\Debug\Yasuo.csprojResolveAssemblyReference.cache

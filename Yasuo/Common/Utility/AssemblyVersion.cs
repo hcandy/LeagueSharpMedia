@@ -70,7 +70,7 @@ namespace Yasuo.Common.Utility
                     return gitVersion;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine(@"MediaSuo: Failed to get new Version!");
             }
