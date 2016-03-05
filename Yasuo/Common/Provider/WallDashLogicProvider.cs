@@ -11,9 +11,9 @@ namespace Yasuo.Common.Provider
 
     static class WallDashLogicProvider
     {
-        public static bool IsWallDash(this Obj_AI_Base target, float dashRange, float minWallWidth = 50)
+        public static bool IsWallDash(this Obj_AI_Base unit, float dashRange, float minWallWidth = 50)
         {
-            return IsWallDash(target.ServerPosition, dashRange, minWallWidth);
+            return IsWallDash(unit.ServerPosition, dashRange, minWallWidth);
         }
 
         public static bool IsWallDash(this Vector3 position, float dashRange, float minWallWidth = 50)

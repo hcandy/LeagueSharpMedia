@@ -99,7 +99,7 @@ namespace Yasuo.Modules.WallDash
             if (this.Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
             {
                 Variables.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-                foreach (var unit in units.Where(unit => WallDashLogicProvider.IsWallDash(unit, Variables.Spells[SpellSlot.E].Range)))
+                foreach (var unit in units.Where(unit => unit.IsWallDash(Variables.Spells[SpellSlot.E].Range)))
                 {
                     if (!mouseCheck)
                     {

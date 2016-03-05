@@ -87,8 +87,6 @@
     <Compile Include="Common\Classes\Parent.cs" />
     <Compile Include="Common\Classes\Template.cs" />
     <Compile Include="Common\Data\Debuffs.cs" />
-    <Compile Include="Common\Enums\ModuleMode.cs" />
-    <Compile Include="Common\Enums\SkillMode.cs" />
     <Compile Include="Common\Extensions\Extensions.cs" />
     <Compile Include="Common\Extensions\AddToolTip.cs" />
     <Compile Include="Common\Objects\Dash.cs" />
