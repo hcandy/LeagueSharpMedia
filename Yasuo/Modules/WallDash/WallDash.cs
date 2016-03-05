@@ -23,7 +23,7 @@ namespace Yasuo.Modules.WallDash
             this.OnLoad();
         }
 
-        public List<Obj_AI_Base> BlacklistUnits;
+        public Dictionary<Obj_AI_Base, bool> BlacklistUnits;
 
         public override string Name => "Wall Dash";
 
@@ -45,6 +45,10 @@ namespace Yasuo.Modules.WallDash
 
         protected override sealed void OnLoad()
         {
+            foreach (var enemy in HeroManager.Enemies)
+            {
+                BlacklistUnits.Add(enemy, false);
+            }
             this.Menu = new Menu(this.Name, this.Name);
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
@@ -61,9 +65,6 @@ namespace Yasuo.Modules.WallDash
                 {
                     blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
                 }
-                MenuExtensions.AddToolTip(
-                    blacklist,
-                    "Setting a champion to 'on', will make the script not using Q for him anymore");
             }
             this.Menu.AddSubMenu(blacklist);
 
@@ -75,7 +76,7 @@ namespace Yasuo.Modules.WallDash
                 new MenuItem(this.Name + "MouseCheck", "Check for mouse position").SetValue(false));
 
             this.Menu.AddItem(
-    new MenuItem(this.Name + "MinWallWidth", "Minimum wall width: ").SetValue(new Slider(150, 10, (int) Variables.Spells[SpellSlot.E].Range / 2)));
+                new MenuItem(this.Name + "MinWallWidth", "Minimum wall width: ").SetValue(new Slider(150, 10, (int) Variables.Spells[SpellSlot.E].Range / 2)));
 
             this.Menu.AddItem(new MenuItem(this.Name + "Helper", "How it works")
                 .SetTooltip("Hold down "+this.Menu.Item(this.Name+"Keybind").GetValue<KeyBind>()+ " to let the assembly perform a Dash over a unit that will be a WallDash"));
@@ -91,8 +92,6 @@ namespace Yasuo.Modules.WallDash
 
         public void OnUpdate(EventArgs args)
         {
-            
-
             var mouseCheck = this.Menu.Item(this.Name + "MouseCheck").GetValue<bool>();
 
             var units = this.Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);

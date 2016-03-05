@@ -36,7 +36,9 @@ namespace Yasuo.Skills.Combo
 
         public override string Name => "Sweeping Blade";
 
-        public SweepingBladeLogicProvider Provider;
+        public SweepingBladeLogicProvider ProviderE;
+
+        public TurretLogicProvider ProviderTurret;
 
         protected override void OnEnable()
         {
@@ -114,7 +116,8 @@ namespace Yasuo.Skills.Combo
 
         protected override void OnInitialize()
         {
-            this.Provider = new SweepingBladeLogicProvider();
+            this.ProviderE = new SweepingBladeLogicProvider();
+            this.ProviderTurret = new TurretLogicProvider();
 
             base.OnInitialize();
         }
@@ -142,7 +145,7 @@ namespace Yasuo.Skills.Combo
                 Execute(targetE);
             }
 
-
+            #region dashVector Mode
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
@@ -164,18 +167,20 @@ namespace Yasuo.Skills.Combo
                     
                     break;
             }
+            #endregion
 
+            #region Path Settings
             if (Menu.Item(this.Name + "PathAroundSkillShots").GetValue<bool>())
             {
-                GapClosePath = Provider.GetPath(dashVector, aroundSkillshots: true);
+                GapClosePath = this.ProviderE.GetPath(dashVector, aroundSkillshots: true);
             }
             else
             {
-                GapClosePath = Provider.GetPath(dashVector);
+                GapClosePath = this.ProviderE.GetPath(dashVector);
             }
+            #endregion
 
-            
-
+            #region When to Execute and when not
             // if a path is given, and the first unit of the path is in dash range, and the path time is faster than running to the given vector (dashVactor)
             if (GapClosePath != null
                 && Variables.Player.Distance(GapClosePath.FirstUnit) <= Variables.Spells[SpellSlot.E].Range
@@ -189,24 +194,23 @@ namespace Yasuo.Skills.Combo
                         Helper.GetPathLenght(
                             Variables.Player.GetPath(
                                 Variables.Player.ServerPosition.Extend(
-                                    GapClosePath.FirstUnit,
+                                    GapClosePath.FirstUnit.ServerPosition,
                                     Variables.Spells[SpellSlot.E].Range),
                                 dashVector)) < Helper.GetPathLenght(Variables.Player.GetPath(dashVector)))
                     {
-                        Game.PrintChat(
-                            "Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
-                        Execute(MinionManager.GetMinions(GapClosePath.FirstUnit, 25, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None)
-                               .FirstOrDefault(x => x.ServerPosition == GapClosePath.FirstUnit));
+                        Game.PrintChat("Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
+
+                        Execute(GapClosePath.FirstUnit);
                     }
                     //TODO: else, find new path
                 }
                 else
                 {
-                    Execute(MinionManager.GetMinions(GapClosePath.FirstUnit, 25, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None)
-                               .FirstOrDefault(x => x.ServerPosition == GapClosePath.FirstUnit));
+                    Execute(GapClosePath.FirstUnit);
                 }
                 #endregion
             }
+            #endregion
         }
 
         public void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -227,23 +231,21 @@ namespace Yasuo.Skills.Combo
             this.GapClosePath?.Draw();
         }
 
-        private static void Execute(Obj_AI_Base target)
+        private void Execute(Obj_AI_Base unit)
         {
             try
             {
-                if (!target.IsValidTarget() || !Helper.IsUnderTowerSafe(target.ServerPosition))
+                if (!unit.IsValidTarget() || !ProviderTurret.IsSafe(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
                 {
                     return;
                 }
 
-                Variables.Spells[SpellSlot.E].CastOnUnit(target);
+                Variables.Spells[SpellSlot.E].CastOnUnit(unit);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(@"Skills/Combo/SweepingBlade/Execute: "+ex);
-                throw;
+                Console.WriteLine(@"Skills/Combo/SweepingBlade/Execute(): "+ex);
             }
-
         }
     }
 }

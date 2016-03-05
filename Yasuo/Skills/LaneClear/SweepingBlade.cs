@@ -32,19 +32,19 @@ namespace Yasuo.Skills.LaneClear
 
         public override string Name => "Sweeping Blade";
 
-        public SweepingBladeLogicProvider Provider;
+        public SweepingBladeLogicProvider ProviderE;
+
+        public TurretLogicProvider ProviderTurret;
 
         protected override void OnEnable()
         {
             Game.OnUpdate += this.OnUpdate;
-            Drawing.OnDraw += this.OnDraw;
             base.OnEnable();
         }
 
         protected override void OnDisable()
         {
             Game.OnUpdate -= this.OnUpdate;
-            Drawing.OnDraw -= this.OnDraw;
             base.OnDisable();
         }
 
@@ -91,7 +91,8 @@ namespace Yasuo.Skills.LaneClear
 
         protected override void OnInitialize()
         {
-            this.Provider = new SweepingBladeLogicProvider();
+            this.ProviderE = new SweepingBladeLogicProvider();
+            this.ProviderTurret = new TurretLogicProvider();
 
             base.OnInitialize();
         }
@@ -153,7 +154,7 @@ namespace Yasuo.Skills.LaneClear
                 var enemies = HeroManager.Enemies.Where(x => x.Health > 0).ToList();
                 List<Obj_AI_Base> possibleExecutions = new List<Obj_AI_Base>();
 
-                foreach (var x in minions.Where(unit => unit.Health <= Provider.GetDamage(unit) 
+                foreach (var x in minions.Where(unit => unit.Health <= this.ProviderE.GetDamage(unit) 
                                                 && unit.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range))
                 {
                     if (enemies.Count(enemy => enemy.Distance(Variables.Player.ServerPosition) <= 1000) > 0)
@@ -188,14 +189,11 @@ namespace Yasuo.Skills.LaneClear
 
         }
 
-        public void OnDraw(EventArgs args)
-        {
-        }
-
         private void Execute(Obj_AI_Base unit)
         {
+            // Check if Dash End position is safe under turret
             if (unit.IsValidTarget() && unit != null
-                && Helper.IsUnderTowerSafe(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
+                && ProviderTurret.IsSafe(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
             {
                 if (Menu.Item(this.Name + "NoWallJump").GetValue<bool>())
                 {

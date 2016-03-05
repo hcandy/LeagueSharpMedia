@@ -111,7 +111,7 @@ namespace Yasuo.Skills.Combo
             }
 
             // EQ > Synergyses with the E function in SweepingBlade/LogicProvider.cs
-            if (Variables.Player.IsDashing() && pred.UnitPosition.Distance(ObjectManager.Player.ServerPosition) <= Variables.Spells[SpellSlot.Q].Range)
+            if (Variables.Player.IsDashing() && target.Distance(ObjectManager.Player.ServerPosition) <= 375)
             {
                 Execute(target);
             }

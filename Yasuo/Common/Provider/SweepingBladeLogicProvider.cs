@@ -17,6 +17,7 @@
     using Point = Yasuo.Common.Algorithm.Djikstra.Point;
 
     // TODO: Add Waypoint System
+
     public class SweepingBladeLogicProvider
     {
         public static float CalculationRange;
@@ -48,7 +49,8 @@
                 var points = units.Select(Position => new Point(Position.ServerPosition)).ToList();
                 points.Add(new Point(Variables.Player.ServerPosition));
 
-                //TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
+                // TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
+                // NOTE: That would need a multipathing system that uses Djikstra Algorithm for every minion in E range and determines the shortest path based on that outcome.
                 foreach (var point in points)
                 {
                     foreach (var neighbour in points)
@@ -92,46 +94,38 @@
         /// <returns>List(Obj_Ai_Base)</returns>
         public List<Obj_AI_Base> GetUnits(Vector2 startPosition, bool minions = true, bool champions = true, bool noSkillshots = false)
         {
-            try
+            // Add all units
+            var units = new List<Obj_AI_Base>();
+
+            if (minions)
             {
-                // Add all units
-                var units = new List<Obj_AI_Base>();
+                units.AddRange(
+                    MinionManager.GetMinions(
+                        ObjectManager.Player.ServerPosition,
+                        CalculationRange,
+                        MinionTypes.All,
+                        MinionTeam.NotAlly));
+            }
 
-                if (minions)
-                {
-                    units.AddRange(
-                        MinionManager.GetMinions(
-                            ObjectManager.Player.ServerPosition,
-                            CalculationRange,
-                            MinionTypes.All,
-                            MinionTeam.NotAlly));
-                }
+            if (champions)
+            {
+                units.AddRange(HeroManager.Enemies);
+            }
 
-                if (champions)
-                {
-                    units.AddRange(HeroManager.Enemies);
-                }
-
-                if (noSkillshots)
-                {
-                    foreach (var x in units.Where(x => x.isInSkillshot()).ToList())
-                    {
-                        units.Remove(x);
-                    }
-                }
-
-                foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper") || x.IsDead || x.Health == 0).ToList())
+            if (noSkillshots)
+            {
+                foreach (var x in units.Where(x => x.isInSkillshot()).ToList())
                 {
                     units.Remove(x);
                 }
+            }
 
-                return units;
-            }
-            catch (Exception ex)
+            foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper") || x.IsDead || x.Health == 0).ToList())
             {
-                Console.WriteLine(@"[GetUnits]: "+ex);
+                units.Remove(x);
             }
-            return null;
+
+            return units;
         }
 
         public double GetDamage(Obj_AI_Base unit)

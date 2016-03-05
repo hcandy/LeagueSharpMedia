@@ -32,10 +32,12 @@ namespace Yasuo.Common.Pathing
             StartPosition = startPosition;
             EndPosition = endPosition;
 
-            FirstUnit = this.ReturnFirstPosition();
+            this.SetAll();
+
+            FirstUnit = Units.FirstOrDefault();
         }
 
-        public Vector3 FirstUnit { get; private set; }
+        public Obj_AI_Base FirstUnit { get; private set; }
 
         public int DangerValue { get; private set; }
 
@@ -108,7 +110,7 @@ namespace Yasuo.Common.Pathing
         // TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
-            var startDistance = this.ReturnFirstPosition().Distance(StartPosition);
+            var startDistance = this.FirstUnit.Distance(StartPosition);
             var endDistance = Positions.LastOrDefault().Distance(EndPosition);
 
             var x = 0f;
@@ -168,7 +170,7 @@ namespace Yasuo.Common.Pathing
             }
         }
 
-        public void SetAll()
+        private void SetAll()
         {
             try
             {
@@ -188,15 +190,6 @@ namespace Yasuo.Common.Pathing
             {             
                 Console.WriteLine(ex);
             }
-        }
-
-        public Vector3 ReturnFirstPosition()
-        {
-            if (Positions != null)
-            {
-                return this.Positions.FirstOrDefault(x => x != Variables.Player.ServerPosition);
-            }
-            return Vector3.Zero;
         }
 
         public void RemoveUnit(Obj_AI_Base unit)

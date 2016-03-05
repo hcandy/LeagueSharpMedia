@@ -101,6 +101,7 @@
     <Compile Include="Common\Provider\SafeZoneLogicProvider.cs" />
     <Compile Include="Common\Provider\SteelTempestLogicProvider.cs" />
     <Compile Include="Common\Provider\SweepingBladeLogicProvider.cs" />
+    <Compile Include="Common\Provider\TurretLogicProvider.cs" />
     <Compile Include="Common\Provider\WallDashLogicProvider.cs" />
     <Compile Include="Common\Provider\WindWallLogicProvider.cs" />
     <Compile Include="Common\Utility\AssemblyVersion.cs" />
