@@ -1,12 +1,8 @@
 ﻿// TODO: Add Dash End Positions as list. Maybe think about positive things when I change Obj_AI_Base to Connection or Point.
 // TODO: Rework Calculations based on Dash End Positions.
 
-namespace Yasuo.Common.Pathing
+namespace Yasuo.Common.Objects
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -14,7 +10,7 @@ namespace Yasuo.Common.Pathing
 
     using Color = System.Drawing.Color;
 
-    public class Dash
+    class Dash
     {
         public Vector3 StartPosition;
 
@@ -24,8 +20,8 @@ namespace Yasuo.Common.Pathing
         {
             this.SetDashLength();
             this.SetDangerValue();
-            StartPosition = Variables.Player.ServerPosition;
-            EndPosition = Variables.Player.ServerPosition.Extend(unit.ServerPosition, DashLenght);
+            this.StartPosition = Variables.Player.ServerPosition;
+            this.EndPosition = Variables.Player.ServerPosition.Extend(unit.ServerPosition, this.DashLenght);
         }
 
         public int DangerValue { get; private set; }
@@ -37,35 +33,35 @@ namespace Yasuo.Common.Pathing
         // TODO: Add Path in Skillshot, Add Enemies Around, Add Allies Around, Add Minions Around (?)
         public void SetDangerValue()
         {
-            DangerValue = 0;
+            this.DangerValue = 0;
         }
 
         public void SetDashTime()
         {
-            DashTime = DashLenght / Variables.Spells[SpellSlot.E].Speed;
+            this.DashTime = this.DashLenght / Variables.Spells[SpellSlot.E].Speed;
         }
 
         public void SetDashLength()
         {
-            DashLenght += Variables.Spells[SpellSlot.E].Range;
+            this.DashLenght += Variables.Spells[SpellSlot.E].Range;
         }
 
         public void Draw()
         {
             var color = Color.White;
 
-            if (EndPosition.CountEnemiesInRange(375) > 0)
+            if (this.EndPosition.CountEnemiesInRange(375) > 0)
             {
                 color = Color.Red;
             }
                 Drawing.DrawLine(
-                    Drawing.WorldToScreen(StartPosition),
-                    Drawing.WorldToScreen(EndPosition),
+                    Drawing.WorldToScreen(this.StartPosition),
+                    Drawing.WorldToScreen(this.EndPosition),
                     4f,
                     color);
 
 
-            Drawing.DrawCircle(EndPosition, 375, color);
+            Drawing.DrawCircle(this.EndPosition, 375, color);
         }
 
     }

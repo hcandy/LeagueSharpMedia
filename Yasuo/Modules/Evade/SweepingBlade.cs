@@ -6,9 +6,9 @@ namespace Yasuo.Modules.Evade
     using LeagueSharp.Common;
     using LeagueSharp.SDK;
 
-    using Yasuo.Common.Pathing;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Classes;
+    using Yasuo.Common.Objects;
 
     using Variables = Yasuo.Variables;
 

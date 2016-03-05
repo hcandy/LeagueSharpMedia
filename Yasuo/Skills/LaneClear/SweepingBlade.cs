@@ -14,7 +14,6 @@ namespace Yasuo.Skills.LaneClear
     using Yasuo.Common;
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
-    using Yasuo.Common.Pathing;
     using Yasuo.Common.Utility;
     using Yasuo.Modules.WallDash;
     using Yasuo.Skills.Combo;

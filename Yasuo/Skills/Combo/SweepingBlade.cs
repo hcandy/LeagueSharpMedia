@@ -14,13 +14,13 @@ namespace Yasuo.Skills.Combo
     using Yasuo.Common;
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
-    using Yasuo.Common.Pathing;
+    using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
     using Yasuo.Modules;
     using Yasuo.Modules.WallDash;
 
-    using YasuoDash = Common.Pathing.Dash;
+    using YasuoDash = Yasuo.Common.Objects.Dash;
 
     internal class SweepingBlade : Child<Combo>
     {
@@ -102,6 +102,10 @@ namespace Yasuo.Skills.Combo
             this.Menu.AddItem(
                 new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
 
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "MinOwnHealth", "Min Player Health%").SetValue(new Slider(15, 1, 100))
+                    .SetTooltip("The assembly will try to E on a minion in order to Q"));
+
             #endregion
 
             // Prediction
@@ -152,7 +156,8 @@ namespace Yasuo.Skills.Combo
                 {
                     if (meanVector.Distance(dash.EndPosition) >= meanVector.Distance(Variables.Player.ServerPosition)
                         && dash.DangerValue <= 4
-                        && Game.CursorPos.Distance(dash.EndPosition) <= Game.CursorPos.Distance(dash.StartPosition))
+                        && Game.CursorPos.Distance(dash.EndPosition) <= Game.CursorPos.Distance(dash.StartPosition)
+                        && Variables.Player.HealthPercent > Menu.Item(this.Name + "MinOwnHealth").GetValue<Slider>().Value)
                     {
                         Execute(targetE);
                     }

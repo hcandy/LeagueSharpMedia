@@ -1,7 +1,7 @@
 ﻿// TODO: Add Dash End Positions as list. Maybe think about positive things when I change Obj_AI_Base to Connection or Point.
 // TODO: Rework Calculations based on Dash End Positions.
 
-namespace Yasuo.Common.Pathing
+namespace Yasuo.Common.Objects
 {
     using System;
     using System.Collections.Generic;
@@ -29,12 +29,12 @@ namespace Yasuo.Common.Pathing
         public Path(List<Vector3> positions, Vector3 startPosition, Vector3 endPosition)
         {
             this.Positions = positions;
-            StartPosition = startPosition;
-            EndPosition = endPosition;
+            this.StartPosition = startPosition;
+            this.EndPosition = endPosition;
 
             this.SetAll();
 
-            FirstUnit = Units.FirstOrDefault();
+            this.FirstUnit = this.Units.FirstOrDefault();
         }
 
         public Obj_AI_Base FirstUnit { get; private set; }
@@ -56,7 +56,7 @@ namespace Yasuo.Common.Pathing
         public void VecToUnits()
         {
             int count = 0;
-            foreach (var position in Positions)
+            foreach (var position in this.Positions)
             {
                 var allminions = MinionManager.GetMinions(position, 50, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None);
                 var position1 = position;
@@ -64,7 +64,7 @@ namespace Yasuo.Common.Pathing
 
                 if (minion != null && minion.IsValid)
                 {
-                    Units.Add(minion);
+                    this.Units.Add(minion);
                 }
 
                 count++;
@@ -78,40 +78,40 @@ namespace Yasuo.Common.Pathing
             {
                 foreach (var hero in HeroManager.Enemies.Where(y => y.Distance(unit) <= Variables.Spells[SpellSlot.E].Range))
                 {
-                    DangerValue += (int)TargetSelector.GetPriority(hero);
+                    this.DangerValue += (int)TargetSelector.GetPriority(hero);
                 }
-                DangerValue += 1;
+                this.DangerValue += 1;
             }
         }
 
         public void SetWalkTime()
         {
-            WalkTime = WalkLenght / Variables.Player.MoveSpeed;
+            this.WalkTime = this.WalkLenght / Variables.Player.MoveSpeed;
         }
 
         public void SetDashTime()
         {
-            DashTime = DashLenght / Variables.Spells[SpellSlot.E].Speed;
+            this.DashTime = this.DashLenght / Variables.Spells[SpellSlot.E].Speed;
         }
 
         public void SetPathTime()
         {
-            PathTime = WalkTime + DashTime;
+            this.PathTime = this.WalkTime + this.DashTime;
         }
 
         public void SetDashLength()
         {
             foreach (var unit in this.Positions)
             {
-                DashLenght += Variables.Spells[SpellSlot.E].Range;
+                this.DashLenght += Variables.Spells[SpellSlot.E].Range;
             }
         }
 
         // TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
-            var startDistance = this.FirstUnit.Distance(StartPosition);
-            var endDistance = Positions.LastOrDefault().Distance(EndPosition);
+            var startDistance = this.FirstUnit.Distance(this.StartPosition);
+            var endDistance = this.Positions.LastOrDefault().Distance(this.EndPosition);
 
             var x = 0f;
 
@@ -120,32 +120,32 @@ namespace Yasuo.Common.Pathing
                 x += this.Positions[i].Distance(this.Positions[i + 1]);
             }
 
-            var inbetweenDistance = (float) x - DashLenght;
+            var inbetweenDistance = (float) x - this.DashLenght;
 
             if (startDistance <= Variables.Spells[SpellSlot.E].Range)
             {
-                WalkLenght = startDistance + endDistance;
+                this.WalkLenght = startDistance + endDistance;
 
                 if (inbetweenDistance > 0)
                 {
-                    WalkLenght += inbetweenDistance;
+                    this.WalkLenght += inbetweenDistance;
                 }
             }
         }
 
         public void SetPathLengtht()
         {
-            PathLenght = WalkLenght + PathLenght;
+            this.PathLenght = this.WalkLenght + this.PathLenght;
         }
 
         // TODO: No clue if that works
         public void SetRealPath()
         {
-            if (StartPosition == null)
+            if (this.StartPosition == null)
             {
                 return;
             }
-            RealPath.StartPosition = Variables.Player.ServerPosition;
+            this.RealPath.StartPosition = Variables.Player.ServerPosition;
             var oldPosition = Variables.Player.ServerPosition;
 
             for (int i = 0; i < this.Units.Count; i++)
@@ -158,14 +158,14 @@ namespace Yasuo.Common.Pathing
                 if (oldPosition.Distance(unit.ServerPosition) < Variables.Spells[SpellSlot.E].Range)
                 {
                     oldPosition = newPosition;
-                    RealPath.AddPosition(newPosition);
+                    this.RealPath.AddPosition(newPosition);
                 }
 
                 // last unit reached
-                if (i == Units.Count - 1)
+                if (i == this.Units.Count - 1)
                 {
-                    RealPath.RemovePosition(newPosition);
-                    RealPath.EndPosition = newPosition;
+                    this.RealPath.RemovePosition(newPosition);
+                    this.RealPath.EndPosition = newPosition;
                 }
             }
         }
@@ -194,7 +194,7 @@ namespace Yasuo.Common.Pathing
 
         public void RemoveUnit(Obj_AI_Base unit)
         {
-            if (Positions.Contains(unit.ServerPosition))
+            if (this.Positions.Contains(unit.ServerPosition))
             {
                 this.Positions.Remove(unit.ServerPosition);
             }
@@ -202,7 +202,7 @@ namespace Yasuo.Common.Pathing
 
         public void AddUnit(Obj_AI_Base unit)
         {
-            if (!Positions.Contains(unit.ServerPosition))
+            if (!this.Positions.Contains(unit.ServerPosition))
             {
                 this.Positions.Add(unit.ServerPosition);
             }
@@ -210,20 +210,20 @@ namespace Yasuo.Common.Pathing
 
         public void RemovePosition(Vector3 position)
         {
-            if (!Positions.Contains(position))
+            if (!this.Positions.Contains(position))
             {
                 return;   
             }
-            Positions.Remove(position);
+            this.Positions.Remove(position);
         }
 
         public void AddPosition(Vector3 position)
         {
-            if (Positions.Contains(position))
+            if (this.Positions.Contains(position))
             {
                 return;
             }
-            Positions.Add(position);
+            this.Positions.Add(position);
         }
 
         //TODO: Add color, Line width, end and start point boolean
@@ -231,16 +231,16 @@ namespace Yasuo.Common.Pathing
         {
             try
             {
-                Drawing.DrawText(500, 500, System.Drawing.Color.White, "Positions: "+Positions.Count);
-                if (Positions != null && Positions.Count > 0)
+                Drawing.DrawText(500, 500, System.Drawing.Color.White, "Positions: "+this.Positions.Count);
+                if (this.Positions != null && this.Positions.Count > 0)
                 {
-                    for (var i = 0; i < Positions.Count; i++)
+                    for (var i = 0; i < this.Positions.Count; i++)
                     {
-                        if (Positions.Count > i + 1 && Positions[i + 1].IsValid())
+                        if (this.Positions.Count > i + 1 && this.Positions[i + 1].IsValid())
                         {
                             Drawing.DrawLine(
-                            Drawing.WorldToScreen(Positions[i]),
-                            Drawing.WorldToScreen(Positions[i + 1]),
+                            Drawing.WorldToScreen(this.Positions[i]),
+                            Drawing.WorldToScreen(this.Positions[i + 1]),
                                 4f,
                             System.Drawing.Color.White);
                         }

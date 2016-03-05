@@ -10,7 +10,7 @@
     using Yasuo.Common;
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
-    using Yasuo.Common.Pathing;
+    using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
 
     internal class SweepingBlade : Child<Mixed>

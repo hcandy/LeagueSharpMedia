@@ -6,6 +6,8 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using SharpDX;
+
     using Yasuo.Common.Extensions;
 
     class LastBreathLogicProvider
@@ -30,18 +32,18 @@
             return damage.MaxOrDefault(x => x.Value).Key;
         }
 
-        public List<Obj_AI_Hero> GetEnemiesAround(Obj_AI_Hero target)
+        public List<Obj_AI_Hero> GetEnemiesAround(Vector3 position)
         {
             var result = new List<Obj_AI_Hero>();
 
-            result.AddRange(target.GetEnemiesInRange(Variables.Spells[SpellSlot.R].Range).Where(x => x.IsAirbone()));
+            result.AddRange(position.GetEnemiesInRange(475).Where(x => x.IsAirbone()));
 
             return result;
         }
 
         public Obj_AI_Hero LeastKnockUpTime(Obj_AI_Hero target)
         {
-            var buffTime = this.GetEnemiesAround(target).ToDictionary(x => target, x => target.RemainingAirboneTime());
+            var buffTime = this.GetEnemiesAround(target.ServerPosition).ToDictionary(x => target, x => target.RemainingAirboneTime());
 
             return buffTime.MinOrDefault(x => x.Value).Key;
         }
@@ -90,6 +92,35 @@
             {
                 return false;
             }
+        }
+
+        public Vector3 GetExecutionPosition(Obj_AI_Hero target)
+        {
+            var endPosition = Vector3.Zero;
+            if (target.IsValid)
+            {
+                if (target.UnderTurret(true))
+                {
+                    var turret =
+                        ObjectManager.Get<Obj_AI_Turret>()
+                            .Where(x => !x.IsAlly && x.Health > 0)
+                            .MinOrDefault(x => x.Distance(Variables.Player));
+
+                    if (turret.IsValid)
+                    {
+                        var y = target.Distance(turret);
+
+                        endPosition = turret.ServerPosition.Extend(
+                            target.ServerPosition,
+                            turret.AttackRange + target.BoundingRadius - y);
+                    }
+                }
+                else
+                {
+                    endPosition = target.ServerPosition;
+                }
+            }
+            return endPosition;
         }
     }
 }

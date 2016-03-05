@@ -90,6 +90,7 @@
     <Compile Include="Common\Extensions\Extensions.cs" />
     <Compile Include="Common\Extensions\AddToolTip.cs" />
     <Compile Include="Common\Objects\Dash.cs" />
+    <Compile Include="Common\Objects\LastBreath.cs" />
     <Compile Include="Common\Objects\Path.cs" />
     <Compile Include="Common\Predictions\PredictionOktw.cs" />
     <Compile Include="Common\Provider\FlashLogicProvider.cs" />

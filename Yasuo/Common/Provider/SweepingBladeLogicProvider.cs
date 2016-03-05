@@ -11,7 +11,7 @@
     using SharpDX;
 
     using Yasuo.Common.Algorithm.Djikstra;
-    using Yasuo.Common.Pathing;
+    using Yasuo.Common.Objects;
     using Yasuo.Common.Utility;
 
     using Point = Yasuo.Common.Algorithm.Djikstra.Point;

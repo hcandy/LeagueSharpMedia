@@ -126,12 +126,12 @@
             {
                 if (Menu.Item(Name + "OverkillCheck").GetValue<bool>())
                 {
-                    var healthAll = Provider.GetEnemiesAround(target).Sum(x => x.Health);
+                    var healthAll = Provider.GetEnemiesAround(target.ServerPosition).Sum(x => x.Health);
                     var damageAll = 0f;
 
                     foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R))
                     {
-                        foreach (var enemy in Provider.GetEnemiesAround(target))
+                        foreach (var enemy in Provider.GetEnemiesAround(target.ServerPosition))
                         {
                             damageAll += spell.Value.GetDamage(enemy);
                         }

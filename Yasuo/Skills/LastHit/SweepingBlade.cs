@@ -9,7 +9,7 @@
 
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
-    using Yasuo.Common.Pathing;
+    using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
     using Yasuo.Skills.LaneClear;
