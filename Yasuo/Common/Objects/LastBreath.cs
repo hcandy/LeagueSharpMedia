@@ -24,9 +24,9 @@ namespace Yasuo.Common.Objects
 
         public TurretLogicProvider ProviderTurret;
 
-        public Vector3 StartPosition;
+        public Vector3 StartPosition { get; private set; }
 
-        public Vector3 EndPosition;
+        public Vector3 EndPosition { get; private set; }
 
         public Obj_AI_Hero Target;
 
@@ -37,6 +37,7 @@ namespace Yasuo.Common.Objects
 
             this.Target = unit;
             this.StartPosition = Variables.Player.ServerPosition;
+            this.EndPosition = ProviderR.GetExecutionPosition(Target);
 
             this.SetEndPosition();
             this.SetAffectedEnemies();
@@ -60,12 +61,12 @@ namespace Yasuo.Common.Objects
         {
             try
             {
-                foreach (var enemy in HeroManager.Enemies.Where(x => !x.IsAirbone() && x.Distance(EndPosition) <= 750))
+                foreach (var enemy in HeroManager.Enemies.Where(x => !x.IsAirbone() && x.Distance(this.EndPosition) <= 750))
                 {
                     DangerValue += 1;
                 }
 
-                if (!ProviderTurret.IsSafe(EndPosition))
+                if (!ProviderTurret.IsSafe(this.EndPosition))
                 {
                     DangerValue += 5;
                 }
@@ -86,7 +87,7 @@ namespace Yasuo.Common.Objects
 
         private void SetEndPosition()
         {
-            ProviderR.GetExecutionPosition(Target);
+            this.EndPosition = ProviderR.GetExecutionPosition(Target);
         }
 
         private void SetKnockUpAmount()
@@ -111,7 +112,7 @@ namespace Yasuo.Common.Objects
 
         private void SetAffectedEnemies()
         {
-            foreach (var enemy in HeroManager.Enemies.Where(x => x.IsAirbone() && x.Distance(EndPosition) <= 475))
+            foreach (var enemy in HeroManager.Enemies.Where(x => x.IsAirbone() && x.Distance(this.EndPosition) <= 475))
             {
                 this.AffectedEnemies.Add(enemy);
             }
