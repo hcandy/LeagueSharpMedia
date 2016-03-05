@@ -133,11 +133,12 @@ namespace Yasuo.Skills.Combo
 
             #region Cast on Champion
 
-            var targetE = TargetSelector.SelectedTarget;
+            var targetE = TargetSelector.SelectedTarget ?? TargetSelector.GetTarget(
+                Variables.Spells[SpellSlot.E].Range,
+                TargetSelector.DamageType.Physical);
 
             if (targetE != null
-                && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
-                && !targetE.HasBuff("YasuoDashWrapper"))
+                && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range)
             {
                 YasuoDash dash = new YasuoDash(targetE);
 
@@ -264,8 +265,8 @@ namespace Yasuo.Skills.Combo
             try
             {
                 if (!unit.IsValidTarget()
-                    || !ProviderTurret.IsSafe(
-                        Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
+                    || !ProviderTurret.IsSafe(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range))
+                    || unit.HasBuff("YasuoDashWrapper"))
                 {
                     return;
                 }
