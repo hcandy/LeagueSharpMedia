@@ -3,6 +3,7 @@
 
 namespace Yasuo.Common.Objects
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -53,19 +54,27 @@ namespace Yasuo.Common.Objects
 
         public float DamageDealt { get; private set; }
 
-        public List<Obj_AI_Hero> affectedEnemies { get; private set; } 
+        public List<Obj_AI_Hero> AffectedEnemies { get; private set; } 
 
         private void SetDangerValue()
         {
-            foreach (var enemy in HeroManager.Enemies.Where(x => !x.IsAirbone() && x.Distance(EndPosition) <= 750))
+            try
             {
-                DangerValue += 1;
+                foreach (var enemy in HeroManager.Enemies.Where(x => !x.IsAirbone() && x.Distance(EndPosition) <= 750))
+                {
+                    DangerValue += 1;
+                }
+
+                if (!ProviderTurret.IsSafe(EndPosition))
+                {
+                    DangerValue += 5;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(@"[SetDangerValue:] "+ex); 
             }
 
-            if (!ProviderTurret.IsSafe(EndPosition))
-            {
-                DangerValue += 5;
-            }
 
             // TODO: Add Skillshots
         }
@@ -82,23 +91,31 @@ namespace Yasuo.Common.Objects
 
         private void SetKnockUpAmount()
         {
-            EnemiesInUlt = affectedEnemies.Count;
+            if (AffectedEnemies != null)
+            {
+                EnemiesInUlt = this.AffectedEnemies.Count;
+            }
         }
 
         private void SetDamageDealt()
         {
-            foreach (var enemy in affectedEnemies)
+            if (AffectedEnemies != null)
             {
-                DamageDealt += Variables.Spells[SpellSlot.R].GetDamage(enemy);
+                foreach (var enemy in this.AffectedEnemies)
+                {
+                    DamageDealt += Variables.Spells[SpellSlot.R].GetDamage(enemy);
+                }
             }
+            Game.PrintChat("Predicted Dmg dealt: "+DamageDealt);
         }
 
         private void SetAffectedEnemies()
         {
             foreach (var enemy in HeroManager.Enemies.Where(x => x.IsAirbone() && x.Distance(EndPosition) <= 475))
             {
-                affectedEnemies.Add(enemy);
+                this.AffectedEnemies.Add(enemy);
             }
+            Game.PrintChat("Enemies knocked up: "+AffectedEnemies.Count);
         }
 
         public void Draw()
@@ -114,7 +131,7 @@ namespace Yasuo.Common.Objects
 
             Drawing.DrawCircle(this.EndPosition, 200, Color.White);
 
-            foreach (var enemy in affectedEnemies)
+            foreach (var enemy in this.AffectedEnemies)
             {
                 Drawing.DrawCircle(enemy.Position, enemy.BoundingRadius, color);
             }

@@ -270,7 +270,7 @@ namespace Yasuo.Skills.Combo
             try
             {
                 if (!unit.IsValidTarget()
-                    || !ProviderTurret.IsSafe(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range))
+                    
                     || unit.HasBuff("YasuoDashWrapper"))
                 {
                     return;

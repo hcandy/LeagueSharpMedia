@@ -92,7 +92,7 @@
         public Vector3 GetExecutionPosition(Obj_AI_Hero target)
         {
             var endPosition = Vector3.Zero;
-            if (target.IsValid)
+            if (target.IsValid && target != null)
             {
                 if (target.UnderTurret(true))
                 {
@@ -101,7 +101,7 @@
                             .Where(x => !x.IsAlly && x.Health > 0)
                             .MinOrDefault(x => x.Distance(Variables.Player));
 
-                    if (turret.IsValid)
+                    if (turret.IsValid && turret != null)
                     {
                         var y = target.Distance(turret);
 
