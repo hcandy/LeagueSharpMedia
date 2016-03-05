@@ -20,7 +20,7 @@ namespace Yasuo.Skills.Combo
     using Yasuo.Modules;
     using Yasuo.Modules.WallDash;
 
-    using Color = System.Drawing.Color;
+    using YasuoDash = Common.Pathing.Dash;
 
     internal class SweepingBlade : Child<Combo>
     {
@@ -88,8 +88,8 @@ namespace Yasuo.Skills.Combo
                     .SetTooltip("The assembly will try to E on a minion in order to Q"));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "PathAroundSkillShots", "[Disabled] Try to Path around Skillshots").SetValue(true)
-                    .SetTooltip("if this is enabled, the assembly will path around a skillshot if a path is given"));
+                new MenuItem(this.Name + "PathAroundSkillShots", "[Disabled] Try to Path around Skillshots").SetValue(
+                    true).SetTooltip("if this is enabled, the assembly will path around a skillshot if a path is given"));
 
             // EQ
 
@@ -131,25 +131,43 @@ namespace Yasuo.Skills.Combo
                 return;
             }
 
-            var dashVector = Vector3.Zero;
+            #region Cast on Champion
 
-            var targetE = TargetSelector.GetTarget(
-                        Variables.Spells[SpellSlot.E].Range,
-                        TargetSelector.DamageType.Physical);
+            var targetE = TargetSelector.SelectedTarget;
 
             if (targetE != null
                 && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
-                && Variables.Spells[SpellSlot.Q].IsReady()
                 && !targetE.HasBuff("YasuoDashWrapper"))
             {
-                Execute(targetE);
+                YasuoDash dash = new YasuoDash(targetE);
+
+                Vector3 meanVector =
+                    Helper.GetMeanVector3(
+                        HeroManager.Enemies.Where(x => x.Distance(Variables.Player.ServerPosition) <= 900)
+                            .Select(enemy => enemy.ServerPosition)
+                            .ToList());
+
+                if (meanVector != Vector3.Zero)
+                {
+                    if (meanVector.Distance(dash.EndPosition) >= meanVector.Distance(Variables.Player.ServerPosition)
+                        && dash.DangerValue <= 4
+                        && Game.CursorPos.Distance(dash.EndPosition) <= Game.CursorPos.Distance(dash.StartPosition))
+                    {
+                        Execute(targetE);
+                    }
+                }
             }
 
-            #region dashVector Mode
+            #endregion
+
+            #region targetedVector Mode
+
+            var targetedVector = Vector3.Zero;
+
             switch (this.Menu.Item(this.Name + "ModeTarget").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    dashVector = Game.CursorPos;
+                    targetedVector = Game.CursorPos;
                     break;
                 case 1:
                     var target = TargetSelector.GetTarget(
@@ -158,35 +176,42 @@ namespace Yasuo.Skills.Combo
 
                     if (Menu.Item(this.Name + "Prediction").GetValue<bool>())
                     {
-                        dashVector = Prediction.GetPrediction(target, Variables.Player.Distance(target) / 1000).UnitPosition;
+                        targetedVector =
+                            Prediction.GetPrediction(target, Variables.Player.Distance(target) / 1000).UnitPosition;
                     }
                     else
                     {
-                        dashVector = target.ServerPosition;
+                        targetedVector = target.ServerPosition;
                     }
-                    
+
                     break;
             }
+
             #endregion
 
             #region Path Settings
+
             if (Menu.Item(this.Name + "PathAroundSkillShots").GetValue<bool>())
             {
-                GapClosePath = this.ProviderE.GetPath(dashVector, aroundSkillshots: true);
+                GapClosePath = this.ProviderE.GetPath(targetedVector, aroundSkillshots: true);
             }
             else
             {
-                GapClosePath = this.ProviderE.GetPath(dashVector);
+                GapClosePath = this.ProviderE.GetPath(targetedVector);
             }
+
             #endregion
 
             #region When to Execute and when not
+
             // if a path is given, and the first unit of the path is in dash range, and the path time is faster than running to the given vector (dashVactor)
             if (GapClosePath != null
                 && Variables.Player.Distance(GapClosePath.FirstUnit) <= Variables.Spells[SpellSlot.E].Range
-                && GapClosePath.PathTime <= Helper.GetPathLenght(Variables.Player.GetPath(dashVector)) / Variables.Player.MoveSpeed)
+                && GapClosePath.PathTime
+                <= Helper.GetPathLenght(Variables.Player.GetPath(targetedVector)) / Variables.Player.MoveSpeed)
             {
                 #region WallCheck
+
                 // if WallDash
                 if (GapClosePath.FirstUnit.IsWallDash(Variables.Spells[SpellSlot.E].Range))
                 {
@@ -196,9 +221,10 @@ namespace Yasuo.Skills.Combo
                                 Variables.Player.ServerPosition.Extend(
                                     GapClosePath.FirstUnit.ServerPosition,
                                     Variables.Spells[SpellSlot.E].Range),
-                                dashVector)) < Helper.GetPathLenght(Variables.Player.GetPath(dashVector)))
+                                targetedVector)) < Helper.GetPathLenght(Variables.Player.GetPath(targetedVector)))
                     {
-                        Game.PrintChat("Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
+                        Game.PrintChat(
+                            "Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
 
                         Execute(GapClosePath.FirstUnit);
                     }
@@ -208,8 +234,10 @@ namespace Yasuo.Skills.Combo
                 {
                     Execute(GapClosePath.FirstUnit);
                 }
+
                 #endregion
             }
+
             #endregion
         }
 
@@ -235,7 +263,9 @@ namespace Yasuo.Skills.Combo
         {
             try
             {
-                if (!unit.IsValidTarget() || !ProviderTurret.IsSafe(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
+                if (!unit.IsValidTarget()
+                    || !ProviderTurret.IsSafe(
+                        Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
                 {
                     return;
                 }
@@ -244,9 +274,8 @@ namespace Yasuo.Skills.Combo
             }
             catch (Exception ex)
             {
-                Console.WriteLine(@"Skills/Combo/SweepingBlade/Execute(): "+ex);
+                Console.WriteLine(@"Skills/Combo/SweepingBlade/Execute(): " + ex);
             }
         }
     }
 }
-

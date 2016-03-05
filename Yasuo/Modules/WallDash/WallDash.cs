@@ -23,7 +23,7 @@ namespace Yasuo.Modules.WallDash
             this.OnLoad();
         }
 
-        public Dictionary<Obj_AI_Base, bool> BlacklistUnits;
+        //public Dictionary<Obj_AI_Base, bool> BlacklistUnits;
 
         public override string Name => "Wall Dash";
 
@@ -45,28 +45,24 @@ namespace Yasuo.Modules.WallDash
 
         protected override sealed void OnLoad()
         {
-            foreach (var enemy in HeroManager.Enemies)
-            {
-                BlacklistUnits.Add(enemy, false);
-            }
             this.Menu = new Menu(this.Name, this.Name);
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
-            // Blacklist
-            var blacklist = new Menu("Blacklist", this.Name + "Blacklist");
+            //// Blacklist
+            //var blacklist = new Menu("Blacklist", this.Name + "Blacklist");
 
-            if (HeroManager.Enemies.Count == 0)
-            {
-                blacklist.AddItem(new MenuItem(blacklist.Name + "null", "No enemies found"));
-            }
-            else
-            {
-                foreach (var x in HeroManager.Enemies)
-                {
-                    blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
-                }
-            }
-            this.Menu.AddSubMenu(blacklist);
+            //if (HeroManager.Enemies.Count == 0)
+            //{
+            //    blacklist.AddItem(new MenuItem(blacklist.Name + "null", "No enemies found"));
+            //}
+            //else
+            //{
+            //    foreach (var x in HeroManager.Enemies)
+            //    {
+            //        blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
+            //    }
+            //}
+            //this.Menu.AddSubMenu(blacklist);
 
 
             this.Menu.AddItem(
