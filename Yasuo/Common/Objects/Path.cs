@@ -12,6 +12,8 @@ namespace Yasuo.Common.Objects
 
     using SharpDX;
 
+    using Yasuo.Common.Provider;
+
     public class Path
     {
         public Vector3 StartPosition;
@@ -24,17 +26,25 @@ namespace Yasuo.Common.Objects
 
         public List<Vector3> Positions;
 
-        public List<Obj_AI_Base> Units; 
+        public List<Obj_AI_Base> Units;
 
-        public Path(List<Vector3> positions, Vector3 startPosition, Vector3 endPosition)
+        private SweepingBladeLogicProvider ProviderE;
+
+        public Path(List<Obj_AI_Base> units, Vector3 startPosition, Vector3 endPosition)
         {
-            this.Positions = positions;
+            ProviderE = new SweepingBladeLogicProvider(startPosition.Distance(endPosition) + 150);
+            this.Units = units;
+            FirstUnit = Units.MinOrDefault(x => x.Distance(Variables.Player.ServerPosition));
+
             this.StartPosition = startPosition;
             this.EndPosition = endPosition;
 
             this.SetAll();
 
-            this.FirstUnit = this.Units.FirstOrDefault();
+            if (Units != null && Units.Count > 0)
+            {
+                this.FirstUnit = this.Units.FirstOrDefault();
+            }
         }
 
         public Obj_AI_Base FirstUnit { get; private set; }
@@ -53,25 +63,18 @@ namespace Yasuo.Common.Objects
 
         public float PathLenght { get; private set; }
 
-        public void VecToUnits()
+        public void UnitsToVec()
         {
-            int count = 0;
-            foreach (var position in this.Positions)
+            foreach (var unit in this.Units)
             {
-                var allminions = MinionManager.GetMinions(position, 50, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None);
-                var position1 = position;
-                var minion = allminions.MinOrDefault(x => x.Distance(position1));
-
-                if (minion != null && minion.IsValid)
+                if (!Positions.Contains(unit.ServerPosition))
                 {
-                    this.Units.Add(minion);
+                    Positions.Add(unit.ServerPosition);
                 }
-
-                count++;
             }
-            Game.PrintChat("Converted Vectors to Units amount: "+count);
         }
 
+        // TODO: Add Skillshots in Path (Based on Danger Level)
         public void SetDangerValue()
         {
             foreach (var unit in this.Positions.Where(x => x.CountEnemiesInRange(Variables.Spells[SpellSlot.E].Range) > 0))
@@ -110,7 +113,7 @@ namespace Yasuo.Common.Objects
         // TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
-            var startDistance = this.FirstUnit.Distance(this.StartPosition);
+            var startDistance = this.Positions.FirstOrDefault().Distance(this.StartPosition);
             var endDistance = this.Positions.LastOrDefault().Distance(this.EndPosition);
 
             var x = 0f;
@@ -141,10 +144,6 @@ namespace Yasuo.Common.Objects
         // TODO: No clue if that works
         public void SetRealPath()
         {
-            if (this.StartPosition == null)
-            {
-                return;
-            }
             this.RealPath.StartPosition = Variables.Player.ServerPosition;
             var oldPosition = Variables.Player.ServerPosition;
 
@@ -174,7 +173,7 @@ namespace Yasuo.Common.Objects
         {
             try
             {
-                this.VecToUnits();
+                this.UnitsToVec();
 
                 this.SetDashLength();
                 this.SetWalkLength();
@@ -257,6 +256,5 @@ namespace Yasuo.Common.Objects
 
 
         }
-
     }
 }

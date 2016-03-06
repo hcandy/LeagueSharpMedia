@@ -22,10 +22,6 @@
             this.OnLoad();
         }
 
-        public List<Obj_AI_Base> BlacklistUnits;
-
-        public Path GapClosePath;
-
         public override string Name => "Sweeping Blade";
 
         public SweepingBladeLogicProvider Provider;

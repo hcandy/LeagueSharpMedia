@@ -6,6 +6,7 @@ namespace Yasuo.Common.Objects
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using Yasuo.Common.Provider;
     using SharpDX;
 
     using Color = System.Drawing.Color;
@@ -16,12 +17,18 @@ namespace Yasuo.Common.Objects
 
         public Vector3 EndPosition;
 
+        public Obj_AI_Base Unit;
+
         public Dash(Obj_AI_Base unit)
         {
-            this.SetDashLength();
-            this.SetDangerValue();
+            Unit = unit;
             this.StartPosition = Variables.Player.ServerPosition;
             this.EndPosition = Variables.Player.ServerPosition.Extend(unit.ServerPosition, this.DashLenght);
+
+            this.SetDashLength();
+            this.SetDangerValue();
+
+            this.CheckWallDash();
         }
 
         public int DangerValue { get; private set; }
@@ -30,7 +37,9 @@ namespace Yasuo.Common.Objects
 
         public float DashLenght { get; private set; }
 
-        // TODO: Add Path in Skillshot, Add Enemies Around, Add Allies Around, Add Minions Around (?)
+        public bool IsWallDash { get; private set; }
+
+        // TODO: Add Path in Skillshot (Based on Skillshot Danger value) , Add Enemies Around (Based on Priority), Add Allies Around, Add Minions Around (?)
         public void SetDangerValue()
         {
             this.DangerValue = 0;
@@ -43,7 +52,19 @@ namespace Yasuo.Common.Objects
 
         public void SetDashLength()
         {
-            this.DashLenght += Variables.Spells[SpellSlot.E].Range;
+            if (!this.IsWallDash && EndPosition.IsWall())
+            {
+                EndPosition = WallDashLogicProvider.GetFirstWallPoint(StartPosition, EndPosition);
+            }
+            this.DashLenght = StartPosition.Distance(EndPosition);
+        }
+
+        public void CheckWallDash(float minWallWidth = 50)
+        {
+            if (this.Unit.IsWallDash(this.DashLenght, minWallWidth))
+            {
+                IsWallDash = true;
+            }
         }
 
         public void Draw()
@@ -59,7 +80,6 @@ namespace Yasuo.Common.Objects
                     Drawing.WorldToScreen(this.EndPosition),
                     4f,
                     color);
-
 
             Drawing.DrawCircle(this.EndPosition, 375, color);
         }

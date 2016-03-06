@@ -182,8 +182,15 @@ namespace Yasuo.Skills.Combo
 
                     if (Menu.Item(this.Name + "Prediction").GetValue<bool>())
                     {
-                        targetedVector =
-                            Prediction.GetPrediction(target, Variables.Player.Distance(target) / 1000).UnitPosition;
+                        if (target != null && target.IsValid)
+                        {
+                            targetedVector = Prediction.GetPrediction(target, Variables.Player.Distance(target) / 1000).UnitPosition;
+                        }
+                        else
+                        {
+                            targetedVector = Game.CursorPos;
+                        }
+
                     }
                     else
                     {
@@ -197,11 +204,11 @@ namespace Yasuo.Skills.Combo
 
             #region Path Settings
 
-            if (Menu.Item(this.Name + "PathAroundSkillShots").GetValue<bool>())
-            {
-                GapClosePath = this.ProviderE.GetPath(targetedVector, aroundSkillshots: true);
-            }
-            else
+            //if (Menu.Item(this.Name + "PathAroundSkillShots").GetValue<bool>())
+            //{
+            //    GapClosePath = this.ProviderE.GetPath(targetedVector, aroundSkillshots: true);
+            //}
+            //else
             {
                 GapClosePath = this.ProviderE.GetPath(targetedVector);
             }

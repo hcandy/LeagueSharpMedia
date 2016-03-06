@@ -30,11 +30,11 @@
         /// <summary>
         ///     Returns the Position that is best to Gapclose to a given position
         /// </summary>
-        /// <param name="position">The vector to dash to</param>
+        /// <param name="to">The vector to dash to</param>
         /// <param name="minions"></param>
         /// <param name="champions"></param>
         /// <returns>Obj_AI_Base</returns>
-        public Path GetPath(Vector3 position, bool minions = true, bool champions = true, bool aroundSkillshots = false)
+        public Path GetPath(Vector3 to, bool minions = true, bool champions = true, bool aroundSkillshots = false)
         {
             try
             {
@@ -69,9 +69,15 @@
                 calculator.CalculateDistance(points.FirstOrDefault(x => x.Position == Variables.Player.ServerPosition));
 
                 // Set end point and return result as path
-                var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(position)));
+                var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(to)));
+                var pathToUnits = new List<Obj_AI_Base>();
 
-                var result = new Path(path.Select(x => x.Position).ToList(), Variables.Player.ServerPosition, position);
+                if (path != null)
+                {
+                    pathToUnits.AddRange(path.Select(x => this.GetUnits(x.Position.To2D()).MinOrDefault(y => y.Distance(Variables.Player.ServerPosition))));
+                }
+
+                var result = new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, to);
 
                 return result;
             }
@@ -94,38 +100,47 @@
         /// <returns>List(Obj_Ai_Base)</returns>
         public List<Obj_AI_Base> GetUnits(Vector2 startPosition, bool minions = true, bool champions = true, bool noSkillshots = false)
         {
-            // Add all units
-            var units = new List<Obj_AI_Base>();
-
-            if (minions)
+            try
             {
-                units.AddRange(
-                    MinionManager.GetMinions(
-                        ObjectManager.Player.ServerPosition,
-                        CalculationRange,
-                        MinionTypes.All,
-                        MinionTeam.NotAlly));
-            }
+                // Add all units
+                var units = new List<Obj_AI_Base>();
 
-            if (champions)
-            {
-                units.AddRange(HeroManager.Enemies);
-            }
+                if (minions)
+                {
+                    units.AddRange(
+                        MinionManager.GetMinions(
+                            ObjectManager.Player.ServerPosition,
+                            CalculationRange,
+                            MinionTypes.All,
+                            MinionTeam.NotAlly));
+                }
 
-            if (noSkillshots)
-            {
-                foreach (var x in units.Where(x => x.isInSkillshot()).ToList())
+                if (champions)
+                {
+                    units.AddRange(HeroManager.Enemies);
+                }
+
+                if (noSkillshots)
+                {
+                    foreach (var x in units.Where(x => x.isInSkillshot()).ToList())
+                    {
+                        units.Remove(x);
+                    }
+                }
+
+                foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper") || x.IsDead || x.Health == 0 || x.IsMe || x.Distance(Variables.Player.ServerPosition) > CalculationRange).ToList())
                 {
                     units.Remove(x);
                 }
-            }
 
-            foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper") || x.IsDead || x.Health == 0).ToList())
+                return units;
+            }
+            catch (Exception ex)
             {
-                units.Remove(x);
+                Console.WriteLine(ex);
             }
 
-            return units;
+            return null;
         }
 
         public double GetDamage(Obj_AI_Base unit)
