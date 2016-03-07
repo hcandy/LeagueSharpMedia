@@ -26,6 +26,8 @@
 
         public SweepingBladeLogicProvider Provider;
 
+        public TurretLogicProvider ProviderTurret;
+
         protected override void OnEnable()
         {
             Game.OnUpdate += this.OnUpdate;
@@ -77,6 +79,7 @@
         protected override void OnInitialize()
         {
             this.Provider = new SweepingBladeLogicProvider();
+            this.ProviderTurret = new TurretLogicProvider();
 
             base.OnInitialize();
         }
@@ -124,7 +127,7 @@
                             Variables.Spells[SpellSlot.E].Range),
                         375).Where(x => x.Health <= Provider.GetDamage(x));
 
-                if (minionsEQ != null && minionsEQ.Count() >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<int>())
+                if (minionsEQ != null && minionsEQ.Count() >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value)
                 {
                     Execute(minion);
                 }
@@ -159,7 +162,7 @@
                     return;
                 }
 
-                Execute(possibleExecutions.MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
+                Execute(possibleExecutions.Where(x => ProviderTurret.IsSafe(Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range))).MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
             }
 
 

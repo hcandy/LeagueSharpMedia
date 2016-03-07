@@ -18,6 +18,7 @@ namespace Yasuo
     using Yasuo.Modules.WallDash;
     using Yasuo.Skills.Combo;
     using Yasuo.Skills.LaneClear;
+    using Yasuo.Skills.LastHit;
     using Yasuo.Skills.Mixed;
 
     using Notifications = LeagueSharp.Common.Notifications;
@@ -37,6 +38,7 @@ namespace Yasuo
                 // Orbwalking Modes
                 var combo = new Combo();
                 var laneclear = new LaneClear();
+                var lasthit = new LastHit();
                 var mixed = new Mixed();
 
                 // Extra Features
@@ -63,9 +65,12 @@ namespace Yasuo
                                     new Skills.LaneClear.SteelTempest(laneclear),
                                     new Skills.LaneClear.SweepingBlade(laneclear),
 
+                                    new Skills.LastHit.SteelTempest(lasthit),
+                                    new Skills.LastHit.SweepingBlade(lasthit),
+
                                     new Skills.Mixed.SteelTempest(mixed),
                                     new Skills.Mixed.SweepingBlade(mixed),
-
+                                    
                                     new Potions(module),
                                     new KillSteal(module),
                                     new WallDash(module),

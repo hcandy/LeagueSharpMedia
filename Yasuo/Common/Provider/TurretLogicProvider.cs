@@ -37,28 +37,31 @@
         public bool IsSafe(Vector3 position)
         {
             var turret = turretCache.MinOrDefault(x => x.Value.Distance(position)).Value;
-            var target = turretTarget[turret.NetworkId];
-
-            if (turret == null || !turret.IsValid || !position.UnderTurret(true) || (int)turret.Health == 0 || turret.IsDead)
+            if (turretTarget != null)
             {
-                return true;
-            }
+                var target = turretTarget[turret.NetworkId];
 
-            // We can onehit the turret, there are not much enemies near and we won't die from the next turret shot
-            if (turret.Health + turret.PhysicalShield <= Variables.Player.GetAutoAttackDamage(turret)
-                && turret.CountEnemiesInRange(turret.AttackRange) < 2
-                && Variables.Player.Health > turret.GetAutoAttackDamage(Variables.Player)
-                && position.Distance(turret.ServerPosition) <= Variables.Player.AttackRange)
-            {
-                return true;
-            }
+                if (!turret.IsValid || !position.UnderTurret(true) || (int)turret.Health == 0 || turret.IsDead)
+                {
+                    return true;
+                }
 
-            if (target != null && !target.IsMe
-                && CountAttackableUnitsInRange(target.Position, turret.AttackRange) > 0)
-            {
-                return true;
+                // We can onehit the turret, there are not much enemies near and we won't die from the next turret shot
+                if (turret.Health + turret.PhysicalShield <= Variables.Player.GetAutoAttackDamage(turret)
+                    && turret.CountEnemiesInRange(turret.AttackRange) < 2
+                    && Variables.Player.Health > turret.GetAutoAttackDamage(Variables.Player)
+                    && position.Distance(turret.ServerPosition) <= Variables.Player.AttackRange)
+                {
+                    return true;
+                }
+
+                if (target != null && !target.IsMe
+                    && this.CountAttackableUnitsInRange(target.Position, turret.AttackRange) > 0)
+                {
+                    return true;
+                }
             }
-            return false;
+            return true;
         }
 
         private int CountAttackableUnitsInRange(Vector3 position, float range)

@@ -95,6 +95,7 @@
 
         public void OnUpdate(EventArgs args)
         {
+            return;
             if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo || !Variables.Spells[SpellSlot.R].IsReady())
             {
                 return;

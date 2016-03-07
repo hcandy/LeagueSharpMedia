@@ -28,7 +28,7 @@ namespace Yasuo
         public static readonly DateTime AssemblyLoadTime = DateTime.Now;
 
         public static string ChampionName = "Yasuo";
-        public static string GitHubPath = "Media/LeagueSharpMedia/master/Yasuo";
+        public static string GitHubPath = "MediaGithub/LeagueSharpMedia/tree/master/Yasuo";
         public static string Name => "MediaSuo";
         public static string Author => "Media";
 
@@ -63,7 +63,7 @@ namespace Yasuo
 
             e = new Spell(SpellSlot.E, 475);
             e.SetTargetted(0, 1025);
-            e.Speed = Player.MoveSpeed * 2;
+            e.Speed = 1000;
             
             r = new Spell(SpellSlot.R, 900);
             r.SetTargetted(0, float.MaxValue);

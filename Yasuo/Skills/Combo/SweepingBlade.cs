@@ -5,6 +5,7 @@ namespace Yasuo.Skills.Combo
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.ExceptionServices;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -176,9 +177,7 @@ namespace Yasuo.Skills.Combo
                     targetedVector = Game.CursorPos;
                     break;
                 case 1:
-                    var target = TargetSelector.GetTarget(
-                        Variables.Spells[SpellSlot.Q].Range,
-                        TargetSelector.DamageType.Physical);
+                    var target = TargetSelector.GetTarget(Variables.Spells[SpellSlot.Q].Range, TargetSelector.DamageType.Physical);
 
                     if (Menu.Item(this.Name + "Prediction").GetValue<bool>())
                     {
@@ -217,27 +216,23 @@ namespace Yasuo.Skills.Combo
 
             #region When to Execute and when not
 
+            Drawing.DrawText(500, 600, System.Drawing.Color.Red, "Walk Path Lenght: "+ Helper.GetPathLenght(Variables.Player.GetPath(targetedVector)));
+            Drawing.DrawText(500, 660, System.Drawing.Color.Red, "Walk Path Time: " + Helper.GetPathLenght(Variables.Player.GetPath(targetedVector)) / Variables.Player.MoveSpeed);
+
             // if a path is given, and the first unit of the path is in dash range, and the path time is faster than running to the given vector (dashVactor)
+            // TODO: Sometimes when the Path is very crowded it happens that the Dash will get executed in the wrong direction. A more accurate pathing algorithm through making unit connections in SweepingBladeLogicProvider faster will fix that
             if (GapClosePath != null
                 && Variables.Player.Distance(GapClosePath.FirstUnit) <= Variables.Spells[SpellSlot.E].Range
-                && GapClosePath.PathTime
-                <= Helper.GetPathLenght(Variables.Player.GetPath(targetedVector)) / Variables.Player.MoveSpeed)
+                && GapClosePath.FasterThanWalking)
             {
                 #region WallCheck
 
-                // if WallDash
                 if (GapClosePath.FirstUnit.IsWallDash(Variables.Spells[SpellSlot.E].Range))
                 {
-                    if (
-                        Helper.GetPathLenght(
-                            Variables.Player.GetPath(
-                                Variables.Player.ServerPosition.Extend(
-                                    GapClosePath.FirstUnit.ServerPosition,
-                                    Variables.Spells[SpellSlot.E].Range),
-                                targetedVector)) < Helper.GetPathLenght(Variables.Player.GetPath(targetedVector)))
+                    if (Helper.GetPathLenght(Variables.Player.GetPath(Variables.Player.ServerPosition.Extend(GapClosePath.FirstUnit.ServerPosition,Variables.Spells[SpellSlot.E].Range), targetedVector)) 
+                        <= Helper.GetPathLenght(Variables.Player.GetPath(targetedVector)))
                     {
-                        Game.PrintChat(
-                            "Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
+                        Game.PrintChat("Next Dash is a walldash, and the new distance to the Aimed Vector is lower than before.");
 
                         Execute(GapClosePath.FirstUnit);
                     }
@@ -245,7 +240,11 @@ namespace Yasuo.Skills.Combo
                 }
                 else
                 {
-                    Execute(GapClosePath.FirstUnit);
+                    if (Variables.Player.ServerPosition.Extend(GapClosePath.FirstUnit.ServerPosition, Variables.Spells[SpellSlot.E].Range)
+                            .Distance(targetedVector) < Variables.Player.Distance(targetedVector))
+                    {
+                        Execute(GapClosePath.FirstUnit);
+                    }
                 }
 
                 #endregion
@@ -269,6 +268,7 @@ namespace Yasuo.Skills.Combo
 
         public void OnDraw(EventArgs args)
         {
+            //this.GapClosePath?.RealPath.Draw();
             this.GapClosePath?.Draw();
         }
 

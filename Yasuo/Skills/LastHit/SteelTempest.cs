@@ -143,7 +143,7 @@
 
             else
             {
-                if (Variables.Player.Spellbook.IsAutoAttacking || Variables.Player.Spellbook.IsCharging
+                if (Variables.Player.Spellbook.IsCharging
                     || Variables.Player.Spellbook.IsChanneling)
                 {
                     return;
@@ -207,8 +207,8 @@
             if (tryStacking)
             {
                 // Get the minion that is furthest away and killable
-                var minion = ObjectManager.Get<Obj_AI_Minion>()
-                             .Where(x => x.Health <= this.ProviderQ.GetDamage(x))
+                var minion = MinionManager.GetMinions(Variables.Player.ServerPosition, Variables.Spells[SpellSlot.Q].Range)
+                             .Where(x => x.Health <= this.ProviderQ.GetDamage(x) && x.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.Q].Range)
                              .MaxOrDefault(x => x.Distance(Variables.Player.ServerPosition));
 
                 if (minion != null)

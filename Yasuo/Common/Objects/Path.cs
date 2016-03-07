@@ -10,9 +10,13 @@ namespace Yasuo.Common.Objects
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using Yasuo.Common.Utility;
+
     using SharpDX;
 
     using Yasuo.Common.Provider;
+
+    using Color = System.Drawing.Color;
 
     public class Path
     {
@@ -24,30 +28,47 @@ namespace Yasuo.Common.Objects
 
         public Path RealPath;
 
-        public List<Vector3> Positions;
+        public List<Vector3> Positions = new List<Vector3>();
 
         public List<Obj_AI_Base> Units;
 
         private SweepingBladeLogicProvider ProviderE;
 
+        private FlowLogicProvider ProviderFlow;
+
         public Path(List<Obj_AI_Base> units, Vector3 startPosition, Vector3 endPosition)
         {
-            ProviderE = new SweepingBladeLogicProvider(startPosition.Distance(endPosition) + 150);
-            this.Units = units;
-            FirstUnit = Units.MinOrDefault(x => x.Distance(Variables.Player.ServerPosition));
+            if (units.Contains(Variables.Player))
+            {
+                units.Remove(Variables.Player);
+            }
 
+            ProviderE = new SweepingBladeLogicProvider(startPosition.Distance(endPosition) + 150);
+            ProviderFlow = new FlowLogicProvider();
+
+            this.Units = units;
+            
             this.StartPosition = startPosition;
             this.EndPosition = endPosition;
-
-            this.SetAll();
-
+            
             if (Units != null && Units.Count > 0)
             {
-                this.FirstUnit = this.Units.FirstOrDefault();
+                this.FirstUnit = this.Units.MinOrDefault(x => x.Distance(Variables.Player));
+                this.SetAll();
             }
+
+            Drawing.DrawText(500, 540, Color.Red, "PathLength: "+PathLenght);
+            Drawing.DrawText(500, 560, Color.Red, "DashLengt: " + DashLenght);
+            Drawing.DrawText(500, 580, Color.Red, "WalkLenght: " + WalkLenght);
+
+            Drawing.DrawText(500, 640, Color.Red, "Time: " + PathTime);
         }
 
         public Obj_AI_Base FirstUnit { get; private set; }
+
+        public bool FasterThanWalking { get; private set; }
+
+        public bool GetsShield { get; private set; }
 
         public int DangerValue { get; private set; }
 
@@ -65,19 +86,26 @@ namespace Yasuo.Common.Objects
 
         public void UnitsToVec()
         {
-            foreach (var unit in this.Units)
+            if (Units != null)
             {
-                if (!Positions.Contains(unit.ServerPosition))
+                Drawing.DrawText(500, 520, Color.AliceBlue, "" + Units.Count);
+
+                foreach (var unit in this.Units.ToList())
                 {
-                    Positions.Add(unit.ServerPosition);
+                    if (!Positions.Contains(unit.ServerPosition))
+                    {
+                        Positions.Add(unit.ServerPosition);
+                    }
                 }
+                Drawing.DrawText(500, 500, Color.AliceBlue, "" + Positions.Count);
             }
+
         }
 
         // TODO: Add Skillshots in Path (Based on Danger Level)
         public void SetDangerValue()
         {
-            foreach (var unit in this.Positions.Where(x => x.CountEnemiesInRange(Variables.Spells[SpellSlot.E].Range) > 0))
+            foreach (var unit in this.Units.Where(x => x.CountEnemiesInRange(Variables.Spells[SpellSlot.E].Range) > 0))
             {
                 foreach (var hero in HeroManager.Enemies.Where(y => y.Distance(unit) <= Variables.Spells[SpellSlot.E].Range))
                 {
@@ -94,17 +122,19 @@ namespace Yasuo.Common.Objects
 
         public void SetDashTime()
         {
-            this.DashTime = this.DashLenght / Variables.Spells[SpellSlot.E].Speed;
+            this.DashTime = this.DashLenght / (1200 + Variables.Player.MoveSpeed);
         }
 
         public void SetPathTime()
         {
+            Drawing.DrawText(500, 700, System.Drawing.Color.Red, "Pathing: Walktime: " + WalkTime);
+            Drawing.DrawText(500, 720, System.Drawing.Color.Red, "Pathing: Dashtime: " + DashTime);
             this.PathTime = this.WalkTime + this.DashTime;
         }
 
         public void SetDashLength()
         {
-            foreach (var unit in this.Positions)
+            foreach (var unit in this.Units)
             {
                 this.DashLenght += Variables.Spells[SpellSlot.E].Range;
             }
@@ -113,14 +143,14 @@ namespace Yasuo.Common.Objects
         // TODO: Get lengts inbetween units
         public void SetWalkLength()
         {
-            var startDistance = this.Positions.FirstOrDefault().Distance(this.StartPosition);
-            var endDistance = this.Positions.LastOrDefault().Distance(this.EndPosition);
+            var startDistance = this.Units.FirstOrDefault().Distance(this.StartPosition);
+            var endDistance = this.Units.LastOrDefault().Distance(this.EndPosition);
 
             var x = 0f;
 
-            for (int i = 0; i < this.Positions.Count - 1; i++)
+            for (int i = 0; i < this.Units.Count - 1; i++)
             {
-                x += this.Positions[i].Distance(this.Positions[i + 1]);
+                x += this.Units[i].Distance(this.Units[i + 1]);
             }
 
             var inbetweenDistance = (float) x - this.DashLenght;
@@ -138,7 +168,7 @@ namespace Yasuo.Common.Objects
 
         public void SetPathLengtht()
         {
-            this.PathLenght = this.WalkLenght + this.PathLenght;
+            this.PathLenght = this.WalkLenght + this.DashLenght;
         }
 
         // TODO: No clue if that works
@@ -163,7 +193,6 @@ namespace Yasuo.Common.Objects
                 // last unit reached
                 if (i == this.Units.Count - 1)
                 {
-                    this.RealPath.RemovePosition(newPosition);
                     this.RealPath.EndPosition = newPosition;
                 }
             }
@@ -184,6 +213,7 @@ namespace Yasuo.Common.Objects
                 this.SetPathTime();
 
                 this.SetDangerValue();
+                this.CompareDashWalkTime();
             }
             catch (Exception ex)
             {             
@@ -191,29 +221,48 @@ namespace Yasuo.Common.Objects
             }
         }
 
+        public void CompareDashWalkTime()
+        {
+            var playerPathLenght = Helper.GetPathLenght(Variables.Player.GetPath(EndPosition)) / Variables.Player.MoveSpeed;
+
+            if (playerPathLenght > PathTime)
+            {
+                this.FasterThanWalking = false;
+                Drawing.DrawText(500, 800, Color.Red, "FasterThanWalking");
+            }
+            else
+            {
+                Drawing.DrawText(500, 800, Color.Green, "FasterThanWalking");
+                FasterThanWalking = true;
+            }
+        }
+
+        public void CheckForShield()
+        {
+            if (PathLenght <= ProviderFlow.GetRemainingUnits())
+            {
+                this.GetsShield = true;
+            }
+            else
+            {
+                GetsShield = false;
+            }
+        }
+
         public void RemoveUnit(Obj_AI_Base unit)
         {
-            if (this.Positions.Contains(unit.ServerPosition))
+            if (this.Units.Contains(unit))
             {
-                this.Positions.Remove(unit.ServerPosition);
+                this.Units.Remove(unit);
             }
         }
 
         public void AddUnit(Obj_AI_Base unit)
         {
-            if (!this.Positions.Contains(unit.ServerPosition))
+            if (!this.Units.Contains(unit))
             {
-                this.Positions.Add(unit.ServerPosition);
+                this.Units.Add(unit);
             }
-        }
-
-        public void RemovePosition(Vector3 position)
-        {
-            if (!this.Positions.Contains(position))
-            {
-                return;   
-            }
-            this.Positions.Remove(position);
         }
 
         public void AddPosition(Vector3 position)
@@ -230,18 +279,20 @@ namespace Yasuo.Common.Objects
         {
             try
             {
-                Drawing.DrawText(500, 500, System.Drawing.Color.White, "Positions: "+this.Positions.Count);
-                if (this.Positions != null && this.Positions.Count > 0)
+                if (this.Units != null && this.Units.Count > 0
+                    && this.Positions != null && this.Positions.Count > 0)
                 {
+                    Drawing.DrawCircle(FirstUnit.Position, 50, Color.Aqua);
+
                     for (var i = 0; i < this.Positions.Count; i++)
                     {
-                        if (this.Positions.Count > i + 1 && this.Positions[i + 1].IsValid())
+                        if (this.Units.Count > i + 1)
                         {
                             Drawing.DrawLine(
                             Drawing.WorldToScreen(this.Positions[i]),
                             Drawing.WorldToScreen(this.Positions[i + 1]),
-                                4f,
-                            System.Drawing.Color.White);
+                                2f,
+                            Color.White);
                         }
 
                     }
@@ -251,7 +302,6 @@ namespace Yasuo.Common.Objects
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                throw;
             }
 
 

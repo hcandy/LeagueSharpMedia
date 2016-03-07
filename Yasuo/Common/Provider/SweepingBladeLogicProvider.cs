@@ -30,11 +30,11 @@
         /// <summary>
         ///     Returns the Position that is best to Gapclose to a given position
         /// </summary>
-        /// <param name="to">The vector to dash to</param>
+        /// <param name="endPosition">The vector to dash to</param>
         /// <param name="minions"></param>
         /// <param name="champions"></param>
         /// <returns>Obj_AI_Base</returns>
-        public Path GetPath(Vector3 to, bool minions = true, bool champions = true, bool aroundSkillshots = false)
+        public Path GetPath(Vector3 endPosition, bool minions = true, bool champions = true, bool aroundSkillshots = false)
         {
             try
             {
@@ -69,15 +69,20 @@
                 calculator.CalculateDistance(points.FirstOrDefault(x => x.Position == Variables.Player.ServerPosition));
 
                 // Set end point and return result as path
-                var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(to)));
+                var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(endPosition)));
                 var pathToUnits = new List<Obj_AI_Base>();
+
+                //if (path != null)
+                //{
+                //    pathToUnits.AddRange(path.Where(x => this.GetUnits(x.Position.To2D()).Count > 0));
+                //}
 
                 if (path != null)
                 {
-                    pathToUnits.AddRange(path.Select(x => this.GetUnits(x.Position.To2D()).MinOrDefault(y => y.Distance(Variables.Player.ServerPosition))));
+                    pathToUnits.AddRange(path.ToList().Select(point => this.GetUnits(point.Position.To2D()).MinOrDefault(x => x.Distance(point.Position))));
                 }
 
-                var result = new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, to);
+                var result = new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, endPosition);
 
                 return result;
             }
@@ -109,7 +114,7 @@
                 {
                     units.AddRange(
                         MinionManager.GetMinions(
-                            ObjectManager.Player.ServerPosition,
+                            startPosition.To3D(),
                             CalculationRange,
                             MinionTypes.All,
                             MinionTeam.NotAlly));
