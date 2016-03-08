@@ -28,17 +28,17 @@
         }
 
         /// <summary>
-        ///     Returns the Position that is best to Gapclose to a given position
+        ///     Returns a path object that represents the shortest possible path to a given location
         /// </summary>
         /// <param name="endPosition">The vector to dash to</param>
         /// <param name="minions"></param>
         /// <param name="champions"></param>
         /// <returns>Obj_AI_Base</returns>
-        public Path GetPath(Vector3 endPosition, bool minions = true, bool champions = true, bool aroundSkillshots = false)
+        public Path GetPath(Vector3 endPosition, bool minions = true, bool champions = true, bool noSkillshots = false)
         {
             try
             {
-                var units = this.GetUnits(ObjectManager.Player.ServerPosition.To2D(), minions, champions, aroundSkillshots);
+                var units = this.GetUnits(Variables.Player.ServerPosition, minions, champions);
                 var connections = new List<Connection>();
 
                 if (units == null || units.Count == 0)
@@ -55,7 +55,7 @@
                 {
                     foreach (var neighbour in points)
                     {
-                        if (point.Position.Distance(neighbour.Position) <= Variables.Spells[SpellSlot.E].Range)
+                        if (point.Position.Distance(neighbour.Position) <= Variables.Spells[SpellSlot.E].Range * 1.5)
                         {
                             connections.Add(new Connection(point, neighbour));
                         }
@@ -79,7 +79,7 @@
 
                 if (path != null)
                 {
-                    pathToUnits.AddRange(path.ToList().Select(point => this.GetUnits(point.Position.To2D()).MinOrDefault(x => x.Distance(point.Position))));
+                    pathToUnits.AddRange(path.ToList().Select(point => this.GetUnits(point.Position).MinOrDefault(x => x.Distance(point.Position))));
                 }
 
                 var result = new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, endPosition);
@@ -94,6 +94,72 @@
 
         }
 
+        public Path GetAlternativePath(Path oldPath, bool minions = true, bool champions = true, bool noSkillshots = true, bool noWallDashes = true)
+        {
+            try
+            {
+                var units = this.GetUnits(Variables.Player.ServerPosition, minions, champions);
+                var connections = new List<Connection>();
+
+                if (units == null || units.Count == 0)
+                {
+                    return null;
+                }
+
+                var points = units.Select(Position => new Point(Position.ServerPosition)).ToList();
+                points.Add(new Point(Variables.Player.ServerPosition));
+
+                // TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
+                // NOTE: That would need a multipathing system that uses Djikstra Algorithm for every minion in E range and determines the shortest path based on that outcome.
+                foreach (var point in points)
+                {
+                    foreach (var neighbour in points)
+                    {
+                        if (point.Position.Distance(neighbour.Position) <= Variables.Spells[SpellSlot.E].Range * 1.5)
+                        {
+                            if (noSkillshots && WallDashLogicProvider.GetFirstWallPoint(point.Position, neighbour.Position, 1) == Vector3.Zero)
+                            {
+                                connections.Add(new Connection(point, neighbour));
+                            }
+                            else
+                            {
+                                connections.Add(new Connection(point, neighbour));
+                            }
+                        }
+                    }
+                }
+
+                // Create new Object of the Djikstra class with values from above
+                var calculator = new Dijkstra(points, connections);
+
+                // Set starting point, Obj_Ai_Base Player in this case
+                calculator.CalculateDistance(points.FirstOrDefault(x => x.Position == Variables.Player.ServerPosition));
+
+                // Set end point and return result as path
+                var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(oldPath.EndPosition)));
+                var pathToUnits = new List<Obj_AI_Base>();
+
+                //if (path != null)
+                //{
+                //    pathToUnits.AddRange(path.Where(x => this.GetUnits(x.Position.To2D()).Count > 0));
+                //}
+
+                if (path != null)
+                {
+                    pathToUnits.AddRange(path.ToList().Select(point => this.GetUnits(point.Position).MinOrDefault(x => x.Distance(point.Position))));
+                }
+
+                var result = new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, oldPath.EndPosition);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(@"[GetPath]: " + ex);
+            }
+            return null;
+        }
+
         // TODO: Not sure if .ToList() is a performance issue. Maybe work with a lock. 
         // TODO: But that could be worse.. maybe add a second List and loop through it to prevent modifying the old list while looping
         /// <summary>
@@ -103,7 +169,7 @@
         /// <param name="minions">bool</param>
         /// <param name="champions">bool</param>
         /// <returns>List(Obj_Ai_Base)</returns>
-        public List<Obj_AI_Base> GetUnits(Vector2 startPosition, bool minions = true, bool champions = true, bool noSkillshots = false)
+        public List<Obj_AI_Base> GetUnits(Vector3 startPosition, bool minions = true, bool champions = true)
         {
             try
             {
@@ -114,7 +180,7 @@
                 {
                     units.AddRange(
                         MinionManager.GetMinions(
-                            startPosition.To3D(),
+                            startPosition,
                             CalculationRange,
                             MinionTypes.All,
                             MinionTeam.NotAlly));
@@ -123,14 +189,6 @@
                 if (champions)
                 {
                     units.AddRange(HeroManager.Enemies);
-                }
-
-                if (noSkillshots)
-                {
-                    foreach (var x in units.Where(x => x.isInSkillshot()).ToList())
-                    {
-                        units.Remove(x);
-                    }
                 }
 
                 foreach (var x in units.Where(x => !x.IsValid || x.HasBuff("YasuoDashWrapper") || x.IsDead || x.Health == 0 || x.IsMe || x.Distance(Variables.Player.ServerPosition) > CalculationRange).ToList())

@@ -95,38 +95,37 @@
 
         public void OnUpdate(EventArgs args)
         {
-            return;
             if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo || !Variables.Spells[SpellSlot.R].IsReady())
             {
                 return;
             }
 
-            List<Obj_AI_Hero> enemies = new List<Obj_AI_Hero>();
-            enemies.AddRange(ObjectManager.Player.GetEnemiesInRange(Variables.Spells[SpellSlot.R].Range).Where(x => x.IsAirbone()));
+            var enemies = new List<Obj_AI_Hero>();
+            enemies.AddRange(HeroManager.Enemies.Where(enemy => enemy.IsAirbone()));
 
-            List<Yasuo.Common.Objects.LastBreath> possibleExecutions = enemies.Select(enemy => new Yasuo.Common.Objects.LastBreath(enemy)).ToList();
-            List<Yasuo.Common.Objects.LastBreath> validatedExecutions = new List<Common.Objects.LastBreath>();
+            var possibleExecutions = new List<Common.Objects.LastBreath>();
+            possibleExecutions.AddRange(enemies.Select(enemy => new Yasuo.Common.Objects.LastBreath(enemy)));
 
-            Yasuo.Common.Objects.LastBreath Execution = new Yasuo.Common.Objects.LastBreath(null);
+            var validatedExecutions = new List<Common.Objects.LastBreath>();
+
+            var Execution = new Yasuo.Common.Objects.LastBreath(null);
 
             if (Menu.Item(Name + "AOE").GetValue<bool>())
             {
-                foreach (var entry in possibleExecutions)
-                {
-                    if (entry.EnemiesInUlt >= Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value)
-                    {
-                        validatedExecutions.Add(entry);
-                    }
-                }
+                validatedExecutions.AddRange(possibleExecutions.Where(entry => entry.EnemiesInUlt >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value));
             }
             else
             {
                 validatedExecutions = possibleExecutions;
             }
 
+            // TODO: Add a lot more stuff here
             #region TargetSelector
 
-            Execution = validatedExecutions.MaxOrDefault(x => x.DamageDealt);
+            if (validatedExecutions != null && validatedExecutions.Count > 0)
+            {
+                Execution = validatedExecutions.MaxOrDefault(x => x.DamageDealt);
+            }
 
             #endregion
 
@@ -135,30 +134,42 @@
                 return;
             }
 
-            if (Variables.Player.HealthPercent >= Menu.Item(Name +"MinPlayerHealth").GetValue<Slider>().Value)
+            if (!(Variables.Player.HealthPercent >= this.Menu.Item(this.Name + "MinPlayerHealth").GetValue<Slider>().Value))
             {
-                if (Menu.Item(Name + "OverkillCheck").GetValue<bool>())
+                return;
+            }
+
+            if (this.Menu.Item(this.Name + "OverkillCheck").GetValue<bool>())
+            {
+                var healthAll = 0f;
+                var damageAll = 0f;
+
+                if (Execution.AffectedEnemies.Count > 0)
                 {
-                    var healthAll = Provider.GetEnemiesAround(Execution.EndPosition).Sum(x => x.Health);
-                    var damageAll = 0f;
-
-                    foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R && x.Value.Slot != SpellSlot.W))
-                    {
-                        foreach (var enemy in Provider.GetEnemiesAround(Execution.EndPosition))
-                        {
-                            damageAll += spell.Value.GetDamage(enemy);
-                        }
-                    }
-
-                    if (healthAll > damageAll)
-                    {
-                        this.Execute(Execution.Target);
-                    }
+                    healthAll += Execution.AffectedEnemies.Sum(enemy => enemy.Health);
                 }
                 else
                 {
+                    healthAll = Execution.Target.Health;
+                }
+
+                foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R && x.Value.Slot != SpellSlot.W))
+                {
+                    foreach (var enemy in this.Provider.GetEnemiesAround(Execution.EndPosition))
+                    {
+                        damageAll += spell.Value.GetDamage(enemy);
+                    }
+                }
+
+                if (healthAll > damageAll)
+                {
+                    Game.PrintChat(@"Combo/LastBreaht.cs (Overkill Check): Execution is not overkill");
                     this.Execute(Execution.Target);
                 }
+            }
+            else
+            {
+                this.Execute(Execution.Target);
             }
         }
 

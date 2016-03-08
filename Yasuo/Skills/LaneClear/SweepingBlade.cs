@@ -214,7 +214,7 @@ namespace Yasuo.Skills.LaneClear
         {
             // Check if Dash End position is safe under turret
             if (unit.IsValidTarget() && unit != null
-                && ProviderTurret.IsSafe(
+                && ProviderTurret.IsSafePosition(
                     Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
             {
                 if (Menu.Item(this.Name + "NoWallJump").GetValue<bool>())

@@ -34,17 +34,18 @@
             }
         }
 
-        public bool IsSafe(Vector3 position)
+        public bool IsSafePosition(Vector3 position)
         {
             var turret = turretCache.MinOrDefault(x => x.Value.Distance(position)).Value;
+
+            if (!turret.IsValid || !position.UnderTurret(true) || (int)turret.Health == 0 || turret.IsDead)
+            {
+                return true;
+            }
+
             if (turretTarget != null)
             {
                 var target = turretTarget[turret.NetworkId];
-
-                if (!turret.IsValid || !position.UnderTurret(true) || (int)turret.Health == 0 || turret.IsDead)
-                {
-                    return true;
-                }
 
                 // We can onehit the turret, there are not much enemies near and we won't die from the next turret shot
                 if (turret.Health + turret.PhysicalShield <= Variables.Player.GetAutoAttackDamage(turret)
@@ -56,24 +57,26 @@
                 }
 
                 if (target != null && !target.IsMe
-                    && this.CountAttackableUnitsInRange(target.Position, turret.AttackRange) > 0)
+                    && this.CountAttackableUnitsInRange(turret.Position, turret.AttackRange) > 1
+                    && target.Health >= turret.GetAutoAttackDamage((Obj_AI_Base) target))
                 {
                     return true;
                 }
             }
-            return true;
+            return false;
         }
 
         private int CountAttackableUnitsInRange(Vector3 position, float range)
         {
-            if (position.IsValid())
+            if (!position.IsValid())
             {
-                var minions = MinionManager.GetMinions(position, range).Where(minion => minion.IsValidTarget());
-                var heroes = HeroManager.Allies.Where(ally => ally.Distance(position) <= range + ally.BoundingRadius && ally.IsValidTarget());
-
-                return minions.Count() + heroes.Count();
+                return 0;
             }
-            return 0;
+
+            var minions = MinionManager.GetMinions(position, range).Where(minion => minion.IsValidTarget());
+            var heroes = HeroManager.Allies.Where(ally => ally.Distance(position) <= range + ally.BoundingRadius && ally.IsValidTarget());
+
+            return minions.Count() + heroes.Count();
         }
 
         private static void InitializeCache()

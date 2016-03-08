@@ -66,7 +66,7 @@ namespace Yasuo.Common.Objects
                     DangerValue += 1;
                 }
 
-                if (!ProviderTurret.IsSafe(this.EndPosition))
+                if (!ProviderTurret.IsSafePosition(this.EndPosition))
                 {
                     DangerValue += 5;
                 }
@@ -112,7 +112,7 @@ namespace Yasuo.Common.Objects
 
         private void SetAffectedEnemies()
         {
-            foreach (var enemy in HeroManager.Enemies.Where(x => x.IsAirbone() && x.Distance(this.EndPosition) <= 475))
+            foreach (var enemy in HeroManager.Enemies.Where(x => x.IsAirbone() && !x.IsZombie && x.Distance(this.EndPosition) <= 475))
             {
                 this.AffectedEnemies.Add(enemy);
             }

@@ -6,12 +6,14 @@ namespace Yasuo.Common.Objects
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using Yasuo.Common.Utility;
+
     using Yasuo.Common.Provider;
     using SharpDX;
 
     using Color = System.Drawing.Color;
 
-    class Dash
+    public class Dash
     {
         public Vector3 StartPosition;
 
@@ -22,8 +24,9 @@ namespace Yasuo.Common.Objects
         public Dash(Obj_AI_Base unit)
         {
             Unit = unit;
+
             this.StartPosition = Variables.Player.ServerPosition;
-            this.EndPosition = Variables.Player.ServerPosition.Extend(unit.ServerPosition, this.DashLenght);
+            this.EndPosition = Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range);
 
             this.SetDashLength();
             this.SetDangerValue();
@@ -39,6 +42,8 @@ namespace Yasuo.Common.Objects
 
         public bool IsWallDash { get; private set; }
 
+        public bool WallDashSavesTime { get; protected internal set; }
+
         // TODO: Add Path in Skillshot (Based on Skillshot Danger value) , Add Enemies Around (Based on Priority), Add Allies Around, Add Minions Around (?)
         public void SetDangerValue()
         {
@@ -52,11 +57,11 @@ namespace Yasuo.Common.Objects
 
         public void SetDashLength()
         {
-            if (!this.IsWallDash && EndPosition.IsWall())
+            if (EndPosition.IsWall() && !this.IsWallDash)
             {
                 EndPosition = WallDashLogicProvider.GetFirstWallPoint(StartPosition, EndPosition);
             }
-            this.DashLenght = StartPosition.Distance(EndPosition);
+            this.DashLenght = Variables.Spells[SpellSlot.E].Range;
         }
 
         public void CheckWallDash(float minWallWidth = 50)
@@ -81,7 +86,7 @@ namespace Yasuo.Common.Objects
                     4f,
                     color);
 
-            Drawing.DrawCircle(this.EndPosition, 375, color);
+            Render.Circle.DrawCircle(this.EndPosition, 350, color);
         }
 
     }

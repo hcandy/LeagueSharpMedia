@@ -88,7 +88,7 @@ namespace Yasuo.Modules.WallDash
 
         public void OnUpdate(EventArgs args)
         {
-            var units = this.Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
+            var units = this.Provider.GetUnits(Variables.Player.ServerPosition);
 
             if (this.Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)
             {
@@ -100,7 +100,7 @@ namespace Yasuo.Modules.WallDash
                         Execute(unit);
                     }
                     // Summary: if Cursor position is near dash end position, dash. That is to prevent dashes over walls that were not intended.
-                    else if (Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range).Distance(Game.CursorPos) < Variables.Player.Distance(unit))
+                    else if (Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range).Distance(Game.CursorPos) < Variables.Spells[SpellSlot.E].Range)
                     {
                         Execute(unit);
                     }
@@ -113,7 +113,7 @@ namespace Yasuo.Modules.WallDash
         {
             if (Variables.Player.IsDead || Variables.Player.IsDashing()) return;
 
-            var units = this.Provider.GetUnits(Variables.Player.ServerPosition.To2D(), true, true);
+            var units = this.Provider.GetUnits(Variables.Player.ServerPosition);
         }
 
         private static void Execute(Obj_AI_Base target)

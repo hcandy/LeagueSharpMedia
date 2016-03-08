@@ -162,7 +162,7 @@
                     return;
                 }
 
-                Execute(possibleExecutions.Where(x => ProviderTurret.IsSafe(Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range))).MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
+                Execute(possibleExecutions.Where(x => ProviderTurret.IsSafePosition(Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range))).MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
             }
 
 

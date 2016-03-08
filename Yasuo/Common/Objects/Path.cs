@@ -32,9 +32,11 @@ namespace Yasuo.Common.Objects
 
         public List<Obj_AI_Base> Units;
 
+        public Dash DashObject;
+
         private SweepingBladeLogicProvider ProviderE;
 
-        private FlowLogicProvider ProviderFlow;
+        private readonly FlowLogicProvider ProviderFlow;
 
         public Path(List<Obj_AI_Base> units, Vector3 startPosition, Vector3 endPosition)
         {
@@ -57,6 +59,8 @@ namespace Yasuo.Common.Objects
                 this.SetAll();
             }
 
+            DashObject = new Dash(FirstUnit);
+
             Drawing.DrawText(500, 540, Color.Red, "PathLength: "+PathLenght);
             Drawing.DrawText(500, 560, Color.Red, "DashLengt: " + DashLenght);
             Drawing.DrawText(500, 580, Color.Red, "WalkLenght: " + WalkLenght);
@@ -67,6 +71,8 @@ namespace Yasuo.Common.Objects
         public Obj_AI_Base FirstUnit { get; private set; }
 
         public bool FasterThanWalking { get; private set; }
+
+        public bool WallDashSavesTime { get; private set; }
 
         public bool GetsShield { get; private set; }
 
@@ -122,7 +128,7 @@ namespace Yasuo.Common.Objects
 
         public void SetDashTime()
         {
-            this.DashTime = this.DashLenght / (1200 + Variables.Player.MoveSpeed);
+            this.DashTime = this.DashLenght / (1000 + Variables.Player.MoveSpeed);
         }
 
         public void SetPathTime()
@@ -214,6 +220,8 @@ namespace Yasuo.Common.Objects
 
                 this.SetDangerValue();
                 this.CompareDashWalkTime();
+
+                this.CheckWallDashTimeSaving();
             }
             catch (Exception ex)
             {             
@@ -234,6 +242,26 @@ namespace Yasuo.Common.Objects
             {
                 Drawing.DrawText(500, 800, Color.Green, "FasterThanWalking");
                 FasterThanWalking = true;
+            }
+        }
+
+        public void CheckForWallDashes()
+        {
+            
+        }
+
+        public void CheckWallDashTimeSaving()
+        {
+            if (DashObject.IsWallDash)
+            {
+                var PathSpeedWalking = Helper.GetPathLenght(Variables.Player.GetPath(EndPosition)) / Variables.Player.MoveSpeed;
+                var PathSpeedDashing = this.PathTime;
+
+                if (PathSpeedWalking <= PathSpeedDashing)
+                {
+                    DashObject.WallDashSavesTime = true;
+                    WallDashSavesTime = true;
+                }
             }
         }
 
@@ -286,7 +314,7 @@ namespace Yasuo.Common.Objects
 
                     for (var i = 0; i < this.Positions.Count; i++)
                     {
-                        if (this.Units.Count > i + 1)
+                        if (this.Positions.Count > i + 1)
                         {
                             Drawing.DrawLine(
                             Drawing.WorldToScreen(this.Positions[i]),
