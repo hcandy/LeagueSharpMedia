@@ -5,6 +5,6 @@
 
     internal class Modules : Parent
     {
-        public override string Name => "Modules / Extras";
+        public override string Name => "Modules";
     }
 }

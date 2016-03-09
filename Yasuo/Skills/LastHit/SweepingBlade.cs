@@ -120,14 +120,14 @@
             // if EQ will hit more than X units and X units die
             if (this.Menu.Item(this.Name + "EQ").GetValue<bool>())
             {
-                var minionsEQ =
+                var minionsEq =
                     MinionManager.GetMinions(
                         Variables.Player.ServerPosition.Extend(
                             minion.ServerPosition,
                             Variables.Spells[SpellSlot.E].Range),
                         375).Where(x => x.Health <= Provider.GetDamage(x));
 
-                if (minionsEQ != null && minionsEQ.Count() >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value)
+                if (minionsEq != null && minionsEq.Count() >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value)
                 {
                     Execute(minion);
                 }

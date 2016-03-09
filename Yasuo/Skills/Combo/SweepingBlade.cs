@@ -5,6 +5,7 @@ namespace Yasuo.Skills.Combo
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Runtime.ExceptionServices;
 
     using LeagueSharp;
@@ -134,6 +135,33 @@ namespace Yasuo.Skills.Combo
                 return;
             }
 
+
+            #region EQ
+
+            if (Menu.Item(this.Name + "EQ").GetValue<bool>())
+            {
+                var possibleEQDashes = new List<Yasuo.Common.Objects.Dash>();
+                var unitsEQ =
+                    ProviderE.GetUnits(Variables.Player.ServerPosition)
+                        .Where(x => x.Distance(Variables.Player) <= Variables.Spells[SpellSlot.E].Range);
+
+                if (unitsEQ != null && unitsEQ.Any())
+                {
+                    foreach (var unit in unitsEQ.Where(x => Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range).CountEnemiesInRange(350)
+                                                    >= Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value).ToList())
+                    {
+                        possibleEQDashes.Add(new Yasuo.Common.Objects.Dash(unit));
+                    }
+                }
+
+                if (possibleEQDashes.Any())
+                {
+                    Execute(possibleEQDashes.MaxOrDefault(x => x.Unit.CountEnemiesInRange(350)).Unit);
+                }
+            }
+
+            #endregion
+
             #region Cast on Champion
 
             var targetE = TargetSelector.SelectedTarget ?? TargetSelector.GetTarget(
@@ -143,9 +171,18 @@ namespace Yasuo.Skills.Combo
             if (targetE != null
                 && targetE.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range)
             {
-                Vector3 meanVector =
-                    Helper.GetMeanVector3(
-                        HeroManager.Enemies.Where(x => x.Distance(Variables.Player.ServerPosition) <= 900)
+                var Dash = new Yasuo.Common.Objects.Dash(targetE);
+
+                // 1v1
+                if (Dash.EndPosition.CountEnemiesInRange(1000) <= 1
+                    && Dash.EndPosition.Distance(Prediction.GetPrediction(Dash.Unit, 500).CastPosition) <= Variables.Player.AttackRange
+                    && Dash.EndPosition.Distance(Prediction.GetPrediction(Dash.Unit, 500).CastPosition) <= Variables.Spells[SpellSlot.Q].Range && Variables.Spells[SpellSlot.Q].IsReady())
+                {
+                    Execute(targetE);
+                }
+
+                Vector3 meanVector = Helper.GetMeanVector3(
+                            HeroManager.Enemies.Where(x => x.Distance(Variables.Player.ServerPosition) <= 900)
                             .Select(enemy => enemy.ServerPosition)
                             .ToList());
 

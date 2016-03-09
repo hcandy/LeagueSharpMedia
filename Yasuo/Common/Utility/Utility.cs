@@ -12,7 +12,7 @@
     public static class Utility
     {
         // TODO: Add a method. Waiting for SDK/Core to get fixed. (Tracker)
-        public static bool isInSkillshot(this Obj_AI_Base unit)
+        public static bool IsInSkillshot(this Obj_AI_Base unit)
         {
             //foreach (var skillshot in SDK.Tracker.DetectedSkillshots)
             //{

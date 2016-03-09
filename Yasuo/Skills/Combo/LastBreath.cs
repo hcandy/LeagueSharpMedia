@@ -95,82 +95,95 @@
 
         public void OnUpdate(EventArgs args)
         {
-            if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo || !Variables.Spells[SpellSlot.R].IsReady())
+            try
             {
-                return;
-            }
-
-            var enemies = new List<Obj_AI_Hero>();
-            enemies.AddRange(HeroManager.Enemies.Where(enemy => enemy.IsAirbone()));
-
-            var possibleExecutions = new List<Common.Objects.LastBreath>();
-            possibleExecutions.AddRange(enemies.Select(enemy => new Yasuo.Common.Objects.LastBreath(enemy)));
-
-            var validatedExecutions = new List<Common.Objects.LastBreath>();
-
-            var Execution = new Yasuo.Common.Objects.LastBreath(null);
-
-            if (Menu.Item(Name + "AOE").GetValue<bool>())
-            {
-                validatedExecutions.AddRange(possibleExecutions.Where(entry => entry.EnemiesInUlt >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value));
-            }
-            else
-            {
-                validatedExecutions = possibleExecutions;
-            }
-
-            // TODO: Add a lot more stuff here
-            #region TargetSelector
-
-            if (validatedExecutions != null && validatedExecutions.Count > 0)
-            {
-                Execution = validatedExecutions.MaxOrDefault(x => x.DamageDealt);
-            }
-
-            #endregion
-
-            if (Execution == null || !Provider.ShouldCastNow(Execution.Target))
-            {
-                return;
-            }
-
-            if (!(Variables.Player.HealthPercent >= this.Menu.Item(this.Name + "MinPlayerHealth").GetValue<Slider>().Value))
-            {
-                return;
-            }
-
-            if (this.Menu.Item(this.Name + "OverkillCheck").GetValue<bool>())
-            {
-                var healthAll = 0f;
-                var damageAll = 0f;
-
-                if (Execution.AffectedEnemies.Count > 0)
+                if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo || !Variables.Spells[SpellSlot.R].IsReady())
                 {
-                    healthAll += Execution.AffectedEnemies.Sum(enemy => enemy.Health);
+                    return;
+                }
+
+                var enemies = new List<Obj_AI_Hero>();
+                enemies.AddRange(HeroManager.Enemies.Where(enemy => enemy.IsAirbone()));
+
+                var possibleExecutions = new List<Common.Objects.LastBreath>();
+                var validatedExecutions = new List<Common.Objects.LastBreath>();
+                if (enemies.Count > 0)
+                {
+                    possibleExecutions.AddRange(enemies.Select(enemy => new Yasuo.Common.Objects.LastBreath(enemy)));
+                }
+
+                var execution = new Yasuo.Common.Objects.LastBreath(null);
+
+                // Menu: Min Hit AOE && AOE
+                if (Menu.Item(Name + "AOE").GetValue<bool>())
+                {
+                    validatedExecutions.AddRange(possibleExecutions.Where(entry => entry.EnemiesInUlt >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value));
                 }
                 else
                 {
-                    healthAll = Execution.Target.Health;
+                    validatedExecutions = possibleExecutions;
                 }
 
-                foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R && x.Value.Slot != SpellSlot.W))
+                // TODO: Add a lot more stuff here
+                #region TargetSelector
+
+                if (validatedExecutions.Count > 0)
                 {
-                    foreach (var enemy in this.Provider.GetEnemiesAround(Execution.EndPosition))
+                    execution = validatedExecutions.MaxOrDefault(x => x.DamageDealt);
+                }
+
+                #endregion
+
+                if (execution == null || !Provider.ShouldCastNow(execution.Target))
+                {
+                    return;
+                }
+
+                // Menu: Min Player Health
+                if (Variables.Player.HealthPercent <= this.Menu.Item(this.Name + "MinPlayerHealth").GetValue<Slider>().Value)
+                {
+                    return;
+                }
+
+                // Menu: Overkill Check
+                if (this.Menu.Item(this.Name + "OverkillCheck").GetValue<bool>())
+                {
+                    var healthAll = 0f;
+                    var damageAll = 0f;
+
+                    if (execution.AffectedEnemies.Count > 0)
                     {
-                        damageAll += spell.Value.GetDamage(enemy);
+                        healthAll += execution.AffectedEnemies.Sum(enemy => enemy.Health);
+                    }
+                    else
+                    {
+                        healthAll = execution.Target.Health;
+                    }
+
+                    foreach (var spell in Variables.Spells.Where(x => x.Value.IsReady() && x.Value.Slot != SpellSlot.R && x.Value.Slot != SpellSlot.W))
+                    {
+                        foreach (var enemy in this.Provider.GetEnemiesAround(execution.EndPosition))
+                        {
+                            damageAll += spell.Value.GetDamage(enemy);
+                        }
+                    }
+
+                    if (healthAll > damageAll)
+                    {
+                        Game.PrintChat(@"Combo/LastBreaht.cs (Overkill Check): Execution is not overkill");
+                        this.Execute(execution.Target);
                     }
                 }
-
-                if (healthAll > damageAll)
+                else
                 {
-                    Game.PrintChat(@"Combo/LastBreaht.cs (Overkill Check): Execution is not overkill");
-                    this.Execute(Execution.Target);
+                    this.Execute(execution.Target);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                this.Execute(Execution.Target);
+                Console.WriteLine(ex);
             }
+            
         }
 
         private void Execute(Obj_AI_Hero target)

@@ -34,9 +34,9 @@ namespace Yasuo.Common.Objects
 
         public Dash DashObject;
 
-        private SweepingBladeLogicProvider ProviderE;
+        private SweepingBladeLogicProvider providerE;
 
-        private readonly FlowLogicProvider ProviderFlow;
+        private readonly FlowLogicProvider providerFlow;
 
         public Path(List<Obj_AI_Base> units, Vector3 startPosition, Vector3 endPosition)
         {
@@ -45,8 +45,8 @@ namespace Yasuo.Common.Objects
                 units.Remove(Variables.Player);
             }
 
-            ProviderE = new SweepingBladeLogicProvider(startPosition.Distance(endPosition) + 150);
-            ProviderFlow = new FlowLogicProvider();
+            this.providerE = new SweepingBladeLogicProvider(startPosition.Distance(endPosition) + 150);
+            this.providerFlow = new FlowLogicProvider();
 
             this.Units = units;
             
@@ -252,12 +252,12 @@ namespace Yasuo.Common.Objects
 
         public void CheckWallDashTimeSaving()
         {
-            if (DashObject.IsWallDash)
+            if (DashObject != null && DashObject.IsWallDash)
             {
-                var PathSpeedWalking = Helper.GetPathLenght(Variables.Player.GetPath(EndPosition)) / Variables.Player.MoveSpeed;
-                var PathSpeedDashing = this.PathTime;
+                var pathSpeedWalking = Helper.GetPathLenght(Variables.Player.GetPath(EndPosition)) / Variables.Player.MoveSpeed;
+                var pathSpeedDashing = this.PathTime;
 
-                if (PathSpeedWalking <= PathSpeedDashing)
+                if (pathSpeedWalking <= pathSpeedDashing)
                 {
                     DashObject.WallDashSavesTime = true;
                     WallDashSavesTime = true;
@@ -267,7 +267,7 @@ namespace Yasuo.Common.Objects
 
         public void CheckForShield()
         {
-            if (PathLenght <= ProviderFlow.GetRemainingUnits())
+            if (PathLenght <= this.providerFlow.GetRemainingUnits())
             {
                 this.GetsShield = true;
             }

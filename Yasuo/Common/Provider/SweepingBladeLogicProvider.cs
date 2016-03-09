@@ -27,6 +27,7 @@
             CalculationRange = calculationRange;
         }
 
+        // TODO: Clean up LATEST UPDATE: Multipathing
         /// <summary>
         ///     Returns a path object that represents the shortest possible path to a given location
         /// </summary>
@@ -46,45 +47,68 @@
                     return null;
                 }
 
-                var points = units.Select(Position => new Point(Position.ServerPosition)).ToList();
+                var points = units.Select(position => new Point(position.ServerPosition)).ToList();
                 points.Add(new Point(Variables.Player.ServerPosition));
+
+                var possibleGrids = new List<List<Connection>>();
 
                 // TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
                 // NOTE: That would need a multipathing system that uses Djikstra Algorithm for every minion in E range and determines the shortest path based on that outcome.
-                foreach (var point in points)
+                // ANOTHER NOTE: The solution is to take every minion around you and create an own grid for it. Then choose the shortest path of that grid. Then return the shortest path.
+                // JOKE: 101 how to path find with Media. :kappa:
+
+                //for every minion currently in dash range create a new grid
+                foreach (var point1 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
+                        && point.Position != Variables.Player.ServerPosition))
                 {
-                    foreach (var neighbour in points)
+                    var connectionGrid = new List<Connection>
                     {
-                        if (point.Position.Distance(neighbour.Position) <= Variables.Spells[SpellSlot.E].Range * 1.5)
+                        new Connection(
+                            new Point(Variables.Player.ServerPosition),
+                            point1)
+                    };
+
+                    var previouspoint = new Point(Vector3.Zero);
+
+                    foreach (var point2 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) > Variables.Spells[SpellSlot.E].Range))
+                    {
+                        if (connectionGrid.Contains(new Connection(previouspoint, point2)))
                         {
-                            connections.Add(new Connection(point, neighbour));
+                            continue;
                         }
+
+                        var endposition = previouspoint.Position.Extend(point2.Position, Variables.Spells[SpellSlot.E].Range);
+
+                        connectionGrid.Add(new Connection(previouspoint, new Point(endposition)));
+
+                        previouspoint = new Point(endposition);
                     }
+                    possibleGrids.Add(connectionGrid);
                 }
 
-                // Create new Object of the Djikstra class with values from above
-                var calculator = new Dijkstra(points, connections);
-
-                // Set starting point, Obj_Ai_Base Player in this case
-                calculator.CalculateDistance(points.FirstOrDefault(x => x.Position == Variables.Player.ServerPosition));
-
-                // Set end point and return result as path
-                var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(endPosition)));
-                var pathToUnits = new List<Obj_AI_Base>();
-
-                //if (path != null)
-                //{
-                //    pathToUnits.AddRange(path.Where(x => this.GetUnits(x.Position.To2D()).Count > 0));
-                //}
-
-                if (path != null)
+                var possiblePaths = new List<Path>();
+                Game.PrintChat("Possible Grids: "+possibleGrids.Count);
+                foreach (var grid in possibleGrids)
                 {
-                    pathToUnits.AddRange(path.ToList().Select(point => this.GetUnits(point.Position).MinOrDefault(x => x.Distance(point.Position))));
+                    // Create new Object of the Djikstra class with values from above
+                    var calculator = new Dijkstra(points, grid);
+
+                    // Set starting point, Obj_Ai_Base Player in this case
+                    calculator.CalculateDistance(points.FirstOrDefault(x => x.Position == Variables.Player.ServerPosition));
+
+                    // Set end point and return result as path
+                    var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(endPosition)));
+                    var pathToUnits = new List<Obj_AI_Base>();
+
+                    if (path != null)
+                    {
+                        pathToUnits.AddRange(path.ToList().Select(point => this.GetUnits(point.Position).MinOrDefault(x => x.Distance(point.Position))));
+                    }
+
+                    possiblePaths.Add(new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, endPosition)); 
                 }
 
-                var result = new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, endPosition);
-
-                return result;
+                return possiblePaths.Where(path => path.FasterThanWalking).MinOrDefault(path => path.PathTime);
             }
             catch (Exception ex)
             {
@@ -106,28 +130,61 @@
                     return null;
                 }
 
-                var points = units.Select(Position => new Point(Position.ServerPosition)).ToList();
+                var points = units.Select(position => new Point(position.ServerPosition)).ToList();
                 points.Add(new Point(Variables.Player.ServerPosition));
 
                 // TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
                 // NOTE: That would need a multipathing system that uses Djikstra Algorithm for every minion in E range and determines the shortest path based on that outcome.
-                foreach (var point in points)
+                // ANOTHER NOTE: The solution is to take every minion around you and create an own grid for it. Then choose the shortest path of that grid. Then return the shortest path.
+                // JOKE: 101 how to path find with Media. :kappa:
+   
+                //for every minion currently in dash range create a new grid
+                foreach (var point1 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
+                        && point.Position != Variables.Player.ServerPosition))
                 {
-                    foreach (var neighbour in points)
+                    var connectionGrid = new List<Connection>
                     {
-                        if (point.Position.Distance(neighbour.Position) <= Variables.Spells[SpellSlot.E].Range * 1.5)
+                        new Connection(
+                            new Point(Variables.Player.ServerPosition),
+                            point1)
+                    };
+                    
+                    var previouspoint = new Point(Vector3.Zero);
+
+                    foreach (var point2 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) > Variables.Spells[SpellSlot.E].Range))
+                    {
+                        if (connectionGrid.Contains(new Connection(previouspoint, point2)))
                         {
-                            if (noSkillshots && WallDashLogicProvider.GetFirstWallPoint(point.Position, neighbour.Position, 1) == Vector3.Zero)
-                            {
-                                connections.Add(new Connection(point, neighbour));
-                            }
-                            else
-                            {
-                                connections.Add(new Connection(point, neighbour));
-                            }
+                            continue;
                         }
+
+                        var endposition = previouspoint.Position.Extend(point2.Position, Variables.Spells[SpellSlot.E].Range);
+
+                        connectionGrid.Add(new Connection(previouspoint, new Point(endposition)));
+
+                        previouspoint = new Point(endposition);
                     }
                 }
+
+                // OLD LOGIC
+                //foreach (var point in points.ToList())
+                //{
+                //    foreach (var neighbour in points.Where(neighbour => point.Position.Distance(neighbour.Position) <= Variables.Spells[SpellSlot.E].Range * 1.5).ToList())
+                //    {
+                //        if (noSkillshots && WallDashLogicProvider.GetFirstWallPoint(point.Position, neighbour.Position, 1) == Vector3.Zero)
+                //        {
+                //            Console.WriteLine("Added");
+                //            connections.Add(new Connection(point, neighbour));
+                //        }
+                //        else
+                //        {
+                //            Console.WriteLine("Added else");
+                //            connections.Add(new Connection(point, neighbour));
+                //        }
+                //    }
+                //}
+                Console.WriteLine("" + connections.Count);
+
 
                 // Create new Object of the Djikstra class with values from above
                 var calculator = new Dijkstra(points, connections);
@@ -155,7 +212,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine(@"[GetPath]: " + ex);
+                Console.WriteLine(@"[GetAlternativePath]: " + ex);
             }
             return null;
         }

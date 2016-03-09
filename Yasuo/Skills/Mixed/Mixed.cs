@@ -5,6 +5,6 @@ namespace Yasuo.Skills.Mixed
 
     internal class Mixed : Parent
     {
-        public override string Name => "Mixed / Harass";
+        public override string Name => "Mixed";
     }
 }

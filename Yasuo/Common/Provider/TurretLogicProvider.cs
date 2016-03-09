@@ -34,6 +34,7 @@
             }
         }
 
+        // TODO: FIX: http://i.imgur.com/aUnV8NA.png
         public bool IsSafePosition(Vector3 position)
         {
             var turret = turretCache.MinOrDefault(x => x.Value.Distance(position)).Value;

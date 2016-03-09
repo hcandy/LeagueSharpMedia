@@ -77,6 +77,11 @@ namespace Yasuo.Modules.WallDash
             this.Menu.AddItem(new MenuItem(this.Name + "Helper", "How it works")
                 .SetTooltip("Hold down "+this.Menu.Item(this.Name+"Keybind").GetValue<KeyBind>()+ " to let the assembly perform a Dash over a unit that will be a WallDash"));
 
+            //var advanced = new Menu("Advanced Settings", this.Name + "Advanced");
+
+            //advanced.AddItem(
+            //    new MenuItem(this.Name + "WidthReduction", "WallWidth %").SetValue(new Slider(100, 0, 200)));
+
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
 
@@ -88,6 +93,7 @@ namespace Yasuo.Modules.WallDash
 
         public void OnUpdate(EventArgs args)
         {
+            //TODO: Add Auto Stacking
             var units = this.Provider.GetUnits(Variables.Player.ServerPosition);
 
             if (this.Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)

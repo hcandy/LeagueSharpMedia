@@ -114,7 +114,7 @@
             if (
                 Variables.Player.ServerPosition.Extend(minion.ServerPosition, Variables.Spells[SpellSlot.E].Range)
                     .CountMinionsInRange(Variables.Spells[SpellSlot.E].Range)
-                > this.Menu.Item(this.Name + "MinHitAOE").GetValue<int>())
+                > this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value)
             {
                 Execute(minion);
             }
