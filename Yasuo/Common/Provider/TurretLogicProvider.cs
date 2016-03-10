@@ -1,5 +1,6 @@
 ﻿namespace Yasuo.Common.Provider
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
@@ -37,34 +38,45 @@
         // TODO: FIX: http://i.imgur.com/aUnV8NA.png
         public bool IsSafePosition(Vector3 position)
         {
-            var turret = turretCache.MinOrDefault(x => x.Value.Distance(position)).Value;
-
-            if (!turret.IsValid || !position.UnderTurret(true) || (int)turret.Health == 0 || turret.IsDead)
+            try
             {
-                return true;
+                var turret = turretCache.Where(x => x.Value.Health > 0).MinOrDefault(x => x.Value.Distance(position)).Value;
+
+                if (!turret.IsValid || !position.UnderTurret(true) || (int)turret.Health == 0 || turret.IsDead)
+                {
+                    return true;
+                }
+
+                if (turretTarget != null)
+                {
+                    var target = turretTarget[turret.NetworkId];
+
+                    // We can onehit the turret, there are not much enemies near and we won't die from the next turret shot
+                    if (turret.Health + turret.PhysicalShield <= Variables.Player.GetAutoAttackDamage(turret)
+                        && turret.CountEnemiesInRange(turret.AttackRange) < 2
+                        && Variables.Player.Health > turret.GetAutoAttackDamage(Variables.Player)
+                        && position.Distance(turret.ServerPosition) <= Variables.Player.AttackRange)
+                    {
+                        return true;
+                    }
+
+                    if (target != null && !target.IsMe
+                        && this.CountAttackableUnitsInRange(turret.Position, turret.AttackRange) > 1
+                        && target.Health >= turret.GetAutoAttackDamage((Obj_AI_Base)target))
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
-
-            if (turretTarget != null)
+            catch (Exception ex)
             {
-                var target = turretTarget[turret.NetworkId];
 
-                // We can onehit the turret, there are not much enemies near and we won't die from the next turret shot
-                if (turret.Health + turret.PhysicalShield <= Variables.Player.GetAutoAttackDamage(turret)
-                    && turret.CountEnemiesInRange(turret.AttackRange) < 2
-                    && Variables.Player.Health > turret.GetAutoAttackDamage(Variables.Player)
-                    && position.Distance(turret.ServerPosition) <= Variables.Player.AttackRange)
-                {
-                    return true;
-                }
-
-                if (target != null && !target.IsMe
-                    && this.CountAttackableUnitsInRange(turret.Position, turret.AttackRange) > 1
-                    && target.Health >= turret.GetAutoAttackDamage((Obj_AI_Base) target))
-                {
-                    return true;
-                }
+                Console.WriteLine(ex);
+                
             }
             return false;
+
         }
 
         private int CountAttackableUnitsInRange(Vector3 position, float range)
@@ -82,7 +94,7 @@
 
         private static void InitializeCache()
         {
-            foreach (var obj in ObjectManager.Get<Obj_AI_Turret>().Where(turret => !turret.IsAlly))
+            foreach (var obj in ObjectManager.Get<Obj_AI_Turret>().Where(turret => !turret.IsAlly && turret.Health > 0))
             {
                 if (!turretCache.ContainsKey(obj.NetworkId))
                 {

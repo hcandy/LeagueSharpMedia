@@ -190,15 +190,16 @@
 
         private void Execute(List<Obj_AI_Base> units, bool aoe = false, bool circular = false, bool tryStacking = false)
         {
-            if (aoe)
-            {
-                var pred = MinionManager.GetBestLineFarmLocation(
-                    units.Where(x => x.Health < ProviderQ.GetDamage(x)).Select(m => m.ServerPosition.To2D()).ToList(),
-                    Variables.Spells[SpellSlot.Q].Width,
-                    Variables.Spells[SpellSlot.Q].Range);
+            // TODO: AOE is bugged and make you walk to base for some reason
+            //if (aoe)
+            //{
+            //    var pred = MinionManager.GetBestLineFarmLocation(
+            //        units.Where(x => x.Health < ProviderQ.GetDamage(x)).Select(m => m.ServerPosition.To2D()).ToList(),
+            //        Variables.Spells[SpellSlot.Q].Width,
+            //        Variables.Spells[SpellSlot.Q].Range);
 
-                Variables.Spells[SpellSlot.Q].Cast(pred.Position);
-            }
+            //    Variables.Spells[SpellSlot.Q].Cast(pred.Position);
+            //}
             if (circular)
             {
                 Variables.Spells[SpellSlot.Q].Cast(

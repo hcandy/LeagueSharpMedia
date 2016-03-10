@@ -101,7 +101,7 @@
             // EQ > Synergyses with the E function in SweepingBlade/LogicProvider.cs
             if (Variables.Player.IsDashing() && pred.UnitPosition.Distance(ObjectManager.Player.ServerPosition) <= Variables.Spells[SpellSlot.Q].Range)
             {
-                CastSteelTempest(target);
+                this.Execute(target);
             }
             if (!Variables.Player.IsDashing())
             {
@@ -109,15 +109,15 @@
                     && Variables.Player.CountEnemiesInRange(Variables.Spells[SpellSlot.Q].Range)
                     >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value)
                 {
-                    CastSteelTempest(target, Variables.Player.HasQ3(), true);
+                    this.Execute(target, Variables.Player.HasQ3(), true);
                 }
-                CastSteelTempest(target, Variables.Player.HasQ3());
+                this.Execute(target, Variables.Player.HasQ3());
             }
 
             #endregion
         }
 
-        private static void CastSteelTempest(Obj_AI_Base target, bool hasQ3 = false, bool aoe = false)
+        private void Execute(Obj_AI_Base target, bool hasQ3 = false, bool aoe = false)
         {
             var pred = PredictionOktw.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
 

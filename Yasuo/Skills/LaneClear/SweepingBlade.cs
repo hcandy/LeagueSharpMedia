@@ -44,7 +44,76 @@ namespace Yasuo.Skills.LaneClear
 
         #region Public Methods and Operators
 
-        public void OnUpdate(EventArgs args)
+        
+
+        #endregion
+
+        #region Methods
+
+        protected override void OnDisable()
+        {
+            Game.OnUpdate -= this.OnUpdate;
+            base.OnDisable();
+        }
+
+        protected override void OnEnable()
+        {
+            Game.OnUpdate += this.OnUpdate;
+            base.OnEnable();
+        }
+
+        protected override void OnInitialize()
+        {
+            this.ProviderE = new SweepingBladeLogicProvider();
+            this.ProviderTurret = new TurretLogicProvider();
+
+            base.OnInitialize();
+        }
+
+        protected override sealed void OnLoad()
+        {
+            this.Menu = new Menu(this.Name, this.Name);
+            this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
+
+            // Mode
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "ModeTarget", "Dash to: ").SetValue(new StringList(new[] { "Mouse", "Auto" })));
+
+            // EQ
+
+            #region EQ
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "EQ", "Try to E for EQ").SetValue(true)
+                    .SetTooltip("The assembly will try to E on a minion in order to Q"));
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(1, 2, 15)));
+
+            #endregion
+
+            #region E LastHit
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "LastHit", "Smart Lasthit").SetValue(true)
+                    .SetTooltip(
+                        "The assembly will only Lasthit a minion if Q is not up and the end position of the dash is not too close to the enemy and is not inside a skillshot"));
+
+            #endregion
+
+            #region Misc
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "NoWallJump", "Anti WallDash").SetValue(true)
+                    .SetTooltip(
+                        "if this is enabled, the assembly won't use Sweeping Blade on a unit if it is a walljump. This is especially useful when doing jungle clear"));
+
+            #endregion
+
+            this.Parent.Menu.AddSubMenu(this.Menu);
+        }
+
+        void OnUpdate(EventArgs args)
         {
             if (Variables.Orbwalker.ActiveMode != LeagueSharp.Common.Orbwalking.OrbwalkingMode.LaneClear || !Variables.Spells[SpellSlot.E].IsReady())
             {
@@ -141,73 +210,6 @@ namespace Yasuo.Skills.LaneClear
 
                 Execute(possibleExecutions.MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
             }
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected override void OnDisable()
-        {
-            Game.OnUpdate -= this.OnUpdate;
-            base.OnDisable();
-        }
-
-        protected override void OnEnable()
-        {
-            Game.OnUpdate += this.OnUpdate;
-            base.OnEnable();
-        }
-
-        protected override void OnInitialize()
-        {
-            this.ProviderE = new SweepingBladeLogicProvider();
-            this.ProviderTurret = new TurretLogicProvider();
-
-            base.OnInitialize();
-        }
-
-        protected override sealed void OnLoad()
-        {
-            this.Menu = new Menu(this.Name, this.Name);
-            this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
-
-            // Mode
-            this.Menu.AddItem(
-                new MenuItem(this.Name + "ModeTarget", "Dash to: ").SetValue(new StringList(new[] { "Mouse", "Auto" })));
-
-            // EQ
-
-            #region EQ
-
-            this.Menu.AddItem(
-                new MenuItem(this.Name + "EQ", "Try to E for EQ").SetValue(true)
-                    .SetTooltip("The assembly will try to E on a minion in order to Q"));
-
-            this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(1, 2, 15)));
-
-            #endregion
-
-            #region E LastHit
-
-            this.Menu.AddItem(
-                new MenuItem(this.Name + "LastHit", "Smart Lasthit").SetValue(true)
-                    .SetTooltip(
-                        "The assembly will only Lasthit a minion if Q is not up and the end position of the dash is not too close to the enemy and is not inside a skillshot"));
-
-            #endregion
-
-            #region Misc
-
-            this.Menu.AddItem(
-                new MenuItem(this.Name + "NoWallJump", "Anti WallDash").SetValue(true)
-                    .SetTooltip(
-                        "if this is enabled, the assembly won't use Sweeping Blade on a unit if it is a walljump. This is especially useful when doing jungle clear"));
-
-            #endregion
-
-            this.Parent.Menu.AddSubMenu(this.Menu);
         }
 
         private void Execute(Obj_AI_Base unit)

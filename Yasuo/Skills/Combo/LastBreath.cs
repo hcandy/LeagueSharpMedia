@@ -145,7 +145,7 @@
                     return;
                 }
 
-                // Menu: Overkill Check
+                // Menu: Overkill Check TODO: Improve that
                 if (this.Menu.Item(this.Name + "OverkillCheck").GetValue<bool>())
                 {
                     var healthAll = 0f;
@@ -170,7 +170,9 @@
 
                     if (healthAll > damageAll)
                     {
-                        Game.PrintChat(@"Combo/LastBreaht.cs (Overkill Check): Execution is not overkill");
+                        Game.PrintChat(@"healthAll:" + healthAll);
+                        Game.PrintChat(@"damageAll:" + damageAll);
+
                         this.Execute(execution.Target);
                     }
                 }

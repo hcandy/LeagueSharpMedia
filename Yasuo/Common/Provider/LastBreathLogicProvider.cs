@@ -68,52 +68,55 @@
         // TODO: Add winding up and Q and E time into consideration
         public bool ShouldCastNow(Obj_AI_Hero target, int buffer = 10)
         {
-            if (!target.IsAirbone() || !target.IsValid)
+            if (target == null || !target.IsValid || !target.IsAirbone())
             {
                 return false;
             }
 
             //Instant Ult in 1 v 1 because armor pen and less time for enemies to get spells up
-            if (target.CountEnemiesInRange(900) == 0)
+            if (target.CountEnemiesInRange(1500) == 0)
             {
                 var gapClosePath = new SweepingBladeLogicProvider(target.Distance(Variables.Player)).GetPath(target.ServerPosition);
 
                 Game.PrintChat("[Ult] PathTime: "+gapClosePath.PathTime);
                 Game.PrintChat("[Ult] AirboneTime: "+target.RemainingAirboneTime());
-                if (gapClosePath.PathTime >= target.RemainingAirboneTime())
+                if (gapClosePath.PathTime >= (target.RemainingAirboneTime() + buffer))
                 {
                     return true;
                 }
             }
 
-            return target.RemainingAirboneTime() <= Game.Ping + buffer;
+            return target.RemainingAirboneTime() <= (Game.Ping + buffer);
         }
 
         public Vector3 GetExecutionPosition(Obj_AI_Hero target)
         {
             var endPosition = Vector3.Zero;
-            if (target.IsValid && target != null)
+
+            if (target == null || !target.IsValid)
             {
-                if (target.UnderTurret(true))
-                {
-                    var turret =
-                        ObjectManager.Get<Obj_AI_Turret>()
-                            .Where(x => !x.IsAlly && x.Health > 0)
-                            .MinOrDefault(x => x.Distance(Variables.Player));
+                return endPosition;
+            }
 
-                    if (turret.IsValid && turret != null)
-                    {
-                        var y = target.Distance(turret);
+            if (target.UnderTurret(true))
+            {
+                var turret =
+                    ObjectManager.Get<Obj_AI_Turret>()
+                        .Where(x => !x.IsAlly && x.Health > 0)
+                        .MinOrDefault(x => x.Distance(Variables.Player));
 
-                        endPosition = turret.ServerPosition.Extend(
-                            target.ServerPosition,
-                            turret.AttackRange + target.BoundingRadius - y);
-                    }
-                }
-                else
+                if (turret != null && turret.IsValid)
                 {
-                    endPosition = target.ServerPosition;
+                    var y = target.Distance(turret);
+
+                    endPosition = turret.ServerPosition.Extend(
+                        target.ServerPosition,
+                        turret.AttackRange + target.BoundingRadius - y);
                 }
+            }
+            else
+            {
+                endPosition = target.ServerPosition;
             }
             return endPosition;
         }

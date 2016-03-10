@@ -35,6 +35,8 @@ namespace Yasuo.Common.Objects
             ProviderR = new LastBreathLogicProvider();
             ProviderTurret = new TurretLogicProvider();
 
+            AffectedEnemies = new List<Obj_AI_Hero>();
+
             this.Target = unit;
             this.StartPosition = Variables.Player.ServerPosition;
             this.EndPosition = ProviderR.GetExecutionPosition(Target);
@@ -55,7 +57,7 @@ namespace Yasuo.Common.Objects
 
         public float DamageDealt { get; private set; }
 
-        public List<Obj_AI_Hero> AffectedEnemies { get; private set; } 
+        public List<Obj_AI_Hero> AffectedEnemies { get; } 
 
         private void SetDangerValue()
         {
@@ -107,16 +109,38 @@ namespace Yasuo.Common.Objects
                     DamageDealt += Variables.Spells[SpellSlot.R].GetDamage(enemy);
                 }
             }
-            Game.PrintChat("Predicted Dmg dealt: "+DamageDealt);
+            if (DamageDealt > 0)
+            {
+                Game.PrintChat("Predicted Dmg dealt: " + DamageDealt);
+            }
         }
 
         private void SetAffectedEnemies()
         {
-            foreach (var enemy in HeroManager.Enemies.Where(x => x.IsAirbone() && !x.IsZombie && x.Distance(this.EndPosition) <= 475))
+            try
             {
-                this.AffectedEnemies.Add(enemy);
+                if (this.EndPosition == Vector3.Zero || this.EndPosition.CountEnemiesInRange(475) <= 0)
+                {
+                    return;
+                }
+
+                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsAirbone() && !x.IsZombie && x.Distance(this.EndPosition) <= 475))
+                {
+                    this.AffectedEnemies.Add(enemy);
+                }
+
+                if (AffectedEnemies.Count > 0)
+                {
+                    Game.PrintChat("Enemies knocked up: " + this.AffectedEnemies.Count);
+                }
+
             }
-            Game.PrintChat("Enemies knocked up: "+AffectedEnemies.Count);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                
+            }
+
         }
 
         public void Draw()
