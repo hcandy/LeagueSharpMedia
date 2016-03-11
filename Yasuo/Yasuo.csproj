@@ -114,6 +114,8 @@
     <Compile Include="Modules\Auto\Killsteal.cs" />
     <Compile Include="Modules\Evade\SweepingBlade.cs" />
     <Compile Include="Modules\Evade\WindWall.cs" />
+    <Compile Include="Modules\Flee\Flee.cs" />
+    <Compile Include="Modules\Flee\SweepingBlade.cs" />
     <Compile Include="Modules\Modules.cs" />
     <Compile Include="Modules\Auto\Potions.cs" />
     <Compile Include="Modules\Protector\Protector.cs" />
