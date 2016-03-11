@@ -87,7 +87,7 @@
                     Variables.Player.ServerPosition, Variables.Spells[SpellSlot.E].Range, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None)
                         .Where(x => !x.HasBuff("YasuoDashWrapper")).ToList())
             {
-                //TODO: Add some l33t Logix
+                //TODO: Add logic.
             }
 
         }

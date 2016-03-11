@@ -100,7 +100,7 @@ namespace Yasuo.Skills.Combo
                     .SetTooltip("The assembly will try to E on a minion in order to Q"));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(1, 1, 5)));
 
             this.Menu.AddItem(
                 new MenuItem(this.Name + "MinOwnHealth", "Min Player Health%").SetValue(new Slider(15, 1, 100))

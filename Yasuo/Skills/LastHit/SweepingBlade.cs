@@ -61,7 +61,7 @@
                     .SetTooltip("The assembly will try to E on a minion in order to Q"));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(3, 2, 15)));
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(1, 1, 15)));
 
             #endregion
 

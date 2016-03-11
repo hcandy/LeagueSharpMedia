@@ -16,8 +16,6 @@
 
     using Point = Yasuo.Common.Algorithm.Djikstra.Point;
 
-    // TODO: Add Waypoint System
-
     public class SweepingBladeLogicProvider
     {
         public static float CalculationRange;
@@ -217,8 +215,6 @@
             return null;
         }
 
-        // TODO: Not sure if .ToList() is a performance issue. Maybe work with a lock. 
-        // TODO: But that could be worse.. maybe add a second List and loop through it to prevent modifying the old list while looping
         /// <summary>
         ///     Returns a list containing all units
         /// </summary>

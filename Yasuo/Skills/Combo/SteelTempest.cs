@@ -73,7 +73,7 @@ namespace Yasuo.Skills.Combo
                         "If predicted hit count > slider, it will try to hit multiple, else it will aim for a single champion"));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 1, 5)));
 
             // Prediction Mode
             //this.Menu.AddItem(new MenuItem(this.Name + "Prediction", "Prediction").SetValue(new StringList(Variables.Predictions, 0)));

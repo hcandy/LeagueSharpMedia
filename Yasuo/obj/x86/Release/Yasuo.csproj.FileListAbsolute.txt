@@ -1,2 +1,0 @@
-C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\x86\Release\Yasuo.Properties.Resources.resources
-C:\Users\bje\Documents\GitHub\LeagueSharpMedia\Yasuo\obj\x86\Release\Yasuo.csproj.GenerateResource.Cache

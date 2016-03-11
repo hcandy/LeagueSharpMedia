@@ -62,6 +62,7 @@ namespace Yasuo
                                     new Skills.Combo.LastBreath(combo),
                                     new Skills.Combo.Flash(combo),
 
+                                    //TODO: Make that JungleClear too
                                     new Skills.LaneClear.SteelTempest(laneclear),
                                     new Skills.LaneClear.SweepingBlade(laneclear),
 

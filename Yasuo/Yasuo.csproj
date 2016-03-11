@@ -93,6 +93,7 @@
     <Compile Include="Common\Objects\Dash.cs" />
     <Compile Include="Common\Objects\LastBreath.cs" />
     <Compile Include="Common\Objects\Path.cs" />
+    <Compile Include="Common\Objects\WindWall.cs" />
     <Compile Include="Common\Predictions\PredictionOktw.cs" />
     <Compile Include="Common\Provider\FlashLogicProvider.cs" />
     <Compile Include="Common\Provider\FlowLogicProvider.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="Modules\Modules.cs" />
     <Compile Include="Modules\Auto\Potions.cs" />
     <Compile Include="Modules\Protector\Protector.cs" />
-    <Compile Include="Modules\Protector\SafeZone.cs" />
     <Compile Include="Modules\Protector\WindWallProtector.cs" />
     <Compile Include="Modules\WallDash\WallDash.cs" />
     <Compile Include="Skills\LastHit\LastHit.cs" />
@@ -176,6 +176,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Items\Combo\" />
+    <Folder Include="Items\LaneClear\" />
+    <Folder Include="Items\LastHit\" />
+    <Folder Include="Items\Mixed\" />
     <Folder Include="Ressources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

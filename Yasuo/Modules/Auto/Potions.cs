@@ -1,6 +1,4 @@
-﻿//TODO:  Djikstra
-
-namespace Yasuo.Modules.Auto
+﻿namespace Yasuo.Modules.Auto
 {
     using System;
     using System.Collections.Generic;

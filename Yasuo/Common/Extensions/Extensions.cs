@@ -52,12 +52,12 @@
 
         public static bool HasQ3(this Obj_AI_Hero hero) => ObjectManager.Player.HasBuff("YasuoQ3W");
 
+        // BUG: Returns wrong value do to SDK not working.
         /// <summary>
         /// Returns the missile position after time time.
         /// </summary>
         public static Vector2 MissilePosition(this Skillshot skillshot, bool allowNegative = false, float delay = 0)
         {
-            //TODO: That returns weird things. Prolly some value is not as I thought it would be.
             if (!skillshot.HasMissile)
             {
                 return Vector2.Zero;

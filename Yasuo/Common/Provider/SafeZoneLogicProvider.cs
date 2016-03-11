@@ -56,9 +56,6 @@
 //        }
 
 
-
-
-//        // TODO: Develope Target Selector for protecting allies. Maybe abuse our current TS for that. 
 //        public static Obj_AI_Base GetUnit(List<Obj_AI_Base> units)
 //        {
 

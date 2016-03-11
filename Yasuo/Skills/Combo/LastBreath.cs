@@ -72,7 +72,7 @@
                         "If hit count > slider, it will try to hit multiple, else it will aim for a single champion"));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 2, 5)));
+                new MenuItem(this.Name + "MinHitAOE", "Min HitCount for AOE").SetValue(new Slider(2, 1, 5)));
 
             this.Menu.AddItem(
                 new MenuItem(this.Name + "MinPlayerHealth", "Min Player Health (%)").SetValue(new Slider(0)));
@@ -134,7 +134,7 @@
 
                 #endregion
 
-                if (execution == null || !Provider.ShouldCastNow(execution.Target))
+                if (execution == null || !Provider.ShouldCastNow(execution.Target, new SweepingBladeLogicProvider().GetPath(execution.Target.ServerPosition)))
                 {
                     return;
                 }
@@ -145,7 +145,8 @@
                     return;
                 }
 
-                // Menu: Overkill Check TODO: Improve that
+                // OBSERVATION: Needs some more love. Often using ult, even if you could gapclose for just QE or EQ or just Q AA.
+                // Menu: Overkill Check
                 if (this.Menu.Item(this.Name + "OverkillCheck").GetValue<bool>())
                 {
                     var healthAll = 0f;

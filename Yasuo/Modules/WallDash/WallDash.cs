@@ -1,6 +1,4 @@
-﻿//TODO:  Djikstra
-
-namespace Yasuo.Modules.WallDash
+﻿namespace Yasuo.Modules.WallDash
 {
     using System;
     using System.Collections.Generic;
@@ -22,8 +20,6 @@ namespace Yasuo.Modules.WallDash
         {
             this.OnLoad();
         }
-
-        //public Dictionary<Obj_AI_Base, bool> BlacklistUnits;
 
         public override string Name => "Wall Dash";
 
@@ -48,23 +44,6 @@ namespace Yasuo.Modules.WallDash
             this.Menu = new Menu(this.Name, this.Name);
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
-            //// Blacklist
-            //var blacklist = new Menu("Blacklist", this.Name + "Blacklist");
-
-            //if (HeroManager.Enemies.Count == 0)
-            //{
-            //    blacklist.AddItem(new MenuItem(blacklist.Name + "null", "No enemies found"));
-            //}
-            //else
-            //{
-            //    foreach (var x in HeroManager.Enemies)
-            //    {
-            //        blacklist.AddItem(new MenuItem(blacklist.Name + x.Name, x.Name).SetValue(false));
-            //    }
-            //}
-            //this.Menu.AddSubMenu(blacklist);
-
-
             this.Menu.AddItem(
                 new MenuItem(this.Name + "Keybind", "Keybind").SetValue(new KeyBind(5, KeyBindType.Press)));
 
@@ -75,7 +54,7 @@ namespace Yasuo.Modules.WallDash
                 new MenuItem(this.Name + "MinWallWidth", "Minimum wall width: ").SetValue(new Slider(150, 10, (int) Variables.Spells[SpellSlot.E].Range / 2)));
 
             this.Menu.AddItem(new MenuItem(this.Name + "Helper", "How it works")
-                .SetTooltip("Hold down "+this.Menu.Item(this.Name+"Keybind").GetValue<KeyBind>()+ " to let the assembly perform a Dash over a unit that will be a WallDash"));
+                .SetTooltip("Hold down the Keybind to let the assembly perform a Dash over a unit that will be a WallDash"));
 
             //var advanced = new Menu("Advanced Settings", this.Name + "Advanced");
 
@@ -93,7 +72,6 @@ namespace Yasuo.Modules.WallDash
 
         public void OnUpdate(EventArgs args)
         {
-            //TODO: Add Auto Stacking
             var units = this.Provider.GetUnits(Variables.Player.ServerPosition);
 
             if (this.Menu.Item(this.Name + "Keybind").GetValue<KeyBind>().Active)

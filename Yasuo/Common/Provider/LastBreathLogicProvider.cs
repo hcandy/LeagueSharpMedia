@@ -48,7 +48,7 @@
             return buffTime.MinOrDefault(x => x.Value).Key;
         }
 
-        // TODO: Add that
+        // TODO: Add Safety Value
         public Obj_AI_Hero MostSafety(List<Obj_AI_Hero> enemies)
         {
             Obj_AI_Hero mostAlliesAround = null;
@@ -65,18 +65,19 @@
             return null;
         }
 
-        // TODO: Add winding up and Q and E time into consideration
-        public bool ShouldCastNow(Obj_AI_Hero target, int buffer = 10)
+        // TODO: Add Path Time into consideration. Add Path Parameter.
+        public bool ShouldCastNow(Obj_AI_Hero target, Objects.Path path = null, int buffer = 10)
         {
-            if (target == null || !target.IsValid || !target.IsAirbone())
+            if (target == null || !target.IsValid || !target.IsAirbone() || path == null)
             {
                 return false;
             }
 
+
             //Instant Ult in 1 v 1 because armor pen and less time for enemies to get spells up
             if (target.CountEnemiesInRange(1500) == 0)
             {
-                var gapClosePath = new SweepingBladeLogicProvider(target.Distance(Variables.Player)).GetPath(target.ServerPosition);
+                var gapClosePath = path;
 
                 Game.PrintChat("[Ult] PathTime: "+gapClosePath.PathTime);
                 Game.PrintChat("[Ult] AirboneTime: "+target.RemainingAirboneTime());

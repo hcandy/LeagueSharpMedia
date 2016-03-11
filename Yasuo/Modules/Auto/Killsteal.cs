@@ -1,6 +1,4 @@
-﻿//TODO:  Djikstra
-
-namespace Yasuo.Modules.Auto
+﻿namespace Yasuo.Modules.Auto
 {
     using System;
 
@@ -37,7 +35,17 @@ namespace Yasuo.Modules.Auto
             this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
             this.Menu.AddItem(
-                new MenuItem(this.Name + "MinHealthPercentage", "Min Own Health %").SetValue(new Slider(35, 0, 99)));
+                new MenuItem(this.Name + "MinHealthPercentage", "Min Own Health %").SetValue(new Slider(15, 0, 99)));
+
+            #region E
+
+            this.Menu.AddItem(new MenuItem(this.Name + "NoEintoEnemies", "Don't E into enemies").SetValue(true));
+
+            this.Menu.AddItem(
+                new MenuItem(this.Name + "MaxEnemiesAroundE", "Max Enemies Around DashEnd Position").SetValue(
+                    new Slider(2, 1, 5)));
+
+            #endregion
 
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
@@ -49,7 +57,7 @@ namespace Yasuo.Modules.Auto
 
         public void OnUpdate(EventArgs args)
         {
-
+            // TODO: Add Logic for every spell.
         }
 
         public void Execute(Obj_AI_Base target, SpellSlot spellslot)

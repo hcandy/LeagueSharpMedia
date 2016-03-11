@@ -1,4 +1,5 @@
-﻿namespace Yasuo.Common.Provider
+﻿// TODO: Much.
+namespace Yasuo.Common.Provider
 {
     using LeagueSharp;
     using LeagueSharp.Common;

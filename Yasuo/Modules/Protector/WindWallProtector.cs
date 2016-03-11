@@ -14,6 +14,7 @@
     using Yasuo.Common;
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
+    using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
     using Yasuo.Skills.Combo;
 
@@ -33,7 +34,7 @@
 
         public SweepingBladeLogicProvider Provider;
 
-        public SafeZone SafeZone;
+        public WindWall WindWall;
 
         public SDK.Tracker Tracker;
 
@@ -129,11 +130,11 @@
                             //Game.PrintChat("Can gapclose in time to protect ally");
                         }
                         
-                        this.SafeZone = new SafeZone(skillshot.StartPosition, skillshot.SData.Range, skillshot.SData.Radius);
+                        this.WindWall = new WindWall(skillshot.StartPosition, skillshot.SData.Range, skillshot.SData.Radius);
 
-                        if (this.SafeZone != null && this.SafeZone.AlliesInside.Contains(ally))
+                        if (this.WindWall != null && this.WindWall.AlliesInside.Contains(ally))
                         {
-                            this.Execute(this.SafeZone.CastPosition);
+                            this.Execute(this.WindWall.CastPosition);
                         }
                     }
                 }

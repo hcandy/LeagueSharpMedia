@@ -1,71 +1,69 @@
-﻿//TODO:  TEMPLATE
-/*
+﻿//namespace Yasuo.Common.Classes
+//{
+//    using System;
 
+//    using LeagueSharp;
+//    using LeagueSharp.Common;
 
+//    internal class ClassName : Child<ChildName>
+//    {
+//        #region Constructors and Destructors
 
-namespace Yasuo.Common.Classes
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+//        public ClassName(ChildName parent)
+//            : base(parent)
+//        {
+//            this.OnLoad();
+//        }
 
-    using LeagueSharp;
-    using LeagueSharp.Common;
+//        #endregion
 
-    using Yasuo.Common.Extensions;
-    using Yasuo.Common.Provider;
-    using Yasuo.Modules.WallDash;
+//        #region Public Properties
 
-    internal class ClassName : Child<ChildName>
-    {
-        public ClassName(ChildName parent)
-            : base(parent)
-        {
-            this.OnLoad();
-        }
+//        public override string Name => "ClassName";
 
-        public override string Name => "ClassName";
+//        #endregion
 
-        protected override void OnEnable()
-        {
-            Game.OnUpdate += this.OnUpdate;
-            Drawing.OnDraw += this.OnDraw;
-            base.OnEnable();
-        }
+//        #region Public Methods and Operators
 
-        protected override void OnDisable()
-        {
-            Game.OnUpdate -= this.OnUpdate;
-            Drawing.OnDraw -= this.OnDraw;
-            base.OnDisable();
-        }
+//        public void OnDraw(EventArgs args)
+//        {
+//        }
 
-        protected override sealed void OnLoad()
-        {
-            this.Menu = new Menu(this.Name, this.Name);
-            this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
+//        public void OnUpdate(EventArgs args)
+//        {
+//        }
 
-            
-            this.Parent.Menu.AddSubMenu(this.Menu);
-        }
+//        #endregion
 
-        protected override void OnInitialize()
-        {
-            base.OnInitialize();
-        }
+//        #region Methods
 
-        public void OnUpdate(EventArgs args)
-        {
+//        protected override void OnDisable()
+//        {
+//            Game.OnUpdate -= this.OnUpdate;
+//            Drawing.OnDraw -= this.OnDraw;
+//            base.OnDisable();
+//        }
 
-        }
+//        protected override void OnEnable()
+//        {
+//            Game.OnUpdate += this.OnUpdate;
+//            Drawing.OnDraw += this.OnDraw;
+//            base.OnEnable();
+//        }
 
-        public void OnDraw(EventArgs args)
-        {
+//        protected override void OnInitialize()
+//        {
+//            base.OnInitialize();
+//        }
 
-        }
-    }
-}
+//        protected override sealed void OnLoad()
+//        {
+//            this.Menu = new Menu(this.Name, this.Name);
+//            this.Menu.AddItem(new MenuItem(this.Name + "Enabled", "Enabled").SetValue(true));
 
+//            this.Parent.Menu.AddSubMenu(this.Menu);
+//        }
 
-
-*/
+//        #endregion
+//    }
+//}

@@ -1,4 +1,5 @@
-﻿namespace Yasuo.Common.Provider
+﻿// OBSERVATION: After some Event I don't know yet, its not accurate anymore, until Max Flow.
+namespace Yasuo.Common.Provider
 {
     using System;
 
@@ -11,7 +12,6 @@
 
     class FlowLogicProvider
     {
-        //TODO: For some reasons its a bit inaccurate after some time. Need to watch it live and decide what to do.
         public float GetUnitsUntilMaxFlow()
         {
             return Variables.Player.Level >= 13 ? 4600f : (Variables.Player.Level >= 7 ? 5200f : 5900f);

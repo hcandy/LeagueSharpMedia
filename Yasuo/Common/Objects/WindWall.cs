@@ -1,6 +1,4 @@
-﻿// TODO: REWORK
-
-namespace Yasuo.Modules.Protector
+﻿namespace Yasuo.Common.Objects
 {
     using System;
     using System.Collections.Generic;
@@ -11,9 +9,8 @@ namespace Yasuo.Modules.Protector
     using SharpDX;
 
     using Color = System.Drawing.Color;
-    using Geometry = LeagueSharp.Common.Geometry;
 
-    class SafeZone
+    internal class WindWall
     {
         //public SafeZoneLogicProvider Provider;
 
@@ -31,7 +28,7 @@ namespace Yasuo.Modules.Protector
 
         public Vector2 CastPosition;
 
-        public SafeZone(Vector2 start, float range, float additionalWidth)
+        public WindWall(Vector2 start, float range, float additionalWidth)
         {
             this.Start = start;
 
@@ -47,13 +44,19 @@ namespace Yasuo.Modules.Protector
         private void Create()
         {
             var wwCenter = Geometry.Extend(Variables.Player.ServerPosition, this.Start.To3D(), 300);
-            CastPosition = wwCenter.To2D();
+            this.CastPosition = wwCenter.To2D();
 
             var wwPerpend = (wwCenter - Variables.Player.ServerPosition).Normalized();
             wwPerpend.X = -wwPerpend.X;
 
-            var leftInnerBound = Geometry.Extend(wwCenter, wwPerpend, (Variables.Spells[SpellSlot.W].Width / 2) + this.AdditionalWidth);
-            var rightInnerBound = Geometry.Extend(wwCenter, wwPerpend, -(Variables.Spells[SpellSlot.W].Width / 2) - this.AdditionalWidth);
+            var leftInnerBound = Geometry.Extend(
+                wwCenter,
+                wwPerpend,
+                (Variables.Spells[SpellSlot.W].Width / 2) + this.AdditionalWidth);
+            var rightInnerBound = Geometry.Extend(
+                wwCenter,
+                wwPerpend,
+                -(Variables.Spells[SpellSlot.W].Width / 2) - this.AdditionalWidth);
 
             var leftOuterBound = Geometry.Extend(this.Start, leftInnerBound.To2D(), this.Range);
             var rightOuterBound = Geometry.Extend(this.Start, rightInnerBound.To2D(), this.Range);
@@ -74,7 +77,7 @@ namespace Yasuo.Modules.Protector
             {
                 if (this.polygon.IsInside(ally.ServerPosition.To2D()))
                 {
-                    AlliesInside.Add(ally);   
+                    this.AlliesInside.Add(ally);
                 }
             }
         }

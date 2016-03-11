@@ -14,10 +14,9 @@ namespace Yasuo.Common.Provider
     class WindWallLogicProvider
     {
         // TODO: Maybe Block spells that aiming an enemy and are blockable i.e: Lux W
-        // TODO: E when W not needed
+        // TODO: E when W not needed (ie. Ally wont get hit)
         // TODO: E behind W when skillshot is targeted (ie. cait ult) will hit you or next AA will kill you or do much dmg
-        // TODO: Anti Gragas Insec
-        // TODO: Add delay to Special Interactions
+        // TODO: Anti Gragas Insec (more of a fun thing actually.)
         // TODO: Crit in AA
         // TODO: 1v1 SafeZone logic
         // TODO: Clean up code
