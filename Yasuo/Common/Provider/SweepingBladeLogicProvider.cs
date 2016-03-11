@@ -85,7 +85,7 @@
                 }
 
                 var possiblePaths = new List<Path>();
-                Game.PrintChat("Possible Grids: "+possibleGrids.Count);
+
                 foreach (var grid in possibleGrids)
                 {
                     // Create new Object of the Djikstra class with values from above
