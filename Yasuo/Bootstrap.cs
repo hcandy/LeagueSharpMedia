@@ -16,6 +16,7 @@ namespace Yasuo
     using Yasuo.Modules.Auto;
     using Yasuo.Modules.Protector;
     using Yasuo.Modules.WallDash;
+    using Yasuo.Modules.Flee;
     using Yasuo.Skills.Combo;
     using Yasuo.Skills.LaneClear;
     using Yasuo.Skills.LastHit;
@@ -75,6 +76,7 @@ namespace Yasuo
                                     new Potions(module),
                                     new KillSteal(module),
                                     new WallDash(module),
+                                    new Yasuo.Modules.Flee.SweepingBlade(module),
                                     
                                     // Extra Features - Disabled due to SDK/Core problems
                                     //new WindWallProtector(protector)

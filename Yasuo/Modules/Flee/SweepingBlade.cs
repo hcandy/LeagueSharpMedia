@@ -16,15 +16,13 @@ namespace Yasuo.Modules.Flee
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
 
-    internal class SweepingBlade : Child<Flee>
+    internal class SweepingBlade : Child<Modules>
     {
-        public SweepingBlade(Flee parent)
+        public SweepingBlade(Modules parent)
             : base(parent)
         {
             this.OnLoad();
         }
-
-        public List<Obj_AI_Base> BlacklistUnits;
 
         public Path Path;
 
