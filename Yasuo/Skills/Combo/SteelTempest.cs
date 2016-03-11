@@ -95,7 +95,6 @@ namespace Yasuo.Skills.Combo
             var target = TargetSelector.GetTarget(
                 Variables.Spells[SpellSlot.Q].Range,
                 TargetSelector.DamageType.Physical);
-            var pred = PredictionOktw.GetPrediction(target, Variables.Spells[SpellSlot.Q].Delay);
 
             if (Variables.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo 
                 || target == null || !target.IsValidTarget())
@@ -111,7 +110,7 @@ namespace Yasuo.Skills.Combo
             }
 
             // EQ > Synergyses with the E function in SweepingBlade/LogicProvider.cs
-            if (Variables.Player.IsDashing() && target.Distance(ObjectManager.Player.ServerPosition) <= 375)
+            if (Variables.Player.IsDashing() && target.Distance(ObjectManager.Player.ServerPosition) <= 350)
             {
                 Execute(target);
             }
