@@ -315,7 +315,7 @@ namespace Yasuo.Skills.Combo
             try
             {
                 if (unit != null && !unit.IsValidTarget() || unit.HasBuff("YasuoDashWrapper") 
-                    || ProviderTurret.IsSafePosition(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.R].Range)))
+                    || !ProviderTurret.IsSafePosition(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.R].Range)))
                 {
                     return;
                 }

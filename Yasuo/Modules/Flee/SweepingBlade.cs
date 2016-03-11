@@ -55,7 +55,7 @@ namespace Yasuo.Modules.Flee
 
             // Spell Settings
             this.Menu.AddItem(
-                new MenuItem(this.Name + "StackQ", "Keybind").SetValue(new KeyBind(5, KeyBindType.Press)));
+                new MenuItem(this.Name + "Keybind", "Keybind").SetValue(new KeyBind(5, KeyBindType.Press)));
 
             this.Menu.AddItem(
                 new MenuItem(this.Name + "PathAroundSkillShots", "[Disabled] Try to Path around Skillshots").SetValue(
