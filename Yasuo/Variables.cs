@@ -19,6 +19,8 @@ namespace Yasuo
 
     class Variables : Helper
     {
+        public static bool Debug = true;
+
         public static Assembly Assembly = null;
 
         public static Orbwalking.Orbwalker Orbwalker { get; internal set; }

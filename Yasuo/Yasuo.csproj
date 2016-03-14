@@ -81,7 +81,9 @@
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Common\Algorithm\Djikstra\Connection.cs" />
     <Compile Include="Common\Algorithm\Djikstra\Djikstra.cs" />
+    <Compile Include="Common\Algorithm\Djikstra\Grid.cs" />
     <Compile Include="Common\Algorithm\Djikstra\Point.cs" />
+    <Compile Include="Common\Algorithm\Media\GridGenerator.cs" />
     <Compile Include="Common\Classes\Base.cs" />
     <Compile Include="Common\Classes\Child.cs" />
     <Compile Include="Common\Classes\IChild.cs" />
@@ -121,21 +123,21 @@
     <Compile Include="Modules\Protector\Protector.cs" />
     <Compile Include="Modules\Protector\WindWallProtector.cs" />
     <Compile Include="Modules\WallDash\WallDash.cs" />
-    <Compile Include="Skills\LastHit\LastHit.cs" />
-    <Compile Include="Skills\LastHit\SteelTempest.cs" />
-    <Compile Include="Skills\LastHit\SweepingBlade.cs" />
-    <Compile Include="Skills\Mixed\Mixed.cs" />
-    <Compile Include="Skills\Mixed\SteelTempest.cs" />
-    <Compile Include="Skills\Mixed\SweepingBlade.cs" />
-    <Compile Include="Skills\LaneClear\LaneClear.cs" />
-    <Compile Include="Skills\LaneClear\SteelTempest.cs" />
-    <Compile Include="Skills\LaneClear\SweepingBlade.cs" />
-    <Compile Include="Skills\Combo\Flash.cs" />
-    <Compile Include="Skills\Combo\LastBreath.cs" />
-    <Compile Include="Skills\Combo\Combo.cs" />
+    <Compile Include="OrbwalkingModes\LastHit\LastHit.cs" />
+    <Compile Include="OrbwalkingModes\LastHit\SteelTempest.cs" />
+    <Compile Include="OrbwalkingModes\LastHit\SweepingBlade.cs" />
+    <Compile Include="OrbwalkingModes\Mixed\Mixed.cs" />
+    <Compile Include="OrbwalkingModes\Mixed\SteelTempest.cs" />
+    <Compile Include="OrbwalkingModes\Mixed\SweepingBlade.cs" />
+    <Compile Include="OrbwalkingModes\LaneClear\LaneClear.cs" />
+    <Compile Include="OrbwalkingModes\LaneClear\SteelTempest.cs" />
+    <Compile Include="OrbwalkingModes\LaneClear\SweepingBlade.cs" />
+    <Compile Include="OrbwalkingModes\Combo\Flash.cs" />
+    <Compile Include="OrbwalkingModes\Combo\LastBreath.cs" />
+    <Compile Include="OrbwalkingModes\Combo\Combo.cs" />
     <Compile Include="Assembly.cs" />
-    <Compile Include="Skills\Combo\SteelTempest.cs" />
-    <Compile Include="Skills\Combo\SweepingBlade.cs" />
+    <Compile Include="OrbwalkingModes\Combo\SteelTempest.cs" />
+    <Compile Include="OrbwalkingModes\Combo\SweepingBlade.cs" />
     <Compile Include="Variables.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -152,7 +154,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

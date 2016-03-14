@@ -62,8 +62,6 @@ namespace Yasuo.Modules.Flee
                     true).SetTooltip("if this is enabled, the assembly will path around a skillshot if a path is given"));
 
 
-
-
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
 
@@ -98,20 +96,22 @@ namespace Yasuo.Modules.Flee
                 #region When to Execute and when not
 
                 // if a path is given, and the first unit of the path is in dash range, and the path time is faster than running to the given vector (dashVactor)
-                // TODO: Sometimes when the Path is very crowded it happens that the Dash will get executed in the wrong direction. A more accurate pathing algorithm through making unit connections in SweepingBladeLogicProvider faster will fix that
                 if (this.Path != null
                     && Variables.Player.Distance(this.Path.FirstUnit) <= Variables.Spells[SpellSlot.E].Range
                     && this.Path.FasterThanWalking
                     )
                 {
+
                     #region WallCheck
 
                     if (this.Path.DashObject.IsWallDash)
                     {
-                        this.Execute(
-                            this.Path.WallDashSavesTime
-                                ? this.Path.DashObject.Unit
-                                : this.ProviderE.GetAlternativePath(this.Path).DashObject.Unit);
+                        //this.Execute(
+                        //    this.Path.WallDashSavesTime
+                        //        ? this.Path.DashObject.Unit
+                        //        : this.ProviderE.GetAlternativePath(this.Path).DashObject.Unit);
+
+                        Execute(Path.FirstUnit);
                     }
 
                     #endregion
@@ -148,6 +148,10 @@ namespace Yasuo.Modules.Flee
 
         public void OnDraw(EventArgs args)
         {
+            //if (this.Path = null)
+            //{
+            //    Console.WriteLine("Cant draw Path == null");
+            //}
             //this.GapClosePath?.RealPath.Draw();
             this.Path?.Draw();
             //this.Path?.DashObject?.Draw();
@@ -157,7 +161,7 @@ namespace Yasuo.Modules.Flee
         {
             try
             {
-                if (unit != null && !unit.IsValidTarget() || unit.HasBuff("YasuoDashWrapper"))
+                if (unit == null || !unit.IsValidTarget() || unit.HasBuff("YasuoDashWrapper"))
                 {
                     return;
                 }

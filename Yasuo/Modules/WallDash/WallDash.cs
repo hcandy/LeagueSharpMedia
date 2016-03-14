@@ -11,7 +11,6 @@
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Provider;
-    using Yasuo.Skills.Combo;
 
     internal class WallDash : Child<Modules>
     {

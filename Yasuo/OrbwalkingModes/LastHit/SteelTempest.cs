@@ -1,4 +1,4 @@
-﻿namespace Yasuo.Skills.LastHit
+﻿namespace Yasuo.OrbwalkingModes.LastHit
 {
     using System;
     using System.Collections.Generic;
@@ -11,7 +11,6 @@
     using Yasuo.Common.Classes;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
-    using Yasuo.Skills.LaneClear;
 
     internal class SteelTempest : Child<LastHit>
     {
@@ -155,7 +154,7 @@
                     // if AOE is enabled and more than X units are around us.
                     if (this.Menu.Item(this.Name + "AOE").GetValue<bool>()
                         && this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value
-                        <= minions.Where(x => !x.InAutoAttackRange() && x.Health > ProviderQ.GetDamage(x)).ToList().Count)
+                        <= minions.Where(x => !x.InAutoAttackRange() && x.Health > this.ProviderQ.GetDamage(x)).ToList().Count)
                     {
                         // Check for the minions centered position and wait until we are a bit away
                         // TODO: Add values like Spread of the minions

@@ -1,6 +1,6 @@
 ﻿// TODO: Add new Dash Object to make things easier
 
-namespace Yasuo.Skills.LaneClear
+namespace Yasuo.OrbwalkingModes.LaneClear
 {
     using System;
     using System.Collections.Generic;
@@ -155,19 +155,19 @@ namespace Yasuo.Skills.LaneClear
             }
 
             // if EQ will hit more than X units
-            if (Menu.Item(this.Name + "EQ").GetValue<bool>()
+            if (this.Menu.Item(this.Name + "EQ").GetValue<bool>()
                 && Variables.Player.ServerPosition.Extend(minion.ServerPosition, Variables.Spells[SpellSlot.E].Range)
-                       .CountMinionsInRange(375) > Menu.Item(Name + "MinHitAOE").GetValue<Slider>().Value
+                       .CountMinionsInRange(375) > this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value
                 && Variables.Player.Health > 100)
             {
                 if (Variables.Spells[SpellSlot.Q].IsReady() && Variables.Spells[SpellSlot.Q].Level > 0)
                 {
-                    Execute(minion);
+                    this.Execute(minion);
                 }
             }
 
             // Smart Last Hit
-            if (Menu.Item(this.Name + "LastHit").GetValue<bool>())
+            if (this.Menu.Item(this.Name + "LastHit").GetValue<bool>())
             {
                 if (minions == null)
                 {
@@ -184,14 +184,14 @@ namespace Yasuo.Skills.LaneClear
                             unit.Health <= this.ProviderE.GetDamage(unit)
                             && unit.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range))
                 {
-                    if (enemies.Count(enemy => enemy.Distance(Variables.Player.ServerPosition) <= 1000) > 0)
+                    if (enemies.Count(enemy => enemy.Distance(x.ServerPosition) <= 1000) > 0)
                     {
                         foreach (var y in enemies.Where(z => z.HealthPercent > 10))
                         {
                             var newPos = Variables.Player.ServerPosition.Extend(
                                 x.ServerPosition,
                                 Variables.Spells[SpellSlot.E].Range);
-                            if (newPos.Distance(y.ServerPosition) < y.AttackRange)
+                            if (newPos.Distance(y.ServerPosition) < y.AttackRange + 475)
                             {
                                 possibleExecutions.Add(x);
                             }
@@ -208,7 +208,7 @@ namespace Yasuo.Skills.LaneClear
                     return;
                 }
 
-                Execute(possibleExecutions.MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
+                this.Execute(possibleExecutions.MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
             }
         }
 
@@ -216,10 +216,10 @@ namespace Yasuo.Skills.LaneClear
         {
             // Check if Dash End position is safe under turret
             if (unit.IsValidTarget() && unit != null
-                && ProviderTurret.IsSafePosition(
+                && this.ProviderTurret.IsSafePosition(
                     Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.E].Range)))
             {
-                if (Menu.Item(this.Name + "NoWallJump").GetValue<bool>())
+                if (this.Menu.Item(this.Name + "NoWallJump").GetValue<bool>())
                 {
                     if (unit.IsWallDash(Variables.Spells[SpellSlot.E].Range, 20))
                     {

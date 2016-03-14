@@ -1,4 +1,4 @@
-﻿namespace Yasuo.Skills.LaneClear
+﻿namespace Yasuo.OrbwalkingModes.LaneClear
 {
     using System;
     using System.Collections.Generic;
@@ -11,8 +11,6 @@
     using Yasuo.Common.Classes;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
-
-    using SkillshotType = LeagueSharp.SDK.SkillshotType;
 
     internal class SteelTempest : Child<LaneClear>
     {
@@ -122,19 +120,19 @@
             #region EQ
 
             // EQ > Synergyses with the E function in SweepingBlade/LogicProvider.cs
-            if (Menu.Item(this.Name + "EQ").GetValue<bool>()
+            if (this.Menu.Item(this.Name + "EQ").GetValue<bool>()
                 && (Variables.Player.IsDashing()
-                    && minions.Where(x => x.Health <= ProviderQ.GetDamage(x))
+                    && minions.Where(x => x.Health <= this.ProviderQ.GetDamage(x))
                            .Count(x => x.Distance(Variables.Player) <= 375) > 2))
             {
                 // Won't waste Q3
                 // TODO: Add a Logic to do it if an enemy can get hit
-                if (Menu.Item(this.Name + "EQNoQ3").GetValue<bool>()
-                    && ProviderQ.HasQ3())
+                if (this.Menu.Item(this.Name + "EQNoQ3").GetValue<bool>()
+                    && this.ProviderQ.HasQ3())
                 {
                     return;
                 }
-                Execute(minions);
+                this.Execute(minions);
             }
 
             #endregion
@@ -150,29 +148,29 @@
                 }
 
                 // Mass lane clear logic
-                if (ProviderQ.HasQ3())
+                if (this.ProviderQ.HasQ3())
                 {
                     // if AOE is enabled and more than X units are around us.
-                    if (Menu.Item(this.Name + "AOE").GetValue<bool>()
-                        && Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value
+                    if (this.Menu.Item(this.Name + "AOE").GetValue<bool>()
+                        && this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value
                         <= minions.Where(x => !x.InAutoAttackRange()).ToList().Count)
                     {
                         // Check for the minions centered position and wait until we are a bit away
                         // TODO: Add values like Spread of the minions
-                        if (Menu.Item(this.Name + "CenterCheck").GetValue<bool>()
+                        if (this.Menu.Item(this.Name + "CenterCheck").GetValue<bool>()
                             && Variables.Player.Distance(Helper.GetMeanVector2(minions)) > 450
                             || minions.Where(x => !x.InAutoAttackRange()).ToList().Count > 15
-                            || ProviderQ.BuffTime() <= 10)
+                            || this.ProviderQ.BuffTime() <= 10)
                         {
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
-                            Execute(minions, true);
+                            this.Execute(minions, true);
                         }
 
                         // Alternative Logic if the Menu Item is disabled
-                        else if (!Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
+                        else if (!this.Menu.Item(this.Name + "CenterCheck").GetValue<bool>())
                         {
                             minions = minions.Where(x => !x.InAutoAttackRange()).ToList();
-                            Execute(minions, true);
+                            this.Execute(minions, true);
                         }
                     }
                 }
@@ -181,7 +179,7 @@
                 // TODO: Add Health Prediction
                 else
                 {
-                    Execute(minions, tryStacking: true);
+                    this.Execute(minions, tryStacking: true);
                 }
             }
 
@@ -208,7 +206,7 @@
             {
                 // Get the minion that is furthest away and killable
                 var minion = MinionManager.GetMinions(Variables.Player.ServerPosition, Variables.Spells[SpellSlot.Q].Range)
-                             .Where(x => x.Health <= ProviderQ.GetDamage(x) && x.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.Q].Range)
+                             .Where(x => x.Health <= this.ProviderQ.GetDamage(x) && x.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.Q].Range)
                              .MaxOrDefault(x => x.Distance(Variables.Player.ServerPosition));
 
                 if (minion != null)

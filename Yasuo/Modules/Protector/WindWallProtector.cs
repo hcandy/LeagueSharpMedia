@@ -16,7 +16,6 @@
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
-    using Yasuo.Skills.Combo;
 
     using Color = System.Drawing.Color;
 

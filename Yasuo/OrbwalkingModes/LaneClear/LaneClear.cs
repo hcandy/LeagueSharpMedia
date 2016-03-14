@@ -1,6 +1,5 @@
-namespace Yasuo.Skills.LaneClear
+namespace Yasuo.OrbwalkingModes.LaneClear
 {
-    using Yasuo.Common;
     using Yasuo.Common.Classes;
 
     internal class LaneClear : Parent

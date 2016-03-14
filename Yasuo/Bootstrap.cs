@@ -17,12 +17,14 @@ namespace Yasuo
     using Yasuo.Modules.Protector;
     using Yasuo.Modules.WallDash;
     using Yasuo.Modules.Flee;
-    using Yasuo.Skills.Combo;
-    using Yasuo.Skills.LaneClear;
-    using Yasuo.Skills.LastHit;
-    using Yasuo.Skills.Mixed;
+    using Yasuo.OrbwalkingModes.Combo;
+    using Yasuo.OrbwalkingModes.LaneClear;
+    using Yasuo.OrbwalkingModes.LastHit;
+    using Yasuo.OrbwalkingModes.Mixed;
 
     using Notifications = LeagueSharp.Common.Notifications;
+    using SteelTempest = Yasuo.OrbwalkingModes.Combo.SteelTempest;
+    using SweepingBlade = Yasuo.OrbwalkingModes.Combo.SweepingBlade;
 
     internal class Bootstrap
     {
@@ -58,20 +60,20 @@ namespace Yasuo
                             new List<IChild>
                                 {
                                     // Orbwalking Modes
-                                    new Skills.Combo.SteelTempest(combo),
-                                    new Skills.Combo.SweepingBlade(combo),
-                                    new Skills.Combo.LastBreath(combo),
-                                    new Skills.Combo.Flash(combo),
+                                    new SteelTempest(combo),
+                                    new SweepingBlade(combo),
+                                    new LastBreath(combo),
+                                    new Flash(combo),
 
                                     //TODO: Make that JungleClear too
-                                    new Skills.LaneClear.SteelTempest(laneclear),
-                                    new Skills.LaneClear.SweepingBlade(laneclear),
+                                    new OrbwalkingModes.LaneClear.SteelTempest(laneclear),
+                                    new OrbwalkingModes.LaneClear.SweepingBlade(laneclear),
 
-                                    new Skills.LastHit.SteelTempest(lasthit),
-                                    new Skills.LastHit.SweepingBlade(lasthit),
+                                    new OrbwalkingModes.LastHit.SteelTempest(lasthit),
+                                    new OrbwalkingModes.LastHit.SweepingBlade(lasthit),
 
-                                    new Skills.Mixed.SteelTempest(mixed),
-                                    new Skills.Mixed.SweepingBlade(mixed),
+                                    new OrbwalkingModes.Mixed.SteelTempest(mixed),
+                                    new OrbwalkingModes.Mixed.SweepingBlade(mixed),
                                     
                                     new Potions(module),
                                     new KillSteal(module),

@@ -1,6 +1,5 @@
-namespace Yasuo.Skills.Mixed
+namespace Yasuo.OrbwalkingModes.Mixed
 {
-    using Yasuo.Common;
     using Yasuo.Common.Classes;
 
     internal class Mixed : Parent

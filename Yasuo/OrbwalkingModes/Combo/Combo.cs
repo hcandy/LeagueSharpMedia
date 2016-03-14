@@ -1,6 +1,5 @@
-namespace Yasuo.Skills.Combo
+namespace Yasuo.OrbwalkingModes.Combo
 {
-    using Yasuo.Common;
     using Yasuo.Common.Classes;
 
     internal class Combo : Parent

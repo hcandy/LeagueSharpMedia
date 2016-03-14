@@ -1,4 +1,4 @@
-namespace Yasuo.Skills.LastHit
+namespace Yasuo.OrbwalkingModes.LastHit
 {
     using Yasuo.Common.Classes;
 

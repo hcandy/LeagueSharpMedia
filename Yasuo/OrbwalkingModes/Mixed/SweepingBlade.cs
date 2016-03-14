@@ -1,4 +1,4 @@
-﻿namespace Yasuo.Skills.Mixed
+﻿namespace Yasuo.OrbwalkingModes.Mixed
 {
     using System;
     using System.Collections.Generic;
@@ -9,9 +9,7 @@
 
     using SharpDX;
 
-    using Yasuo.Common;
     using Yasuo.Common.Classes;
-    using Yasuo.Common.Extensions;
     using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
@@ -107,7 +105,7 @@
                 MinionTeam.Enemy,
                 MinionOrderTypes.None);
 
-            if (Menu.Item(this.Name + "LastHit").GetValue<bool>())
+            if (this.Menu.Item(this.Name + "LastHit").GetValue<bool>())
             {
                 if (minions == null)
                 {
@@ -148,22 +146,22 @@
                     return;
                 }
 
-                Execute(possibleExecutions.MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
+                this.Execute(possibleExecutions.MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
             }
 
             #region EQ
 
-            if (Menu.Item(this.Name + "EQ").GetValue<bool>())
+            if (this.Menu.Item(this.Name + "EQ").GetValue<bool>())
             {
                 var possibleEqDashes = new List<Yasuo.Common.Objects.Dash>();
                 var unitsEq =
-                    ProviderE.GetUnits(Variables.Player.ServerPosition)
+                    this.ProviderE.GetUnits(Variables.Player.ServerPosition)
                         .Where(x => x.Distance(Variables.Player) <= Variables.Spells[SpellSlot.E].Range);
 
                 if (unitsEq != null && unitsEq.Any())
                 {
                     foreach (var unit in unitsEq.Where(x => Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range).CountEnemiesInRange(350)
-                                                    >= Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value).ToList())
+                                                    >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value).ToList())
                     {
                         possibleEqDashes.Add(new Yasuo.Common.Objects.Dash(unit));
                     }
@@ -171,7 +169,7 @@
 
                 if (possibleEqDashes.Any())
                 {
-                    Execute(possibleEqDashes.MaxOrDefault(x => x.Unit.CountEnemiesInRange(350)).Unit);
+                    this.Execute(possibleEqDashes.MaxOrDefault(x => x.Unit.CountEnemiesInRange(350)).Unit);
                 }
             }
 
@@ -193,7 +191,7 @@
                     && dash.EndPosition.Distance(Prediction.GetPrediction(dash.Unit, 500).CastPosition) <= Variables.Player.AttackRange
                     && dash.EndPosition.Distance(Prediction.GetPrediction(dash.Unit, 500).CastPosition) <= Variables.Spells[SpellSlot.Q].Range && Variables.Spells[SpellSlot.Q].IsReady())
                 {
-                    Execute(targetE);
+                    this.Execute(targetE);
                 }
 
                 Vector3 meanVector = Helper.GetMeanVector3(
@@ -203,12 +201,12 @@
 
                 if (meanVector != Vector3.Zero)
                 {
-                    if (meanVector.Distance(Path.DashObject.EndPosition) >= meanVector.Distance(Variables.Player.ServerPosition)
-                        && Path.DashObject.DangerValue <= 4
-                        && Game.CursorPos.Distance(Path.DashObject.EndPosition) <= Game.CursorPos.Distance(Path.DashObject.StartPosition)
-                        && Variables.Player.HealthPercent > Menu.Item(this.Name + "MinOwnHealth").GetValue<Slider>().Value)
+                    if (meanVector.Distance(this.Path.DashObject.EndPosition) >= meanVector.Distance(Variables.Player.ServerPosition)
+                        && this.Path.DashObject.DangerValue <= 4
+                        && Game.CursorPos.Distance(this.Path.DashObject.EndPosition) <= Game.CursorPos.Distance(this.Path.DashObject.StartPosition)
+                        && Variables.Player.HealthPercent > this.Menu.Item(this.Name + "MinOwnHealth").GetValue<Slider>().Value)
                     {
-                        Execute(targetE);
+                        this.Execute(targetE);
                     }
                 }
             }
@@ -227,7 +225,7 @@
                 case 1:
                     var target = TargetSelector.GetTarget(Variables.Spells[SpellSlot.Q].Range, TargetSelector.DamageType.Physical);
 
-                    if (Menu.Item(this.Name + "Prediction").GetValue<bool>())
+                    if (this.Menu.Item(this.Name + "Prediction").GetValue<bool>())
                     {
                         if (target != null && target.IsValid)
                         {
@@ -276,20 +274,22 @@
             {
                 #region WallCheck
 
-                if (Path.DashObject.IsWallDash)
+                if (this.Path.DashObject.IsWallDash)
                 {
-                    this.Execute(
-                        this.Path.WallDashSavesTime
-                            ? this.Path.DashObject.Unit
-                            : this.ProviderE.GetAlternativePath(this.Path).DashObject.Unit);
+                    //this.Execute(
+                    //    this.Path.WallDashSavesTime
+                    //        ? this.Path.DashObject.Unit
+                    //        : this.ProviderE.GetAlternativePath(this.Path).DashObject.Unit);
+
+                    Execute(Path.FirstUnit);
                 }
 
                 #endregion
 
-                else if (Path.DashObject.EndPosition.Distance(targetedVector) <= (Variables.Player.Distance(targetedVector)))
+                else if (this.Path.DashObject.EndPosition.Distance(targetedVector) <= (Variables.Player.Distance(targetedVector)))
                 {
-                    Drawing.DrawCircle(Path.DashObject.EndPosition, 150, System.Drawing.Color.Red);
-                    Execute(this.Path.FirstUnit);
+                    Drawing.DrawCircle(this.Path.DashObject.EndPosition, 150, System.Drawing.Color.Red);
+                    this.Execute(this.Path.FirstUnit);
                 }
             }
 

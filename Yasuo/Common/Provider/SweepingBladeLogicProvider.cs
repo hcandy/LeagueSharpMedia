@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -11,9 +12,11 @@
     using SharpDX;
 
     using Yasuo.Common.Algorithm.Djikstra;
+    using Yasuo.Common.Algorithm.Media;
     using Yasuo.Common.Objects;
     using Yasuo.Common.Utility;
 
+    using Color = System.Drawing.Color;
     using Point = Yasuo.Common.Algorithm.Djikstra.Point;
 
     public class SweepingBladeLogicProvider
@@ -25,7 +28,6 @@
             CalculationRange = calculationRange;
         }
 
-        // TODO: Clean up LATEST UPDATE: Multipathing
         /// <summary>
         ///     Returns a path object that represents the shortest possible path to a given location
         /// </summary>
@@ -38,7 +40,6 @@
             try
             {
                 var units = this.GetUnits(Variables.Player.ServerPosition, minions, champions);
-                var connections = new List<Connection>();
 
                 if (units == null || units.Count == 0)
                 {
@@ -48,74 +49,89 @@
                 var points = units.Select(position => new Point(position.ServerPosition)).ToList();
                 points.Add(new Point(Variables.Player.ServerPosition));
 
-                var possibleGrids = new List<List<Connection>>();
+                var possibleGrids = new List<Grid>();
+                var possiblePaths = new List<Path>();
 
                 // TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
                 // NOTE: That would need a multipathing system that uses Djikstra Algorithm for every minion in E range and determines the shortest path based on that outcome.
                 // ANOTHER NOTE: The solution is to take every minion around you and create an own grid for it. Then choose the shortest path of that grid. Then return the shortest path.
-                // JOKE: 101 how to path find with Media. :kappa:
 
-                //for every minion currently in dash range create a new grid
-                foreach (var point1 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
-                        && point.Position != Variables.Player.ServerPosition))
+                
+                #region Grid/Connection Generator V2 (Real Multipathing System)
+
+                var generator = new GridGenerator(units);
+
+                generator.Generate();
+
+                possibleGrids = generator.Grids;
+
+                #endregion
+
+
+                #region Calculator
+
+                if (possibleGrids == null)
                 {
-                    var connectionGrid = new List<Connection>
-                    {
-                        new Connection(
-                            new Point(Variables.Player.ServerPosition),
-                            point1)
-                    };
+                    Game.PrintChat("Grids are null " +Game.ClockTime);
+                }
 
-                    var previouspoint = new Point(Vector3.Zero);
-
-                    foreach (var point2 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) > Variables.Spells[SpellSlot.E].Range))
+                if (possibleGrids != null && possibleGrids.Count > 0)
+                {
+                    foreach (var calculator in possibleGrids.Select(grid => new Dijkstra(points, grid.Connections)))
                     {
-                        if (connectionGrid.Contains(new Connection(previouspoint, point2)))
+                        // Set starting point, Obj_Ai_Base Player in this case
+                        calculator.CalculateDistance(
+                            points.FirstOrDefault(x => x.Position == Variables.Player.ServerPosition));
+
+                        // Set end point and return result as path
+                        var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(endPosition)));
+                        var pathToUnits = new List<Obj_AI_Base>();
+
+                        if (path != null)
                         {
-                            continue;
+                            pathToUnits.AddRange(
+                                path.ToList()
+                                    .Select(
+                                        point => this.GetUnits(point.Position).MinOrDefault(x => x.Distance(point.Position))));
                         }
 
-                        var endposition = previouspoint.Position.Extend(point2.Position, Variables.Spells[SpellSlot.E].Range);
-
-                        connectionGrid.Add(new Connection(previouspoint, new Point(endposition)));
-
-                        previouspoint = new Point(endposition);
+                        possiblePaths.Add(new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, endPosition));
                     }
-                    possibleGrids.Add(connectionGrid);
                 }
 
-                var possiblePaths = new List<Path>();
+                #endregion
 
-                foreach (var grid in possibleGrids)
+                #region Debug
+
+                if (Variables.Debug)
                 {
-                    // Create new Object of the Djikstra class with values from above
-                    var calculator = new Dijkstra(points, grid);
+                    Drawing.DrawText(1500, 500, Color.AliceBlue, "Grids: " + possibleGrids.Count);
+                    Drawing.DrawText(1500, 520, Color.AliceBlue, "Paths: " + possiblePaths.Count);
 
-                    // Set starting point, Obj_Ai_Base Player in this case
-                    calculator.CalculateDistance(points.FirstOrDefault(x => x.Position == Variables.Player.ServerPosition));
-
-                    // Set end point and return result as path
-                    var path = calculator.GetPathTo(points.MinOrDefault(x => x.Position.Distance(endPosition)));
-                    var pathToUnits = new List<Obj_AI_Base>();
-
-                    if (path != null)
+                    var Versatz = 600;
+                    foreach (var var in possibleGrids)
                     {
-                        pathToUnits.AddRange(path.ToList().Select(point => this.GetUnits(point.Position).MinOrDefault(x => x.Distance(point.Position))));
+                        Drawing.DrawText(1500, Versatz, Color.AliceBlue, "Grids Units: " + var.Connections.Count);
+                        Versatz += 20;
                     }
-
-                    possiblePaths.Add(new Path(pathToUnits.ToList(), Variables.Player.ServerPosition, endPosition)); 
                 }
 
-                return possiblePaths.Where(path => path.FasterThanWalking).MinOrDefault(path => path.PathTime);
+                #endregion
+
+                var result = possiblePaths.Where(path => path.FasterThanWalking).MinOrDefault(path => path.PathTime);
+
+                return result;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(@"[GetPath]: " +ex);
+                Console.WriteLine(@"[GetPath]: " + ex);
             }
             return null;
 
         }
 
+        // TODO: REWRITE ALTERNATIVE PATH (using Grid Generator to remove only the old path)
+        /*
         public Path GetAlternativePath(Path oldPath, bool minions = true, bool champions = true, bool noSkillshots = true, bool noWallDashes = true)
         {
             try
@@ -131,38 +147,7 @@
                 var points = units.Select(position => new Point(position.ServerPosition)).ToList();
                 points.Add(new Point(Variables.Player.ServerPosition));
 
-                // TODO: Make that more dynamic (distance to next Position based on current player distance to possible first Position), what that does is a more correct pathing
-                // NOTE: That would need a multipathing system that uses Djikstra Algorithm for every minion in E range and determines the shortest path based on that outcome.
-                // ANOTHER NOTE: The solution is to take every minion around you and create an own grid for it. Then choose the shortest path of that grid. Then return the shortest path.
-                // JOKE: 101 how to path find with Media. :kappa:
-   
-                //for every minion currently in dash range create a new grid
-                foreach (var point1 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) <= Variables.Spells[SpellSlot.E].Range
-                        && point.Position != Variables.Player.ServerPosition))
-                {
-                    var connectionGrid = new List<Connection>
-                    {
-                        new Connection(
-                            new Point(Variables.Player.ServerPosition),
-                            point1)
-                    };
-                    
-                    var previouspoint = new Point(Vector3.Zero);
-
-                    foreach (var point2 in points.ToList().Where(point => point.Position.Distance(Variables.Player.ServerPosition) > Variables.Spells[SpellSlot.E].Range))
-                    {
-                        if (connectionGrid.Contains(new Connection(previouspoint, point2)))
-                        {
-                            continue;
-                        }
-
-                        var endposition = previouspoint.Position.Extend(point2.Position, Variables.Spells[SpellSlot.E].Range);
-
-                        connectionGrid.Add(new Connection(previouspoint, new Point(endposition)));
-
-                        previouspoint = new Point(endposition);
-                    }
-                }
+                
 
                 // OLD LOGIC
                 //foreach (var point in points.ToList())
@@ -214,6 +199,7 @@
             }
             return null;
         }
+        */
 
         /// <summary>
         ///     Returns a list containing all units
@@ -259,6 +245,12 @@
             return null;
         }
 
+        /// <summary>
+        ///     Credits: Brian
+        ///     Returns the correct amount of Damage on unit
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
         public double GetDamage(Obj_AI_Base unit)
         {
             return Variables.Player.CalcDamage(

@@ -1,26 +1,21 @@
 ﻿// TODO: Add Multi Pathing System. The Idea is to get some paths that are equally good and compare them then. This way you could do things like if Path A is safer than Path B in Situation X choose Path A
 
-namespace Yasuo.Skills.Combo
+namespace Yasuo.OrbwalkingModes.Combo
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.ExceptionServices;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
     using SharpDX;
 
-    using Yasuo.Common;
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
     using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
-    using Yasuo.Modules;
-    using Yasuo.Modules.WallDash;
 
     internal class SweepingBlade : Child<Combo>
     {
@@ -139,18 +134,18 @@ namespace Yasuo.Skills.Combo
 
                 #region EQ
 
-                if (Menu.Item(this.Name + "EQ").GetValue<bool>())
+                if (this.Menu.Item(this.Name + "EQ").GetValue<bool>())
                 {
                     var possibleEqDashes = new List<Yasuo.Common.Objects.Dash>();
                     var unitsEq =
-                        ProviderE.GetUnits(Variables.Player.ServerPosition)
+                        this.ProviderE.GetUnits(Variables.Player.ServerPosition)
                             .Where(x => x.Distance(Variables.Player) <= Variables.Spells[SpellSlot.E].Range);
 
                     var objAiBases = unitsEq as IList<Obj_AI_Base> ?? unitsEq.ToList();
                     if (objAiBases.Any())
                     {
                         foreach (var unit in objAiBases.Where(x => Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range).CountEnemiesInRange(350)
-                                                        >= Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value).ToList())
+                                                        >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value).ToList())
                         {
                             possibleEqDashes.Add(new Yasuo.Common.Objects.Dash(unit));
                         }
@@ -158,7 +153,7 @@ namespace Yasuo.Skills.Combo
 
                     if (possibleEqDashes.Any())
                     {
-                        Execute(possibleEqDashes.MaxOrDefault(x => x.Unit.CountEnemiesInRange(350)).Unit);
+                        this.Execute(possibleEqDashes.MaxOrDefault(x => x.Unit.CountEnemiesInRange(350)).Unit);
                     }
                 }
 
@@ -180,7 +175,7 @@ namespace Yasuo.Skills.Combo
                         && dash.EndPosition.Distance(Prediction.GetPrediction(dash.Unit, 500).CastPosition) <= Variables.Player.AttackRange
                         && dash.EndPosition.Distance(Prediction.GetPrediction(dash.Unit, 500).CastPosition) <= Variables.Spells[SpellSlot.Q].Range && Variables.Spells[SpellSlot.Q].IsReady())
                     {
-                        Execute(targetE);
+                        this.Execute(targetE);
                     }
 
                     Vector3 meanVector = Helper.GetMeanVector3(
@@ -190,12 +185,12 @@ namespace Yasuo.Skills.Combo
 
                     if (meanVector != Vector3.Zero)
                     {
-                        if (meanVector.Distance(Path.DashObject.EndPosition) >= meanVector.Distance(Variables.Player.ServerPosition)
-                            && Path.DashObject.DangerValue <= 4
-                            && Game.CursorPos.Distance(Path.DashObject.EndPosition) <= Game.CursorPos.Distance(Path.DashObject.StartPosition)
-                            && Variables.Player.HealthPercent > Menu.Item(this.Name + "MinOwnHealth").GetValue<Slider>().Value)
+                        if (meanVector.Distance(this.Path.DashObject.EndPosition) >= meanVector.Distance(Variables.Player.ServerPosition)
+                            && this.Path.DashObject.DangerValue <= 4
+                            && Game.CursorPos.Distance(this.Path.DashObject.EndPosition) <= Game.CursorPos.Distance(this.Path.DashObject.StartPosition)
+                            && Variables.Player.HealthPercent > this.Menu.Item(this.Name + "MinOwnHealth").GetValue<Slider>().Value)
                         {
-                            Execute(targetE);
+                            this.Execute(targetE);
                         }
                     }
                 }
@@ -214,7 +209,7 @@ namespace Yasuo.Skills.Combo
                     case 1:
                         var target = TargetSelector.GetTarget(Variables.Spells[SpellSlot.Q].Range, TargetSelector.DamageType.Physical);
 
-                        if (Menu.Item(this.Name + "Prediction").GetValue<bool>())
+                        if (this.Menu.Item(this.Name + "Prediction").GetValue<bool>())
                         {
                             if (target != null && target.IsValid)
                             {
@@ -263,20 +258,22 @@ namespace Yasuo.Skills.Combo
                 {
                     #region WallCheck
 
-                    if (Path.DashObject.IsWallDash)
+                    if (this.Path.DashObject.IsWallDash)
                     {
-                        this.Execute(
-                            this.Path.WallDashSavesTime
-                                ? this.Path.DashObject.Unit
-                                : this.ProviderE.GetAlternativePath(this.Path).DashObject.Unit);
+                        //this.Execute(
+                        //    this.Path.WallDashSavesTime
+                        //        ? this.Path.DashObject.Unit
+                        //        : this.ProviderE.GetAlternativePath(this.Path).DashObject.Unit);
+
+                        Execute(Path.FirstUnit);
                     }
 
                     #endregion
 
-                    else if (Path.DashObject.EndPosition.Distance(targetedVector) <= (Variables.Player.Distance(targetedVector)))
+                    else if (this.Path.DashObject.EndPosition.Distance(targetedVector) <= (Variables.Player.Distance(targetedVector)))
                     {
-                        Drawing.DrawCircle(Path.DashObject.EndPosition, 150, System.Drawing.Color.Red);
-                        Execute(this.Path.FirstUnit);
+                        Drawing.DrawCircle(this.Path.DashObject.EndPosition, 150, System.Drawing.Color.Red);
+                        this.Execute(this.Path.FirstUnit);
                     }
                 }
 
@@ -305,8 +302,13 @@ namespace Yasuo.Skills.Combo
 
         public void OnDraw(EventArgs args)
         {
+            if (this.Path != null)
+            {
+                this.Path.Draw();
+                Console.WriteLine(@"Drawing Path");
+            }
             //this.GapClosePath?.RealPath.Draw();
-            this.Path?.Draw();
+
             //this.Path?.DashObject?.Draw();
         }
 
@@ -315,12 +317,12 @@ namespace Yasuo.Skills.Combo
             try
             {
                 if (unit != null && !unit.IsValidTarget() || unit.HasBuff("YasuoDashWrapper") 
-                    || !ProviderTurret.IsSafePosition(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.R].Range)))
+                    || !this.ProviderTurret.IsSafePosition(Variables.Player.ServerPosition.Extend(unit.ServerPosition, Variables.Spells[SpellSlot.R].Range)))
                 {
                     return;
                 }
 
-                Variables.Spells[SpellSlot.E].CastOnUnit(unit);
+                //Variables.Spells[SpellSlot.E].CastOnUnit(unit);
             }
             catch (Exception ex)
             {

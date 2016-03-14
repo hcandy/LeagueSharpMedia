@@ -1,4 +1,4 @@
-﻿namespace Yasuo.Skills.LastHit
+﻿namespace Yasuo.OrbwalkingModes.LastHit
 {
     using System;
     using System.Collections.Generic;
@@ -8,11 +8,8 @@
     using LeagueSharp.Common;
 
     using Yasuo.Common.Classes;
-    using Yasuo.Common.Extensions;
-    using Yasuo.Common.Objects;
     using Yasuo.Common.Provider;
     using Yasuo.Common.Utility;
-    using Yasuo.Skills.LaneClear;
 
     internal class SweepingBlade : Child<LastHit>
     {
@@ -125,7 +122,7 @@
                         Variables.Player.ServerPosition.Extend(
                             minion.ServerPosition,
                             Variables.Spells[SpellSlot.E].Range),
-                        375).Where(x => x.Health <= Provider.GetDamage(x));
+                        375).Where(x => x.Health <= this.Provider.GetDamage(x));
 
                 if (minionsEq != null && minionsEq.Count() >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value)
                 {
@@ -162,7 +159,7 @@
                     return;
                 }
 
-                Execute(possibleExecutions.Where(x => ProviderTurret.IsSafePosition(Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range))).MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
+                Execute(possibleExecutions.Where(x => this.ProviderTurret.IsSafePosition(Variables.Player.ServerPosition.Extend(x.ServerPosition, Variables.Spells[SpellSlot.E].Range))).MinOrDefault(x => x.Distance(Helper.GetMeanVector2(minions))));
             }
 
 

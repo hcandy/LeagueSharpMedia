@@ -55,6 +55,7 @@ namespace Yasuo.Common.Objects
             
             if (Units != null && Units.Count > 0)
             {
+                //Game.PrintChat(@"START; "+Units.Count);
                 this.FirstUnit = this.Units.MinOrDefault(x => x.Distance(Variables.Player));
                 this.SetAll();
             }
@@ -302,34 +303,70 @@ namespace Yasuo.Common.Objects
             this.Positions.Add(position);
         }
 
-        //TODO: Add color, Line width, end and start point boolean
-        public void Draw()
+        public void Draw(int width = 2, bool multicolor = true)
         {
             try
             {
-                if (this.Units != null && this.Units.Count > 0
-                    && this.Positions != null && this.Positions.Count > 0)
+                Console.WriteLine(@"Position.Count: " + Positions.Count);
+                Console.WriteLine(@"Units.Count: " + Units.Count);
+                if (Variables.Debug)
                 {
-                    Drawing.DrawCircle(FirstUnit.Position, 50, Color.Aqua);
-
-                    for (var i = 0; i < this.Positions.Count; i++)
+                    if (Units == null)
                     {
-                        if (this.Positions.Count > i + 1)
-                        {
-                            Drawing.DrawLine(
-                            Drawing.WorldToScreen(this.Positions[i]),
-                            Drawing.WorldToScreen(this.Positions[i + 1]),
-                                2f,
-                            Color.White);
-                        }
-
+                        Console.WriteLine(@"Path (Draw): Units are null");
+                    }
+                    if (Positions == null)
+                    {
+                        Console.WriteLine(@"Path (Draw): Positions are null");
+                        return;
+                    }
+                    if (Units != null && Units.Count == 0)
+                    {
+                        Console.WriteLine(@"Path (Draw): Units.Count = 0");
+                    }
+                    if (Positions != null && Positions.Count == 0)
+                    {
+                        Console.WriteLine(@"Path (Draw): Positions.Count = 0");
+                        return;
                     }
                 }
 
+                var color = Color.White;
+
+                if (multicolor && Positions.Any(x => x.CountEnemiesInRange(Variables.Spells[SpellSlot.E].Range) > 0))
+                {
+                    color = Color.Red;
+                }
+
+                if (this.Units != null && this.Units.Count > 0
+                    && this.Positions != null && this.Positions.Count > 1)
+                {
+                    for (var i = 0; i < this.Positions.Count; i++)
+                    {
+                        var drawpos1 = Vector3.Zero;
+                        var drawpos2 = Vector3.Zero;
+
+                            drawpos1 = this.Positions[i];
+                            Console.WriteLine(@"drawpos1: " + drawpos1);
+                            drawpos2 = this.Positions[i + 1];
+                            Console.WriteLine(@"drawpos2: " + drawpos2);
+
+
+                        if (drawpos1 != Vector3.Zero && drawpos2 != Vector3.Zero)
+                        {
+
+                            Drawing.DrawLine(
+                            Drawing.WorldToScreen(this.Positions[i]),
+                            Drawing.WorldToScreen(this.Positions[i + 1]),
+                            width,
+                            color);
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(@"Drawing path expection :" +ex);
             }
 
 

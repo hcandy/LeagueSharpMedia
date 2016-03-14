@@ -1,4 +1,4 @@
-﻿namespace Yasuo.Skills.Combo
+﻿namespace Yasuo.OrbwalkingModes.Combo
 {
     using System;
     using System.Collections.Generic;
@@ -7,14 +7,9 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using Yasuo.Common;
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
-    using Yasuo.Common.Predictions;
     using Yasuo.Common.Provider;
-    using Yasuo.Common.Objects;
-
-    using HitChance = Yasuo.Common.Predictions.HitChance;
 
     internal class LastBreath : Child<Combo>
     {
@@ -115,7 +110,7 @@
                 var execution = new Yasuo.Common.Objects.LastBreath(null);
 
                 // Menu: Min Hit AOE && AOE
-                if (Menu.Item(Name + "AOE").GetValue<bool>())
+                if (this.Menu.Item(this.Name + "AOE").GetValue<bool>())
                 {
                     validatedExecutions.AddRange(possibleExecutions.Where(entry => entry.EnemiesInUlt >= this.Menu.Item(this.Name + "MinHitAOE").GetValue<Slider>().Value));
                 }
@@ -134,7 +129,7 @@
 
                 #endregion
 
-                if (execution == null || !Provider.ShouldCastNow(execution.Target, new SweepingBladeLogicProvider().GetPath(execution.Target.ServerPosition)))
+                if (execution == null || !this.Provider.ShouldCastNow(execution.Target, new SweepingBladeLogicProvider().GetPath(execution.Target.ServerPosition)))
                 {
                     return;
                 }

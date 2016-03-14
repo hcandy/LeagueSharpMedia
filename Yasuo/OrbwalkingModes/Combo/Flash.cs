@@ -1,16 +1,13 @@
-﻿namespace Yasuo.Skills.Combo
+﻿namespace Yasuo.OrbwalkingModes.Combo
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using Yasuo.Common;
     using Yasuo.Common.Classes;
     using Yasuo.Common.Extensions;
-    using Yasuo.Common.Predictions;
     using Yasuo.Common.Provider;
 
     internal class Flash : Child<Combo>
@@ -61,9 +58,9 @@
             }
             this.Menu.AddSubMenu(blacklist);
 
-            Menu.AddItem(new MenuItem(Name + "EQFlash", "Do EQ Flash").SetValue(true)
+            this.Menu.AddItem(new MenuItem(this.Name + "EQFlash", "Do EQ Flash").SetValue(true)
                 .SetTooltip("If enabled the assembly will perfom an EQ Flash Combo when it can hit X enemies"));
-            Menu.AddItem(new MenuItem(Name + "MinHitCount", "Min HitCount EQ Flash").SetValue(new Slider(3, 1, 5)));
+            this.Menu.AddItem(new MenuItem(this.Name + "MinHitCount", "Min HitCount EQ Flash").SetValue(new Slider(3, 1, 5)));
 
             this.Parent.Menu.AddSubMenu(this.Menu);
         }
